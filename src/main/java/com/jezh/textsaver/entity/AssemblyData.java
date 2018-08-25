@@ -34,7 +34,8 @@ public class AssemblyData {
     @Column(name = "parts_order")
     // LinkedList is faster in add() and remove(), but slower in get() as compared with ArrayList. Since the add()
     // and remove() operations will perform often, I choose LinkedList.
-    private List<Long> partsOrder = new LinkedList<>();
+//    private List<Long> partsOrder = new LinkedList<>();
+    private String partsOrder;
 
     @OneToOne
     @JoinColumn(name = "text_common_data_id")
