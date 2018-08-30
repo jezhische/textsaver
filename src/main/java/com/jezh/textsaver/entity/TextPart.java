@@ -1,19 +1,18 @@
 package com.jezh.textsaver.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "texts")
+@Table(name = "text_parts")
 @Data // getters, setters, equals, hashCode, toString
 @NoArgsConstructor
 @Builder
+/* for test purpose */
 @AllArgsConstructor
+//@RequiredArgsConstructor
 public class TextPart {
 
     // The unique identifier for the part of text. When I pull the text for reading or redacting,
@@ -25,16 +24,26 @@ public class TextPart {
 
     // в конструкторе этого класса д.б. прописано, чтобы каждый раз, когда создается эта сущность, менялся и объект
     // AssemblyData. Или это д.б. прописано в методе create()
+
+
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+// With the "save()" JpaRepository method:
+// GenerationType.AUTO brings "could not extract ResultSet... ERROR: relation "hibernate_sequence" does not exist"
+// GenerationType.SEQUENCE brings the same "could not extract ResultSet... ERROR: relation "hibernate_sequence" does not exist"
+// GenerationType.TABLE brings "error performing isolated work... ERROR: relation "hibernate_sequence" does not exist"
+// GenerationType.IDENTITY brings "ERROR: null value in column "id" violates not-null constraint"
+
+// todo: NB: this id generation works only if I let db the primary key incrementation by creating table with "id SERIAL PRIMARY KEY"
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
 
-    // text body
+    /* text body */
     @Column
     private String body;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "assembly_data_id")
-    private AssemblyData assemblyData;
+    public TextPart(String body) {
+        this.body = body;
+    }
 }

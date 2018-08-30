@@ -1,11 +1,11 @@
-package com.jezh.textsaver.util;
+package com.jezh.textsaver.jpaTestUtils;
 
-public class JpaUtils {
-    public static String newAssemblyId() {
-        StringBuilder ssoBuilder = new StringBuilder();
+public class JpaTestUtils {
+    public static String newTextPartBody() {
+        StringBuilder textBodyBuilder = new StringBuilder();
         for (int i = 0; i < 10; i++)
-            ssoBuilder.append(generateRandomChar());
-        return ssoBuilder.toString();
+            textBodyBuilder.append(generateRandomChar());
+        return textBodyBuilder.toString();
     }
 
     private static char generateRandomChar() {

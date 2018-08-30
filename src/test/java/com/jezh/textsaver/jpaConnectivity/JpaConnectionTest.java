@@ -1,6 +1,7 @@
 package com.jezh.textsaver.jpaConnectivity;
 
 import com.jezh.textsaver.configuration.TextsaverApplication;
+import com.jezh.textsaver.entity.TextPart;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +17,7 @@ import javax.persistence.EntityManagerFactory;
 //@SpringBootTest()
 // without following I couldn't autowire EntityManagerFactory:
 @ContextConfiguration(classes = TextsaverApplication.class)
-public class JpaConnection {
+public class JpaConnectionTest {
 
 //    SpringBootTest.WebEnvironment webEnvironment = SpringBootTest.WebEnvironment.MOCK;
     @Autowired
@@ -33,4 +34,12 @@ public class JpaConnection {
     public void testGetConnection() {
         Assert.assertTrue(entityManager.isOpen());
     }
+
+    @Test
+    public void testSaveTextPart() {
+        TextPart textPart = new TextPart("hururu");
+        entityManager.persist(textPart);
+    }
 }
+
+

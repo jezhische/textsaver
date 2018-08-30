@@ -34,7 +34,4 @@ public class TextCommonData {
     // creating date
     @Column
     private LocalDateTime creatingDate;
-
-    @OneToOne(mappedBy = "textCommonData")
-    private AssemblyData assemblyData;
 }
