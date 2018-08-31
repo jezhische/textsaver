@@ -1,6 +1,8 @@
 package com.jezh.textsaver.configuration;
 
 import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -20,6 +22,9 @@ import java.util.Properties;
 @EnableTransactionManagement
 // without following I get "IllegalStateException: Failed to load ApplicationContext...Required key 'spring.datasource.url' not found"
 @PropertySource("application.properties")
+// https://stackoverflow.com/questions/25366550/how-to-specify-packagestoscan-in-hibernatejpaautoconfiguration
+//@EnableAutoConfiguration // this is the part of @SpringBootApplication annotation
+@EntityScan(basePackages = "com.jezh.textsaver.entity")
 public class DataSourceConfig {
 
     private static final String PROP_DATABASE_DRIVER = "spring.datasource.driver-class-name";
