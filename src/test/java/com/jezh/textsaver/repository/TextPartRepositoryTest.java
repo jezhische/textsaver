@@ -36,12 +36,12 @@ public class TextPartRepositoryTest {
 
     @Test
     public void testRetrieveOne() {
-        Assert.assertEquals("TUaIVJRQKa", repository.findById(226L).get().getBody());
+        Assert.assertEquals("TUaIVJRQKa", repository.findOne(226L).getBody());
     }
 
     @Test
     public void testUpdateOne() {
-        TextPart textPart = repository.findById(226L).orElse(null);
+        TextPart textPart = repository.findOne(226L);
         textPart.setBody("TUaIVJRQKa");
         repository.save(textPart);
     }

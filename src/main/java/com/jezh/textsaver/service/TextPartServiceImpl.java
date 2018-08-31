@@ -34,7 +34,7 @@ public class TextPartServiceImpl implements TextPartService {
 
     @Override
     public Optional<TextPart> findTextPartById(Long id) {
-        return repository.findById(id);
+        return Optional.ofNullable(repository.findOne(id));
     }
 
     @Override
