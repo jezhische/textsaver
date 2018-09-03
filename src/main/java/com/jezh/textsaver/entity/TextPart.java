@@ -28,13 +28,13 @@ public class TextPart {
 
 
     @Id
-// With the "save()" JpaRepository method:
-// GenerationType.AUTO brings "could not extract ResultSet... ERROR: relation "hibernate_sequence" does not exist"
-// GenerationType.SEQUENCE brings the same "could not extract ResultSet... ERROR: relation "hibernate_sequence" does not exist"
-// GenerationType.TABLE brings "error performing isolated work... ERROR: relation "hibernate_sequence" does not exist"
-// GenerationType.IDENTITY brings "ERROR: null value in column "id" violates not-null constraint"
-
-// todo: NB: this id generation works only if I let db the primary key incrementation by creating table with "id SERIAL PRIMARY KEY"
+// todo: NB: this id generation (strategy = GenerationType.IDENTITY) works only if I let db the primary key incrementation
+// by creating table with "id SERIAL PRIMARY KEY"
+// The DDL (and DML to initialize tables with data) scripts may be fulfilled automatically from files "schema.sql" and
+// "data.sql", and also "schema-${platform}.sql" and "data-${platform}.sql", where "platform" is the value of
+// "spring.datasource.platform" (to allow to switch to database-specific scripts if necessary).
+// see https://docs.spring.io/spring-boot/docs/current/reference/html/howto-database-initialization.html#howto-initialize-a-database-using-spring-jdbc
+    // NB: .AUTO works too
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
@@ -43,6 +43,19 @@ public class TextPart {
     @Column
     private String body;
 
+    @Column
+    private Long previous;
+
+    @Column
+    private Long next;
+
+    public TextPart(String body, Long previous, Long next) {
+        this.body = body;
+        this.previous = previous;
+        this.next = next;
+    }
+
+    // only to compilate the previously wrote tests
     public TextPart(String body) {
         this.body = body;
     }

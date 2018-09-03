@@ -6,11 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.validation.Valid;
 
 @RestController
 public class TextsaverController {
@@ -19,7 +22,9 @@ public class TextsaverController {
     private TextPartService textPartService;
 
     @PostMapping(path = "/text-parts")
-    public ResponseEntity<TextPart> create(@RequestBody TextPart textPart, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<TextPart> create(@Valid @RequestBody TextPart textPart,
+                                           UriComponentsBuilder uriBuilder,
+                                           BindingResult bindingResult) {
         textPartService.create(textPart);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriBuilder.path("/text-parts/{id}").buildAndExpand(textPart.getId()).toUri());
@@ -30,4 +35,9 @@ public class TextsaverController {
     public ResponseEntity<?> getTextPartList() {
         return ResponseEntity.ok().body(textPartService.findAll());
     }
+
+//    @GetMapping (path = "/text-parts/{id}")
+//    public ResponseEntity<TextPart> getTextPartById() {
+//
+//    }
 }

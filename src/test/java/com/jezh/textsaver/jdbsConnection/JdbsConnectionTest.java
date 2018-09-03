@@ -15,7 +15,7 @@ import java.util.Properties;
 import java.util.Random;
 
 //@RunWith(SpringRunner.class)
-//@SpringBootTest(classes = {TextsaverApplication.class, DataSourceConfig.class})
+//@SpringBootTest(classes = {TextsaverApplication.class, TestEntityManagerDataSourcePostgresConfig.class})
 public class JdbsConnectionTest {
 
     private Connection connection;
@@ -99,11 +99,12 @@ public class JdbsConnectionTest {
 
     @Test
     public void testSaveTextPart_thenOk() throws Exception {
-        preparedStatement = connection.prepareStatement(CREATE_TABLE_text_parts);
-        preparedStatement.execute();
+//        preparedStatement = connection.prepareStatement(CREATE_TABLE_text_parts);
+//        preparedStatement.execute();
         preparedStatement = connection.prepareStatement(INSERT_SQL);
         preparedStatement.setLong(1, new Random().nextInt(1000) + 1);
-        preparedStatement.setString(2, JpaTestUtils.newTextPartBody());
+        preparedStatement.setString(2, "JdbsConnectionTest/ testSaveTextPart_thenOk()/ " +
+                "preparedStatement.executeUpdate(): " + JpaTestUtils.newTextPartBody());
         preparedStatement.executeUpdate();
         connection.commit();
 

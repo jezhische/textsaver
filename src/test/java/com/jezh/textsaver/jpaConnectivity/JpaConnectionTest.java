@@ -1,6 +1,6 @@
 package com.jezh.textsaver.jpaConnectivity;
 
-import com.jezh.textsaver.configuration.TextsaverApplication;
+import com.jezh.textsaver.TextsaverApplication;
 import com.jezh.textsaver.entity.TextPart;
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,7 +37,7 @@ public class JpaConnectionTest {
 
     @Test
     public void testSaveTextPart() {
-        TextPart textPart = new TextPart("hururu");
+        TextPart textPart = new TextPart("JpaConnectionTest/ testSaveTextPart()/ entityManager.persist(textPart)");
         entityManager.persist(textPart);
     }
 }
