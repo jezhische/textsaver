@@ -2,6 +2,7 @@ package com.jezh.textsaver.jpaConnectivity;
 
 import com.jezh.textsaver.TextsaverApplication;
 import com.jezh.textsaver.entity.TextPart;
+import com.jezh.textsaver.jpaTestUtils.JpaTestUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 
 @RunWith(SpringRunner.class)
 //@SpringBootTest()
@@ -23,6 +25,7 @@ public class JpaConnectionTest {
     @Autowired
     EntityManagerFactory entityManagerFactory;
 
+//    @PersistenceContext
     private EntityManager entityManager;
 
     @Before
@@ -37,7 +40,9 @@ public class JpaConnectionTest {
 
     @Test
     public void testSaveTextPart() {
-        TextPart textPart = new TextPart("JpaConnectionTest/ testSaveTextPart()/ entityManager.persist(textPart)");
+        TextPart textPart = TextPart.builder()
+                .body("JpaConnectionTest/ testSaveTextPart()/ entityManager.persist(textPart)")
+                .build();
         entityManager.persist(textPart);
     }
 }

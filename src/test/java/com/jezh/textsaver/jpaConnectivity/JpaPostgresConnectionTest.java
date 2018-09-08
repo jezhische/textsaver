@@ -82,7 +82,9 @@ public class JpaPostgresConnectionTest {
     @Commit
     public void testSaveTextPart() {
 //        TestTransaction.start(); // Cannot start a new transaction without ending the existing transaction first
-        TextPart textPart = new TextPart("JpaPostgresConnectionTest/ testSaveTextPart()/ entityManager.persist(textPart)");
+        TextPart textPart = TextPart.builder()
+                .body("JpaPostgresConnectionTest/ testSaveTextPart()/ entityManager.persist(textPart)")
+                .build();
         entityManager.persist(textPart);
         Assert.assertFalse(TestTransaction.isFlaggedForRollback());
         TestTransaction.end();

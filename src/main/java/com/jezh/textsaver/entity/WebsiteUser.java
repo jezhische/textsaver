@@ -3,8 +3,8 @@ package com.jezh.textsaver.entity;
 import javax.persistence.*;
 import java.util.Objects;
 
-@Entity
-@Table(name = "WEBSITE_USER")
+//@Entity
+//@Table(name = "WEBSITE_USER")
 public class WebsiteUser {
 
     @Id

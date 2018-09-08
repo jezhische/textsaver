@@ -58,7 +58,7 @@ public class JdbsConnectionTest {
 
     @Before
     public void setUp() throws Exception {
-        textPart = new TextPart(JpaTestUtils.newTextPartBody());
+        textPart = TextPart.builder().body(JpaTestUtils.newTextPartBody()).build();
 
         connection = DriverManager.getConnection(
                 PROP_DATABASE_URL,
