@@ -3,6 +3,7 @@ package com.jezh.textsaver;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -12,7 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 //@Import(DataSourceConfig.class)
 @ComponentScan("com.jezh.textsaver")
-@EnableJpaRepositories("com.jezh.textsaver.repository")
+@EnableJpaRepositories(basePackages = "com.jezh.textsaver.repository")
 @EnableTransactionManagement
 
 // https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html#boot-features-configure-datasource

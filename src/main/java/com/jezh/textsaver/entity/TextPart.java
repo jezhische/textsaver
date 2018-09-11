@@ -51,14 +51,14 @@ public class TextPart {
     /**
      * link to previous text part
      * */
-    @Column(name = "previous_item")
-    private Integer previousItem;
+    @Column(name = "previous_item", nullable = true, unique = true)
+    private Long previousItem;
 
     /**
      * link to next text part
      * */
-    @Column(name = "next_item")
-    private Integer nextItem;
+    @Column(name = "next_item", nullable = true, unique = true)
+    private Long nextItem;
 
     @ManyToOne(fetch = FetchType.LAZY/*, cascade = CascadeType.REFRESH*/) // default EAGER - it's JPA requirement,
     // since in hibernate all select fetching is LAZY

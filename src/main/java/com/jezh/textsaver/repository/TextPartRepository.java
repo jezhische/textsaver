@@ -9,10 +9,12 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 // The @RepositoryRestResource annotation is optional and is used to customize the REST endpoint. If we decided
 // to omit it, Spring would automatically create an endpoint at “/textParts” instead of “/text-parts“.
 //@RepositoryRestResource(collectionResourceRel = "text-parts", path = "text-parts")
 @Repository
 public interface TextPartRepository extends JpaRepository<TextPart, Long> {
+    Optional<TextPart> findByPreviousItem(Integer previousItem);
 }
