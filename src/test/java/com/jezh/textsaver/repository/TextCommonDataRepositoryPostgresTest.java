@@ -45,11 +45,16 @@ public class TextCommonDataRepositoryPostgresTest extends BasePostgresConnecting
 
     @Test
     public void testCreate() {
-        textCommonData.setName(textCommonData.getName() + "/ testCreate()/ textCommonDataRepository.saveAndFlush(textCommonData)");
-//        textPartRepository.saveAndFlush(textPart);
-//        textCommonData.addTextParts(textPart);
         Assert.assertNotNull(textCommonDataRepository.saveAndFlush(textCommonData));
         System.out.println("*****************************************************************" + textCommonData.getId());
+    }
+
+    @Test
+    public void testRemove() {
+        textCommonData = textCommonDataRepository.findAll().get(0);
+        Assert.assertNotNull(textCommonData);
+        textCommonDataRepository.delete(textCommonData);
+        Assert.assertFalse(textCommonDataRepository.findById(textCommonData.getId()).isPresent());
     }
 
     @Test
@@ -60,34 +65,37 @@ public class TextCommonDataRepositoryPostgresTest extends BasePostgresConnecting
 
     @Test
     public void testUpdateName() {
-        textCommonData = textCommonDataRepository.findAll().get(0);
-        textCommonData.setName("updated");
+//        textCommonData = textCommonDataRepository.findAll().get(0);
+//        textCommonData = textCommonDataRepository.getOne(7L); // LazyInitializationException: could not initialize
+//        // proxy [com.jezh.textsaver.entity.TextCommonData#7] - no Session
+        textCommonData = textCommonDataRepository.findById(26L).get();
+        textCommonData.setName("eighth");
         textCommonDataRepository.saveAndFlush(textCommonData);
     }
 
-    @Test
-    public void testSetTextParts_thenTextPartForeignKeysBeUpdated() {
-        textCommonData = textCommonDataRepository.findAll().get(0);
-        List<TextPart> textPartList = textPartRepository.findAll();
-//        int size = textPartList.size();
-//        textCommonData.addTextParts(textPartList.toArray(new TextPart[size]));
-        textCommonData.setTextParts(new HashSet<>(textPartList));
-        textCommonDataRepository.saveAndFlush(textCommonData);
-    }
-
-    @Test
-    @Transactional
-    @Rollback(value = false)// see comments to Set<TextPart> textParts in TextCommonData (to avoid LazyInitializationException)
-    public void testAddTextParts() {
-        textCommonData = textCommonDataRepository.findAll().get(0);
-//        textCommonData.addTextParts(textPartRepository.findById(1L).get());
-        textCommonData.addTextParts(TextPart.builder().body("TextCommonDataRepositoryPostgresTest/ testAddTextParts").build());
-        textCommonDataRepository.saveAndFlush(textCommonData);
-    }
-
-    @Test
-    @Transactional
-    public void getTextPartsCollection() {
-        textCommonDataRepository.findAll().get(0).getTextParts().forEach(System.out::println);
-    }
+//    @Test
+//    public void testSetTextParts_thenTextPartForeignKeysBeUpdated() {
+//        textCommonData = textCommonDataRepository.findAll().get(0);
+//        List<TextPart> textPartList = textPartRepository.findAll();
+////        int size = textPartList.size();
+////        textCommonData.addTextParts(textPartList.toArray(new TextPart[size]));
+//        textCommonData.setTextParts(new HashSet<>(textPartList));
+//        textCommonDataRepository.saveAndFlush(textCommonData);
+//    }
+//
+//    @Test
+//    @Transactional
+//    @Rollback(value = false)// see comments to Set<TextPart> textParts in TextCommonData (to avoid LazyInitializationException)
+//    public void testAddTextParts() {
+//        textCommonData = textCommonDataRepository.findAll().get(0);
+////        textCommonData.addTextParts(textPartRepository.findById(1L).get());
+//        textCommonData.addTextParts(TextPart.builder().body("TextCommonDataRepositoryPostgresTest/ testAddTextParts").build());
+//        textCommonDataRepository.saveAndFlush(textCommonData);
+//    }
+//
+//    @Test
+//    @Transactional
+//    public void getTextPartsCollection() {
+//        textCommonDataRepository.findAll().get(0).getTextParts().forEach(System.out::println);
+//    }
 }

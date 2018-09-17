@@ -8,7 +8,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -27,6 +30,9 @@ public class TextPartRepositoryPostgresTest extends BasePostgresConnectingTest {
     public void setUp() throws Exception {
         textPart = TextPart.builder()
                 .body("TextPartRepositoryPostgresTest/")
+                .textCommonData(textCommonDataRepository.findAll().get(0))
+                .nextItem((long)(Math.random() * 10000))
+                .previousItem((long)(Math.random() * 10000))
                 .build();
     }
 
@@ -39,6 +45,20 @@ public class TextPartRepositoryPostgresTest extends BasePostgresConnectingTest {
     public void testCreate() {
         Assert.assertNotNull(textPartRepository.saveAndFlush(textPart));
         System.out.println("*****************************************************************" + textPart.getId());
+    }
+
+    @Test
+    public void testCreateFiveItems() {
+        for (int i = 0; i < 5; i++) {
+            textPart = null;
+            textPart = TextPart.builder()
+                    .body("TextPartRepositoryPostgresTest/")
+                    .textCommonData(textCommonDataRepository.findAll().get(0))
+                    .nextItem((long)(Math.random() * 10000))
+                    .previousItem((long)(Math.random() * 10000))
+                    .build();
+            textPartRepository.saveAndFlush(textPart);
+        }
     }
 
     @Test
@@ -56,8 +76,8 @@ public class TextPartRepositoryPostgresTest extends BasePostgresConnectingTest {
 
     @Test
     public void testUpdateForeignKey() {
-        textPart = textPartRepository.findAll().get(0);
-//        TextPart textPart = textPartRepository.findById(5L).get();
+//        textPart = textPartRepository.findAll().get(0);
+        TextPart textPart = textPartRepository.findById(5L).get();
 //        textPart.setTextCommonData(null);
         textPart.setTextCommonData(textCommonDataRepository.findAll().get(0));
         textPartRepository.saveAndFlush(textPart);
@@ -66,18 +86,12 @@ public class TextPartRepositoryPostgresTest extends BasePostgresConnectingTest {
     @Test
     public void testFindByPreviousItem() {
         TextPart lastSavedTextPart = textPartRepository.findAll().get((int) textPartRepository.count() - 1);
-// to avoid NullPointerException in lastSavedTextPart.toString(), since some properties can be equals null -----------:
-        lastSavedTextPart.setPreviousItem(1L);
-        lastSavedTextPart.setNextItem(2L);
-        lastSavedTextPart.setTextCommonData(textCommonDataRepository.findAll().get(0));
-        System.out.println("***********************************************" + lastSavedTextPart);
-// --------------------------------------------------------------------------------------------------------------------
+
         Long previous = lastSavedTextPart.getId();
-        textPart = TextPart.builder().previousItem(previous).nextItem(3L).body("TextPartRepositoryPostgresTest/")
-                .textCommonData(textCommonDataRepository.findAll().get(0)).build();
-        textPartRepository.saveAndFlush(this.textPart);
+        textPart.setPreviousItem(previous);
+        textPartRepository.saveAndFlush(textPart);
         System.out.println("***********************************************" + textPart);
-        Optional<TextPart> byPreviousItem = textPartRepository.findByPreviousItem(previous.intValue());
+        Optional<TextPart> byPreviousItem = textPartRepository.findByPreviousItem(previous);
         TextPart part = byPreviousItem.get();
         Assert.assertNotNull(part);
         Assert.assertTrue(part.getPreviousItem() == previous);
@@ -85,9 +99,49 @@ public class TextPartRepositoryPostgresTest extends BasePostgresConnectingTest {
     }
 
     @Test
-    public void testOptional() {
-        textPart.setPreviousItem(27L);
-        textPartRepository.saveAndFlush(textPart);
-        System.out.println(textPartRepository.findByPreviousItem(27).get().getId());
+    @Transactional
+    public void testFindByTextCommonDataName() {
+        List<TextPart> textPartList = textPartRepository.findByTextCommonDataName("eighth");
+        textPartList.forEach(textPart1 -> System.out.println("id: " + textPart1.getId() +
+        ", foreignKey: " + textPart1.getTextCommonData().getId() + ": " + textPart1.getTextCommonData().getName()));
     }
+
+    @Test(expected = DataIntegrityViolationException.class)
+    public void testPreviousItemUniqueConstraint() {
+        TextPart lastSavedTextPart = textPartRepository.findAll().get((int) textPartRepository.count() - 1);
+        textPart.setPreviousItem(lastSavedTextPart.getPreviousItem());
+        textPartRepository.saveAndFlush(textPart);
+    }
+
+//    @Test
+//    public void testFindBySequence() {
+//        textPart = textPartRepository.findByTextCommonDataName("eighth").stream().findAny().get();
+//        System.out.println("********************************** previous textPart: previousItem = " +
+//        textPart.getPreviousItem() + ", nextItem = " + textPart.getNextItem());
+//        Long nextItem = textPart.getNextItem();
+//        textPart = textPartRepository.findNextByCurrentInSequence(nextItem).get();
+//        System.out.println("********************************** next textPart: previousItem = " +
+//                textPart.getPreviousItem() + ", nextItem = " + textPart.getNextItem());
+//    }
+@Test
+public void testFindNextByCurrentInSequence() {
+    textPart = textPartRepository.findByTextCommonDataName("eighth").stream().findAny().get();
+    System.out.println("********************************** previous textPart: previousItem = " +
+            textPart.getPreviousItem() + ", nextItem = " + textPart.getNextItem());
+//    Long nextItem = textPart.getNextItem();
+    TextPart nextTextPart = textPartRepository.findNextByCurrentInSequence(textPart).get();
+    System.out.println("********************************** next textPart: previousItem = " +
+            nextTextPart.getPreviousItem() + ", nextItem = " + nextTextPart.getNextItem());
+}
+
+//    @Test
+//    public void testIndexPreviousItems() {
+//        textPartRepository.indexPreviousItems();
+//    }
+//
+//
+//    @Test
+//    public void testDropIndexPreviousItems() {
+//        textPartRepository.dropIndexPreviousItems();
+//    }
 }

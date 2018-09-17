@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>home</title>
+    <script src="jquery-3.3.1.js"></script>
+</head>
+<body>
+<div>
+    Hi, Jezh!
+</div>
+
+<button id="helper1">helper1</button>
+<div><button id="helper2">get_textpart32_value</button></div>
+<p id="hel1txt"></p>
+<p id="hel2txt"></p>
+
+<div>
+    <form action="text-common-data/26/text-parts/32" method="post" id="txt32">
+        <textarea id="ta32"></textarea>
+        <input type="submit" value="txt32 submit in ta32"/>
+    </form>
+</div>
+
+
+<script>
+    $(function () {
+        $('#helper1').click(function (e) {
+            $('#hel1txt').toggle().html('hi one more!');
+        });
+
+
+        function extractTextPart() {
+            let data = {};
+            $.ajax('text-common-data/26/text-parts/32', {success: function (d) {
+                data.id = d.id;
+                data.body = d.body;
+                    return d;
+                }});
+            // return data;
+        }
+
+        $('#helper2').click(function (e) {
+            $('#hel2txt').html('adding retrieved value in textarea ta32 from textpart32');
+            let data = extractTextPart();
+            $('#ta32').val(data.body);
+        });
+
+        $('#txt32').submit(function (e) {
+            e.preventDefault();
+
+        })
+    });
+</script>
+</body>
+</html>

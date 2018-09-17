@@ -1,7 +1,6 @@
 package com.jezh.textsaver.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.jezh.textsaver.exceptions.RepositoryNotFoundException;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -9,10 +8,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -21,7 +16,11 @@ import java.util.*;
 */
 @Entity
 @Table(name = "text_common_data")
-@Data // getters, setters, equals, hashCode, toString
+//@Data // getters, setters, equals, hashCode, toString
+@Getter
+@Setter
+// I can to create toString() automatically since I have no more any collection of TextPart
+@ToString
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
@@ -33,12 +32,12 @@ import java.util.*;
         /*to support defining "read-only" properties*/ allowGetters = true)
 // for Date fields proper assigning; need @EnableJpaAuditing to activate auditing in the classes marked this annotation
 @EntityListeners(AuditingEntityListener.class)
-public class TextCommonData {
+public class TextCommonData extends AbstractIdentifier {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, unique = true)
-    private Long id;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(nullable = false, unique = true)
+//    private Long id;
 
     // the name of the text
 //  @NotBlank - must contain at least one non-whitespace character; for CharSequence
@@ -61,47 +60,57 @@ public class TextCommonData {
     @LastModifiedDate
     private Date updatingDate;
 
-// "You can also use this annotation (by combining it with AccessLevel.NONE) to suppress generating a... setter."
-// "This lets you override the behaviour of a @Getter, @Setter or @Data annotation on a class."
-    @Setter(AccessLevel.NONE)
-    @Column
-// to avoid "fetch = FetchType.EAGER", I need to MAKE TRANSACTION in test methods (e.g. see testAddTextParts in
-// TextCommonDataRepositoryPostgresTest), in other case I have "org.hibernate.LazyInitializationException: failed to lazily
-// initialize a collection of role: com.jezh.textsaver.entity.TextCommonData.textParts, could not initialize proxy - no Session"
-    @OneToMany(mappedBy = "textCommonData", cascade = CascadeType.ALL, orphanRemoval = true
-            /*, fetch = FetchType.LAZY*/) // default LAZY, so I can not define it here
-//    @JoinColumn(name = "text_common_data_id")
-    private Set<TextPart> textParts = new HashSet<>();
-
-    public void setTextParts(Set<TextPart> textParts) {
-        this.textParts = new HashSet<>(textParts);
-        textParts.forEach((textPart -> {
-            if (textPart.getTextCommonData() != this) textPart.setTextCommonData(this);
-        }));
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 
-    public void addTextParts(TextPart...textParts) {
-        if (this.textParts == null) setTextParts(new HashSet<>(Arrays.asList(textParts)));
-        for (TextPart textPart : textParts) {
-            if (textPart.getTextCommonData() != this) {
-                this.textParts.add(textPart);
-                textPart.setTextCommonData(this);
-            }
-        }
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
-    public void removeTextParts(TextPart...textParts) throws RepositoryNotFoundException, SQLWarning {
-        if (this.textParts != null && this.textParts.size() != 0) {
-            for (TextPart textPart : textParts) {
-                if (this.textParts.contains(textPart)) {
-                    this.textParts.remove(textPart);
-                    textPart.setTextCommonData(null);
-                } else throw new RepositoryNotFoundException(
-                        String.format("The textPart entity with id %d is not found", textPart.getId()),
-                        new SQLException());
-            }
-        } else throw new SQLWarning("this textCommonData entity collection of textParts is empty or disrupted");
-    }
+    //// "You can also use this annotation (by combining it with AccessLevel.NONE) to suppress generating a... setter."
+//// "This lets you override the behaviour of a @Getter, @Setter or @Data annotation on a class."
+//    @Setter(AccessLevel.NONE)
+//    @Column
+//// to avoid "fetch = FetchType.EAGER", I need to MAKE TRANSACTION in test methods (e.g. see testAddTextParts in
+//// TextCommonDataRepositoryPostgresTest), in other case I have "org.hibernate.LazyInitializationException: failed to lazily
+//// initialize a collection of role: com.jezh.textsaver.entity.TextCommonData.textParts, could not initialize proxy - no Session"
+//    @OneToMany(mappedBy = "textCommonData", cascade = CascadeType.ALL, orphanRemoval = true
+//            /*, fetch = FetchType.LAZY*/) // default LAZY, so I can not define it here
+////    @JoinColumn(name = "text_common_data_id")
+//    private Set<TextPart> textParts = new HashSet<>();
+//
+//    public void setTextParts(Set<TextPart> textParts) {
+//        this.textParts = new HashSet<>(textParts);
+//        textParts.forEach((textPart -> {
+//            if (textPart.getTextCommonData() != this) textPart.setTextCommonData(this);
+//        }));
+//    }
+//
+//    public void addTextParts(TextPart...textParts) {
+//        if (this.textParts == null) setTextParts(new HashSet<>(Arrays.asList(textParts)));
+//        for (TextPart textPart : textParts) {
+//            if (textPart.getTextCommonData() != this) {
+//                this.textParts.add(textPart);
+//                textPart.setTextCommonData(this);
+//            }
+//        }
+//    }
+//
+//    public void removeTextParts(TextPart...textParts) throws EntityNotFoundException, SQLWarning {
+//        if (this.textParts != null && this.textParts.size() != 0) {
+//            for (TextPart textPart : textParts) {
+//                if (this.textParts.contains(textPart)) {
+//                    this.textParts.remove(textPart);
+//                    textPart.setTextCommonData(null);
+//                } else throw new EntityNotFoundException(
+//                        String.format("The textPart entity with id %d is not found", textPart.getId()),
+//                        new SQLException());
+//            }
+//        } else throw new SQLWarning("this textCommonData entity collection of textParts is empty or disrupted");
+//    }
 
 
 }

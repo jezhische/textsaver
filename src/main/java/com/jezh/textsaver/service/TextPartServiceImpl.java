@@ -16,10 +16,19 @@ public class TextPartServiceImpl implements TextPartService {
     @Autowired
     private TextPartRepository repository;
 
-
     @Override
     public TextPart create(TextPart textPart) {
         return repository.saveAndFlush(textPart);
+    }
+
+    @Override
+    public TextPart create(TextPart current, TextPart newOne, TextPart next) {
+        newOne.setPreviousItem(current.getId());
+        boolean nextIsNotNull = next != null;
+        if (nextIsNotNull) newOne.setNextItem(next.getId());
+        repository.saveAndFlush(newOne);
+//        current.se
+        return null;
     }
 
     @Override
@@ -40,5 +49,20 @@ public class TextPartServiceImpl implements TextPartService {
     @Override
     public List<TextPart> findAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public List<TextPart> findByTextCommonDataId(Long textCommonDataId) {
+        return repository.findByTextCommonDataId(textCommonDataId);
+    }
+
+    @Override
+    public Optional<TextPart> findNextByCurrentInSequence(TextPart current) {
+        return repository.findNextByCurrentInSequence(current);
+    }
+
+    @Override
+    public Optional<TextPart> findPreviousByCurrentInSequence(TextPart current) {
+        return repository.findPreviousByCurrentInSequence(current);
     }
 }

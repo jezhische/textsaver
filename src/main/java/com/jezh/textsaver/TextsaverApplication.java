@@ -27,8 +27,8 @@ public class TextsaverApplication {
 
 	public static void main(String[] args) {
         ConfigurableApplicationContext applicationContext = SpringApplication.run(TextsaverApplication.class, args);
-        for (String beanName : applicationContext.getBeanDefinitionNames()) {
-            System.out.println("******************** " + beanName);
-        }
+//        for (String beanName : applicationContext.getBeanDefinitionNames()) {
+//            System.out.println("******************** " + beanName);
+//        }
     }
 }
