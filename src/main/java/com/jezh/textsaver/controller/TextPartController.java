@@ -63,6 +63,8 @@ public class TextPartController {
         return ResponseEntity.ok().body(textPart);
     }
 
+//    @GetMapping(path = "/text-parts/")
+
 //    @GetMapping (path = "/text-parts/{id}")
 //    public ResponseEntity<TextPart> getTextPartById() {
 //

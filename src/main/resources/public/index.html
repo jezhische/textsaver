@@ -3,6 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>home</title>
+    <style>
+        /*textarea.form-control{*/
+            /*!*position:absolute;*!*/
+            /*!*height: content-box;*!*/
+            /*outline: none;*/
+        /*}*/
+        /*textarea {*/
+            /*!*outline: none;*!*/
+            /*height: fit-content;*/
+        /*}*/
+        textarea {
+            border: 0;
+            outline: none;
+        }
+
+    </style>
+    <link rel="stylesheet" type="text/css" href="bootstrap3.3.7/css/bootstrap.css"/>
     <script src="jquery-3.3.1.js"></script>
 </head>
 <body>
@@ -15,40 +32,118 @@
 <p id="hel1txt"></p>
 <p id="hel2txt"></p>
 
-<div>
-    <form action="text-common-data/26/text-parts/32" method="post" id="txt32">
-        <textarea id="ta32"></textarea>
-        <input type="submit" value="txt32 submit in ta32"/>
-    </form>
-</div>
+<div id="text"></div>
 
 
 <script>
+    let dataAccessCounter = [];
+
     $(function () {
         $('#helper1').click(function (e) {
-            $('#hel1txt').toggle().html('hi one more!');
+
+            $('#hel1txt').html('<h1>ui<div style="display:none;">ou</div>hou</h1>');
+            // .html( function ), where Function( Integer index, htmlString oldhtml ) => htmlString... Within the
+            // function, "this" refers to the current element in the set. (in this case, that is object HTMLButtonElement)
+            $('#hel1txt').html((index, oldhtml) => {return oldhtml + '<p>' + $('#ta26').html() + '</p>'});
+            $('#hel1txt').html((index, oldhtml) => {return oldhtml + '<p id="rrr">tot\r\r\rou</p>'});
+            $('#hel1txt').html((index, oldhtml) => {return oldhtml + $('p#hel1txt p#rrr').html()});
+            $('#ta26').append($('p#hel1txt p#rrr').html());
+            let soMany = 10;
+            console.log(`This is ${soMany} times easier!   tot\r\r\rou`);
         });
 
+// GET all TEXT PART with given textCommonDataId
+        function extractTextParts(textCommonDataId/*, textareaId*/) {
+            let formId = 'txt' + textCommonDataId;
+            let textareaId = 'ta' + textCommonDataId;
+            /** when first call of given function with such textCommonDataId, create form element with textarea  */
+            if ($('#' + formId).html() === undefined) {
+            $('#text').append(function (index, html) {
+                console.log(index);
+                    return $('<form id="' + formId + '" style="margin-left: 60px">' +
+                        <!--class="form-control"-->
+                    // style="border:0"
+                        '        <textarea cols="50" id="' + textareaId + '"' +
+                        // 'oninput=\'this.style.height = "";this.style.height = this.scrollHeight + "px"\'></textarea>' +
+                        'oninput=\'this.style.height = "";this.style.height = this.scrollHeight + "px"\'></textarea>' +
+                        '        <p><input type="submit" value="close"/></p>' +
+                        '    </form>')
+                });
+                // $('#' + textareaId).elastic();
+            }
+            /** get data. To avoid data duplication, check the flag dataAccessCounter */
+            if (!dataAccessCounter.includes(textCommonDataId)) {
+                $.ajax({
+                    type:'GET',
+                    url:'text-common-data/'+ textCommonDataId + '/text-parts',
+                    success: function (data, textStatus, jqXHR) {
+                        // first version of array sorting:
+                        let sortedData = sortArray(data/*, 28*/);
+                        sortedData.forEach(sd => $(/*textareaId*/ '#ta' + textCommonDataId).append('id: ' + sd.id + ', ' +
+                            'nextItem: ' + sd.nextItem + '/ '));
+                        // sortedData.sort()
+                        // while ()
 
-        function extractTextPart() {
-            let data = {};
-            $.ajax('text-common-data/26/text-parts/32', {success: function (d) {
-                data.id = d.id;
-                data.body = d.body;
-                    return d;
-                }});
-            // return data;
+                        console.log('extractTextParts(' + textCommonDataId + ') textStatus: ' + textStatus);
+                        /** set the flag "dataAccessCounter.includes(textCommonDataId)" to true */
+                        dataAccessCounter.push(textCommonDataId);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                    }
+                });
+            }
         }
 
+        /** first version of array sorting */
+        function sortArray(array/*, id*/) {
+            let sortedArray = [];
+            let nextId/* = id*/;
+            /** specify first item in the textPart sorted list (where previousItem = null) */
+            for (let i = 0; i < array.length; i++ ) {
+                if (array[i].previousItem == null) {
+                    nextId = array[i].id;
+                    break;
+                }
+            }
+            while (array.length !== 0) {
+                for (let i = 0; i < array.length; i++) {
+                    if (array[i].id === nextId) {
+                /** push item into the end of sorted array */
+                        sortedArray.push(array[i]);
+                        nextId = array[i].nextItem;
+                /** remove the element from the original array, break the for () loop, and then
+                 * start the next iteration of the while () loop with a truncated original array*/
+                        array.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+            return sortedArray;
+        }
+
+        // console.log(extractTextParts());
+
+
+
+        // console.log(extractTextPartVersion2());
+
+// PUT TEXT PART
+//         $('#helper2').click(function (e) {
+//             e.preventDefault();
+//             // $('#hel2txt').html('adding retrieved value in textarea ta32 from textpart32');
+//             extractTextParts('#ta32', 32);
+//             // setTimeout(function () {
+//             //     console.log(outerData.id + ' ' + isComplited)
+//             // }, 100);
+//         });
         $('#helper2').click(function (e) {
-            $('#hel2txt').html('adding retrieved value in textarea ta32 from textpart32');
-            let data = extractTextPart();
-            $('#ta32').val(data.body);
+            e.preventDefault();
+                extractTextParts(26/*, '#ta32'*/);
         });
 
         $('#txt32').submit(function (e) {
             e.preventDefault();
-
+            // extractTextParts('#ta32', 32);
         })
     });
 </script>
