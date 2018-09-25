@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <title>home</title>
     <style>
-        /*textarea.form-control{*/
-            /*!*position:absolute;*!*/
-            /*!*height: content-box;*!*/
-            /*outline: none;*/
-        /*}*/
-        /*textarea {*/
-            /*!*outline: none;*!*/
-            /*height: fit-content;*/
-        /*}*/
         textarea {
             border: 0;
             outline: none;
+            padding: 0;
+            margin: 0;
+            /** to order all the textarea vertically */
+            display: list-item;
+            /** allows to set min height of textarea as 1 row, not as 2 rows as its default value */
+            !important;height: 0;
+            /** remove resize handle (a little triangle in the bottom right of textarea) */
+            resize: none;
         }
-
     </style>
     <link rel="stylesheet" type="text/css" href="bootstrap3.3.7/css/bootstrap.css"/>
+    <link rel="icon" type="image/png" href="favicon.ico"/>
+    <!--href="../static/favicon.ico"-->
     <script src="jquery-3.3.1.js"></script>
 </head>
 <body>
@@ -40,10 +40,9 @@
 
     $(function () {
         $('#helper1').click(function (e) {
-
-            $('#hel1txt').html('<h1>ui<div style="display:none;">ou</div>hou</h1>');
             // .html( function ), where Function( Integer index, htmlString oldhtml ) => htmlString... Within the
             // function, "this" refers to the current element in the set. (in this case, that is object HTMLButtonElement)
+            $('#hel1txt').html('<h1>ui<div style="display:none;">ou</div>hou</h1>');
             $('#hel1txt').html((index, oldhtml) => {return oldhtml + '<p>' + $('#ta26').html() + '</p>'});
             $('#hel1txt').html((index, oldhtml) => {return oldhtml + '<p id="rrr">tot\r\r\rou</p>'});
             $('#hel1txt').html((index, oldhtml) => {return oldhtml + $('p#hel1txt p#rrr').html()});
@@ -52,25 +51,14 @@
             console.log(`This is ${soMany} times easier!   tot\r\r\rou`);
         });
 
+
 // GET all TEXT PART with given textCommonDataId
-        function extractTextParts(textCommonDataId/*, textareaId*/) {
-            let formId = 'txt' + textCommonDataId;
-            let textareaId = 'ta' + textCommonDataId;
-            /** when first call of given function with such textCommonDataId, create form element with textarea  */
-            if ($('#' + formId).html() === undefined) {
-            $('#text').append(function (index, html) {
-                console.log(index);
-                    return $('<form id="' + formId + '" style="margin-left: 60px">' +
-                        <!--class="form-control"-->
-                    // style="border:0"
-                        '        <textarea cols="50" id="' + textareaId + '"' +
-                        // 'oninput=\'this.style.height = "";this.style.height = this.scrollHeight + "px"\'></textarea>' +
-                        'oninput=\'this.style.height = "";this.style.height = this.scrollHeight + "px"\'></textarea>' +
-                        '        <p><input type="submit" value="close"/></p>' +
-                        '    </form>')
-                });
-                // $('#' + textareaId).elastic();
-            }
+        function extractTextParts(textCommonDataId) {
+            let textFormId = 'txt' + textCommonDataId;
+
+            /** when first call of given function with such textCommonDataId, create form element */
+            createTextCommonDataElement(textFormId);
+
             /** get data. To avoid data duplication, check the flag dataAccessCounter */
             if (!dataAccessCounter.includes(textCommonDataId)) {
                 $.ajax({
@@ -78,13 +66,31 @@
                     url:'text-common-data/'+ textCommonDataId + '/text-parts',
                     success: function (data, textStatus, jqXHR) {
                         // first version of array sorting:
-                        let sortedData = sortArray(data/*, 28*/);
-                        sortedData.forEach(sd => $(/*textareaId*/ '#ta' + textCommonDataId).append('id: ' + sd.id + ', ' +
-                            'nextItem: ' + sd.nextItem + '/ '));
-                        // sortedData.sort()
-                        // while ()
+                        let sortedData = sortArray(data, textCommonDataId);
+                        // check the array filling
+                        sortedData.forEach(sd => console.log('id: ' + sd.id + ', ' +
+                            'nextItem: ' + sd.nextItem + ', body: '+ sd.body + '/ '));
+
+                        /** create the textarea elements and fill them */
+                        sortedData.forEach(sd => {
+                            let thisTextareaId = 'ta' + sd.id;
+                            createTextareaElement(textFormId, thisTextareaId);
+
+                            /** fill content */
+                            $('#' + thisTextareaId).html('id: ' + sd.id + ', ' +
+                                'nextItem: ' + sd.nextItem + ', body: '+ sd.body + '/ ');
+
+                            /** to auto grow the created textarea height according loaded content */
+                            $('#' + thisTextareaId).height($('#' + thisTextareaId)[0].scrollHeight);
+
+                        });
+
+// todo: установить на .change, чтобы когда textarea опустела, она становилась hidden (и при закрытии уничтожалась), чтобы
+// при выделении или движении стрелки происходило перескакивание на соседнюю область - а это как сделать?
+// todo: И СОЧЕТАНИЕ КЛАВИШ Ctrl+Z, Shift+Ctrl+Z
 
                         console.log('extractTextParts(' + textCommonDataId + ') textStatus: ' + textStatus);
+
                         /** set the flag "dataAccessCounter.includes(textCommonDataId)" to true */
                         dataAccessCounter.push(textCommonDataId);
                     },
@@ -94,13 +100,38 @@
             }
         }
 
+// ----------------------------------------------------------------------------------------------------------
+        /** create and append textarea child element to existing form element: */
+        function createTextareaElement(formId, textareaId) {
+            if ($('#' + textareaId).html() === undefined) {
+                $('#' + formId).append(
+                    '        <textarea wrap="soft" cols="50" id="' + textareaId + '"' +
+                    /** HTML oninput Event Attribute allows to set the height of this textarea dinamically
+                     * in accordance with the number of entered lines, when an element gets user input.
+                     * "this" references current element, i.e. this textarea, "px" means "pixels" */
+                    'oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\'></textarea>'
+                );
+            }
+        }
+
+// ---------------------------------------------------------------------------------------------------------------
+        /** when first call of given function with such textCommonDataId, create form element */
+        function createTextCommonDataElement(textFormId) {
+            if ($('#' + textFormId).html() === undefined) {
+                $('#text').append(function (index, html) {
+                    return $('<form id="' + textFormId + '" style="margin-left: 60px">' +
+                        '<input type="submit" value="close"></form>')
+                });
+            }
+        }
+// ----------------------------------------------------------------------------------------------------------------
         /** first version of array sorting */
-        function sortArray(array/*, id*/) {
+        function sortArray(array, textCommonDataId) {
             let sortedArray = [];
             let nextId/* = id*/;
-            /** specify first item in the textPart sorted list (where previousItem = null) */
+            /** specify first item in the textPart sorted list (where previousItem = textCommonDataId) */
             for (let i = 0; i < array.length; i++ ) {
-                if (array[i].previousItem == null) {
+                if (array[i].previousItem === textCommonDataId) {
                     nextId = array[i].id;
                     break;
                 }
