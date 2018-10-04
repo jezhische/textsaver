@@ -106,9 +106,10 @@
             if ($('#' + textareaId).html() === undefined) {
                 $('#' + formId).append(
                     '        <textarea wrap="soft" cols="50" id="' + textareaId + '"' +
-                    /** HTML oninput Event Attribute allows to set the height of this textarea dinamically
+                    /** HTML oninput Event Attribute here allows to set the height of this textarea dynamically
                      * in accordance with the number of entered lines, when an element gets user input.
-                     * "this" references current element, i.e. this textarea, "px" means "pixels" */
+                     * Scroll bar won't be sappeared */
+                    // "this" references current element, i.e. this textarea, "px" means "pixels"
                     'oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\'></textarea>'
                 );
             }
@@ -129,7 +130,7 @@
         function sortArray(array, textCommonDataId) {
             let sortedArray = [];
             let nextId/* = id*/;
-            /** specify first item in the textPart sorted list (where previousItem = textCommonDataId) */
+            /** specify first item in the textPart sorted list (such one where previousItem = textCommonDataId) */
             for (let i = 0; i < array.length; i++ ) {
                 if (array[i].previousItem === textCommonDataId) {
                     nextId = array[i].id;

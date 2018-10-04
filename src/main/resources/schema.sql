@@ -8,14 +8,14 @@
 -- GRANT CONNECT, TEMPORARY ON DATABASE textsaver TO public;
 -- GRANT ALL ON DATABASE textsaver TO postgres WITH GRANT OPTION;
 
-CREATE TABLE IF NOT EXISTS text_common_data (
+CREATE TABLE IF NOT EXISTS public.text_common_data (
     id SERIAL PRIMARY KEY
   , name VARCHAR(255)
   , creating_date TIMESTAMP without time zone DEFAULT now()
   , updating_date TIMESTAMP without time zone DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS text_parts (
+CREATE TABLE IF NOT EXISTS public.text_parts (
   id SERIAL PRIMARY KEY
   , body TEXT
   , previous_item BIGINT UNIQUE
