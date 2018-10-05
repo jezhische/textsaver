@@ -36,6 +36,27 @@ CREATE INDEX IF NOT EXISTS idx_prev_it
   USING hash
   (previous_item);
 
-
+CREATE OR REPLACE FUNCTION get_textparts_ordered_set(start_id INTEGER, size INTEGER) RETURNS SETOF public.text_parts AS
+$body$
+DECLARE
+  r public.text_parts%ROWTYPE;
+  next_id INTEGER;
+BEGIN
+  next_id := start_id;
+  FOR i IN 1..$2  -- NB: two points, not three
+  LOOP
+    IF (next_id IS NULL) THEN
+      RETURN;
+    END IF ;
+    r := (SELECT tp FROM public.text_parts AS tp WHERE id = next_id);
+    --     casting to text_parts to specify type explicitly to get field next_item from r composite type
+    next_id := (r::text_parts).next_item;
+    RAISE NOTICE 'next_id = %', next_id;
+    RETURN NEXT r;
+  END LOOP;
+  RETURN;
+END;
+$body$
+LANGUAGE plpgsql;
 
 

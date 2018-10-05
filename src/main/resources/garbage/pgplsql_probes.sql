@@ -68,25 +68,26 @@ SELECT * FROM get_all_textparts();
 CREATE OR REPLACE FUNCTION get_textparts_ordered_set(start_id INTEGER, size INTEGER) RETURNS SETOF public.text_parts AS
 $body$
 -- the label of the outer block
-<<external>>
+-- <<external>>
 DECLARE
   r public.text_parts%ROWTYPE;
   next_id INTEGER;
 BEGIN
   next_id := start_id;
-  FOR i IN 1...5
+  FOR i IN 1..$2  -- NB: two points, not three
   LOOP
 --     EXIT external WHEN next_id is NULL;
-    RAISE NOTICE 'i = %', i;
---     i := i + 1;
---     r := (SELECT tp FROM public.text_parts AS tp WHERE id = next_id);
+    IF (next_id IS NULL) THEN
+      RETURN;
+    END IF ;
+    r := (SELECT tp FROM public.text_parts AS tp WHERE id = next_id);
 --     casting to text_parts to specify type explicitly to get field next_item from r composite type
---     next_id := (r::text_parts).next_item;
+    next_id := (r::text_parts).next_item;
     RAISE NOTICE 'next_id = %', next_id;
---     RETURN NEXT r;
+    RETURN NEXT r;
   END LOOP;
   RETURN;
-END
+END;
 $body$
 LANGUAGE plpgsql;
 
