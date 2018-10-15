@@ -19,16 +19,18 @@ public class TextCommonDataController {
     @Autowired
     private TextCommonDataService textCommonDataService;
 
+    /** find all the textCommonData */
     @GetMapping(path = "")
     public ResponseEntity<?> getTextCommonDataList() {
         return ResponseEntity.ok(textCommonDataService.findAll());
     }
 
+    /** find the textCommonData by id */
     @GetMapping(path = "/{commonDataId}")
-    public ResponseEntity<TextCommonData> findTextCommonDataById(@PathVariable Long id) {
+    public ResponseEntity<TextCommonData> findTextCommonDataById(@PathVariable("commonDataId") Long id) {
         TextCommonData textCommonData = null;
         try {
-            textCommonData = textCommonDataService.findTextPartById(id)
+            textCommonData = textCommonDataService.findTextCommonDataById(id)
                     .orElseThrow(() -> new EntityNotFoundException("textPart with such id is not found", new SQLException()));
         } catch (EntityNotFoundException ex) {return ResponseEntity.notFound().build();}
         return ResponseEntity.ok().body(textCommonData);

@@ -2,6 +2,7 @@ package com.jezh.textsaver.repository;
 
 import com.jezh.textsaver.entity.TextPart;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -21,24 +22,26 @@ public interface TextPartRepository extends JpaRepository<TextPart, Long> {
 
     List<TextPart> findByTextCommonDataName(String textCommonDataName);
 
-//    @Query("select tp from TextPart tp where tp.previousItem = ?1")
-//    Optional<TextPart> findNextByCurrentInSequence(Long nextItem);
-
-//    @Query("select tp from TextPart tp where tp.previousItem = (select tp.nextItem from tp where tp.nextItem = ?1)")
-//    Optional<TextPart> findNextByCurrentInSequence(Long nextItem);
-
     @Query("select tp from TextPart tp where tp.previousItem = (select p.nextItem from TextPart p where p = ?1)")
     Optional<TextPart> findNextByCurrentInSequence(TextPart current);
 
     @Query("select tp from TextPart tp where tp.nextItem = (select p.previousItem from TextPart p where p = ?1)")
     Optional<TextPart> findPreviousByCurrentInSequence(TextPart current);
 
-////    "CREATE UNIQUE INDEX IF NOT EXISTS idx_prev_it ON public.text_parts USING btree(previous_item)"
-//    @Query(value = "CREATE INDEX IF NOT EXISTS idx_prev_it ON public.text_parts(previous_item)", nativeQuery = true)
-//    void indexPreviousItems();
-////
-//    @Query(value = "DROP INDEX IF EXISTS idx_prev_it", nativeQuery = true)
-//    void dropIndexPreviousItems();
+    /** find all the textPart with the given textCommonData id in an order, where textPart.nextItem = nextTextPart.id */
+    @Query(value = "SELECT * FROM public.get_all_texparts_ordered_set(?1)", nativeQuery = true)
+    List<TextPart> findSortedSetByTextCommonDataId(Long textCommonDataId);
 
-    List<TextPart> findByTextCommonDataId(Long textCommonDataId);
+
+    /** find a list of textPart in an order, where textPart.nextItem = nextTextPart.id, with the given size and start
+     * from given textPart.id */
+    @Query(value = "SELECT * FROM public.get_textparts_ordered_set(?1, ?2)", nativeQuery = true)
+    List<TextPart> findSortedTextPartBunchByStartId(Long startId, int size);
+
+
+    @Query(value = "SELECT * FROM public.get_textpart_by_id(?1)", nativeQuery = true)
+    Optional<TextPart> findTextPartById(Long id);
+
+
+
 }

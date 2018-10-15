@@ -47,13 +47,25 @@ public class TextPartServiceImpl implements TextPartService {
     }
 
     @Override
+    public Optional<TextPart> findByPreviousItem(Long previousItem) {
+        return repository.findByPreviousItem(previousItem);
+    }
+
+    @Override
     public List<TextPart> findAll() {
         return repository.findAll();
     }
 
+    /** find all the textParts with given textCommonDataId */
     @Override
-    public List<TextPart> findByTextCommonDataId(Long textCommonDataId) {
-        return repository.findByTextCommonDataId(textCommonDataId);
+    public List<TextPart> findSortedSetByTextCommonDataId(Long textCommonDataId) {
+        return repository.findSortedSetByTextCommonDataId(textCommonDataId);
+    }
+
+    /** find a bunch of sequenced textParts with 'size' quantity and starting with 'startId' id */
+    @Override
+    public List<TextPart> findSortedTextPartBunchByStartId(Long startId, int size) {
+        return repository.findSortedTextPartBunchByStartId(startId, size);
     }
 
     @Override
@@ -65,4 +77,5 @@ public class TextPartServiceImpl implements TextPartService {
     public Optional<TextPart> findPreviousByCurrentInSequence(TextPart current) {
         return repository.findPreviousByCurrentInSequence(current);
     }
+
 }

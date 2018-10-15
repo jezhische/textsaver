@@ -108,6 +108,9 @@ public class TextPart extends AbstractIdentifier {
 ////        return id != null? id.intValue() : 31;
 //    }
 
+//    /** for test purpose only */
+//    @Override
+//    public void setId(Long id) {super.setId(id);}
 
     @Override
     public int hashCode() {
@@ -126,7 +129,7 @@ public class TextPart extends AbstractIdentifier {
                 ", body='" + body + '\'' +
                 ", previousItem=" + previousItem +
                 ", nextItem=" + nextItem +
-                ", textCommonDataName=" + textCommonData.getName() +
+//                ", textCommonDataName=" + textCommonData.getName() +
                 ", lastUpdate=" + lastUpdate +
                 '}';
     }

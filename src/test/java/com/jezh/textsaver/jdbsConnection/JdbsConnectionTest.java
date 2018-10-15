@@ -1,5 +1,6 @@
 package com.jezh.textsaver.jdbsConnection;
 
+import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
 import com.jezh.textsaver.jpaTestUtils.JpaTestUtils;
 import org.junit.After;
@@ -7,12 +8,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureQuery;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Random;
+import java.util.*;
 
 //@RunWith(SpringRunner.class)
 //@SpringBootTest(classes = {TextsaverApplication.class, TestEntityManagerDataSourcePostgresConfig.class})
@@ -22,6 +23,7 @@ public class JdbsConnectionTest {
 //    private Transaction transaction;
     private Statement statement;
     private PreparedStatement preparedStatement;
+    private CallableStatement callableStatement;
     private ResultSet resultSet;
 
     private TextPart textPart;
@@ -107,6 +109,55 @@ public class JdbsConnectionTest {
                 "preparedStatement.executeUpdate(): " + JpaTestUtils.newTextPartBody());
         preparedStatement.executeUpdate();
         connection.commit();
-
     }
+
+    @Test
+    public void test_get_textparts_ordered_set_storedFunction() throws SQLException {
+//      CallableStatement - The interface used to execute SQL stored procedures
+        CallableStatement function = connection.prepareCall(
+                "{? = call get_textparts_ordered_set(?, ?)}"
+// The constant indicating the type for a ResultSet object that is scrollable but generally not sensitive to changes
+// to the data that underlies the ResultSet.
+                , ResultSet.TYPE_SCROLL_INSENSITIVE
+// The constant indicating the concurrency mode for a ResultSet object that may be updated.
+                , ResultSet.CONCUR_UPDATABLE
+// The constant indicating that open ResultSet objects with this holdability will be closed when the current transaction
+// is committed.
+                , ResultSet.CLOSE_CURSORS_AT_COMMIT);
+        function.setLong(1, 28L);
+        function.setInt(2, 5);
+//        function.registerOutParameter(3, Types.OTHER);
+        function.execute();
+        ResultSet result = function.getResultSet();
+        List<TextPart> textParts = new ArrayList<>();
+        Long id = 0L;
+        while (result.next()) {
+            id = result.getLong(4);}
+        TextCommonData textCommonData = TextCommonData.builder().build();
+        textCommonData.setId(id);
+// Second iteration through ResultSet object is possible, since I've set ResutSet type as ResultSet.TYPE_SCROLL_INSENSITIVE
+        while (result.next()) {
+            TextPart textPart = TextPart
+                    .builder()
+                    .body(result.getString(1))
+                    .previousItem(result.getLong(2))
+                    .nextItem(result.getLong(3))
+                    .textCommonData(textCommonData)
+                    .lastUpdate(result.getDate(5))
+                    .build();
+            textParts.add(textPart);
+        }
+        connection.commit();
+
+        textParts.forEach(System.out::println);
+        System.out.println("TextCommonData.id = " + textParts.get(0).getTextCommonData().getId());
+    }
+//
+//    @Test
+//    public void testFindTextPartById() throws SQLException {
+//        PreparedStatement preparedStatement = connection.prepareStatement("SELECT public.get_tp_by_id(28)");
+//
+//
+//        preparedStatement.execute();
+//    }
 }

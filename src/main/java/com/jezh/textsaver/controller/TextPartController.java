@@ -17,6 +17,7 @@ import javax.validation.Valid;
 
 import java.net.URI;
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -48,11 +49,13 @@ public class TextPartController {
         return new ResponseEntity<TextPart>(headers, HttpStatus.CREATED);
     }
 
-    @GetMapping (path = "/text-parts")
-    public ResponseEntity<?> getTextPartListByTextCommonDataId(@PathVariable("commonDataId") Long textCommonDataId) {
-        return ResponseEntity.ok().body(textPartService.findByTextCommonDataId(textCommonDataId));
-    }
+    /** find all the textParts with given textCommonData id */
+//    @GetMapping (path = "/text-parts")
+//    public ResponseEntity<?> getTextPartListByTextCommonDataId(@PathVariable("commonDataId") Long textCommonDataId) {
+//        return ResponseEntity.ok().body(textPartService.findByTextCommonDataId(textCommonDataId));
+//    }
 
+    /** find textPart by id */
     @GetMapping (path = "/text-parts/{textPartId}")
     public ResponseEntity<TextPart> findTextPartById(@PathVariable Long textPartId) {
         TextPart textPart = null;
@@ -69,4 +72,23 @@ public class TextPartController {
 //    public ResponseEntity<TextPart> getTextPartById() {
 //
 //    }
+
+    /**
+     * find a bunch of textPart in the sorted order start from the given textPart id and with the given size.
+     * If request parameter is not specified, find all the textPart with given textCommonDataId in this order
+     */
+    @GetMapping(path = "/text-parts")
+    public ResponseEntity<List<TextPart>> findSortedTextPartBunchByStartId(
+            @PathVariable("commonDataId") Long textCommonDataId,
+            @RequestParam(value = "startId", required = false) Long startId,
+            @RequestParam(value = "size", required = false) Integer size) { // not int or long, otherwise I get "IllegalStateException:
+        // Optional int parameter 'size' is present but cannot be translated into a null value due to being declared as a primitive type."
+        if (startId == null && size == null) {
+        return ResponseEntity.ok().body(textPartService.findSortedSetByTextCommonDataId(textCommonDataId));
+        } else if (startId == null && size != 0) {
+            return ResponseEntity.ok().body(textPartService.findSortedTextPartBunchByStartId(textCommonDataId, size));
+        } else {
+            return ResponseEntity.ok().body(textPartService.findSortedTextPartBunchByStartId(startId, size));
+        }
+    }
 }

@@ -1,22 +1,20 @@
 package com.jezh.textsaver.service;
 
-import com.jezh.textsaver.TextsaverApplication;
 import com.jezh.textsaver.entity.TextPart;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-
-import static org.junit.Assert.*;
+import java.util.List;
 
 /**
  * need to create test only on the 'real' db, cause on h2 db I get error: "Error creating bean with name
@@ -26,8 +24,9 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Transactional(propagation = Propagation.REQUIRED)
 @Rollback(value = false)
-public class TextPartServiceImplPostgresTest {
+public class TextPartServicePostgresTest {
 
     @Resource
     private TextPartService service;
@@ -40,7 +39,7 @@ public class TextPartServiceImplPostgresTest {
     @Before
     public void setUp() throws Exception {
         textPart = TextPart.builder()
-                .body("TextPartServiceImplPostgresTest/")
+                .body("TextPartServicePostgresTest/")
                 .textCommonData(textCommonDataService.findAll().get(0))
                 .nextItem((long)(Math.random() * 10000))
                 .previousItem((long)(Math.random() * 10000))
@@ -62,12 +61,12 @@ public class TextPartServiceImplPostgresTest {
 
     @Test
     public void testFindByTextCommonDataId() {
-        service.findByTextCommonDataId(27L).forEach(System.out::println);
+        service.findSortedSetByTextCommonDataId(27L).forEach(System.out::println);
     }
 
     @Test
     public void testFindPreviousByCurrentInSequence() {
-        textPart = service.findByTextCommonDataId(26L).stream().findAny().get();
+        textPart = service.findSortedSetByTextCommonDataId(26L).stream().findAny().get();
         System.out.println("********************************** current textPart: previousItem = " +
                 textPart.getPreviousItem() + ", nextItem = " + textPart.getNextItem());
         if (textPart.getPreviousItem() == null) {
@@ -77,6 +76,15 @@ public class TextPartServiceImplPostgresTest {
         TextPart previousTextPart = service.findPreviousByCurrentInSequence(textPart).get();
         System.out.println("********************************** previous textPart: previousItem = " +
                 previousTextPart.getPreviousItem() + ", nextItem = " + previousTextPart.getNextItem());
+        }
+    }
+
+    @Test
+    public void testFindSortedTextPartBunchByStartId() {
+        List<TextPart> result = service.findSortedTextPartBunchByStartId(28L, 10);
+        result.forEach(System.out::println);
+        for (int i = 0; i < result.size() - 1; i++) {
+            Assert.assertEquals(result.get(i).getNextItem(), result.get(i + 1).getId());
         }
     }
 
@@ -97,5 +105,7 @@ public class TextPartServiceImplPostgresTest {
 
     @Test
     public void testFindTextPartById() {
+        service.create(textPart);
+        Assert.assertEquals(textPart, service.findTextPartById(textPart.getId()).get());
     }
 }

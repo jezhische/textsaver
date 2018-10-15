@@ -25,6 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureQuery;
+import java.math.BigInteger;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 // need either @ContextConfiguration(classes = TextsaverApplication.class),
@@ -44,7 +48,6 @@ import javax.persistence.EntityManagerFactory;
 // you can disable transaction management for a test or for the whole class as follows:"
 //@Transactional(propagation = Propagation.NOT_SUPPORTED) // transaction does not work - ???
 @Transactional(propagation = Propagation.REQUIRED)
-//@Transactional(propagation = Propagation.SUPPORTS)
 // " If, however, you prefer to run tests against a real database...:"
 @AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
 public class JpaPostgresConnectionTest {
@@ -90,5 +93,38 @@ public class JpaPostgresConnectionTest {
         TestTransaction.end();
         TestTransaction.start();
         entityManager.persist(textPart);
+    }
+
+
+    @Test
+    public void test_get_textparts_ordered_set_storedFunction() {
+        StoredProcedureQuery query = entityManager
+                .createStoredProcedureQuery("public.get_textparts_ordered_set")
+                .registerStoredProcedureParameter("start_id", Long.class, ParameterMode.IN)
+                .registerStoredProcedureParameter("size", int.class, ParameterMode.IN);
+        query.setParameter("start_id", 28L).setParameter("size", 4);
+        query.execute();
+        List<Object[]> results = query.getResultList();
+        results.forEach(result ->
+        {for (Object o : result)  System.out.println(o);
+        });
+        Assert.assertTrue((long) (int) (results.get(0)[0]) == 28L);
+
+        // because of currently (temporarily) I have id field in the text_parts table as SERIAL, not BIGSERIAL, so I get
+        // this field value as Integer, not BigInteger:
+        Assert.assertEquals(results.get(0)[3].getClass(), BigInteger.class);
+        Assert.assertEquals(results.get(0)[0].getClass(), Integer.class);
+        // so I need casting:
+        Assert.assertEquals(results.get(0)[3], BigInteger.valueOf ((int)results.get(1)[0]));
+    }
+
+    @Test
+    public void testFindTextPartById() {
+        StoredProcedureQuery query = entityManager
+                .createStoredProcedureQuery("get_textpart_by_id")
+                .registerStoredProcedureParameter("id", Long.class, ParameterMode.IN);
+        query.setParameter("id", 28L);
+        query.execute();
+
     }
 }

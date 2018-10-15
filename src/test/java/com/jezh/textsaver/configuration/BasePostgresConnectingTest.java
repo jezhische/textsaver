@@ -3,6 +3,7 @@ package com.jezh.textsaver.configuration;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,5 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 // " If, however, you prefer to run tests against a real database...:"
 @AutoConfigureTestDatabase(/*connection = EmbeddedDatabaseConnection.NONE, */replace = AutoConfigureTestDatabase.Replace.NONE)
+//@Rollback(value = false)
 public class BasePostgresConnectingTest {
 }

@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.text_common_data (
 );
 
 CREATE TABLE IF NOT EXISTS public.text_parts (
-  id SERIAL PRIMARY KEY
+  id BIGSERIAL PRIMARY KEY
   , body TEXT
   , previous_item BIGINT UNIQUE
   , next_item BIGINT UNIQUE
@@ -36,14 +36,43 @@ CREATE INDEX IF NOT EXISTS idx_prev_it
   USING hash
   (previous_item);
 
-CREATE OR REPLACE FUNCTION get_textparts_ordered_set(start_id INTEGER, size INTEGER) RETURNS SETOF public.text_parts AS
-$body$
+CREATE OR REPLACE FUNCTION get_all_texparts_ordered_set(IN this_text_common_data_id BIGINT) RETURNS SETOF public.text_parts AS --126
+'
+DECLARE
+  r public.text_parts%ROWTYPE;
+  next_id INTEGER;
+BEGIN
+  r := (SELECT tp FROM public.text_parts AS tp WHERE tp.previous_item = this_text_common_data_id);
+  next_id := (r::text_parts).next_item;
+  RETURN NEXT r;
+  FOR r IN SELECT * FROM public.text_parts AS tp WHERE tp.text_common_data_id = this_text_common_data_id
+  LOOP
+--     RAISE NOTICE $$current r.next_item: %, r.id: %$$, (r::text_parts).next_item, (r::text_parts).id;
+    r := (SELECT tp FROM public.text_parts AS tp WHERE tp.id = next_id);
+    next_id := (r::text_parts).next_item;
+    IF ((r::public.text_parts).id IS NULL) THEN
+      CONTINUE;
+    END IF;
+    RETURN NEXT r;
+  END LOOP;
+  RETURN;
+END
+'
+LANGUAGE plpgsql;
+
+SELECT * FROM get_all_texparts_ordered_set(26);
+
+
+-- NB: BIGINT for Long type variable
+CREATE OR REPLACE FUNCTION get_textparts_ordered_set(IN start_id BIGINT, IN size INTEGER) RETURNS SETOF public.text_parts AS
+-- NB: function body must be something like "one statement" for JPA, so the "dollars quotes" $$ there are no suitable here, only '
+'
 DECLARE
   r public.text_parts%ROWTYPE;
   next_id INTEGER;
 BEGIN
   next_id := start_id;
-  FOR i IN 1..$2  -- NB: two points, not three
+  FOR i IN 1..$2  -- NB: two dots, not three
   LOOP
     IF (next_id IS NULL) THEN
       RETURN;
@@ -51,12 +80,22 @@ BEGIN
     r := (SELECT tp FROM public.text_parts AS tp WHERE id = next_id);
     --     casting to text_parts to specify type explicitly to get field next_item from r composite type
     next_id := (r::text_parts).next_item;
-    RAISE NOTICE 'next_id = %', next_id;
+--     RAISE NOTICE $$current r: %$$, r;
     RETURN NEXT r;
   END LOOP;
   RETURN;
 END;
-$body$
+'
 LANGUAGE plpgsql;
 
+-- SELECT * FROM get_textparts_ordered_set(28, 10);
 
+
+CREATE OR REPLACE FUNCTION get_textpart_by_id(IN tpid BIGINT, OUT textpart text_parts) AS
+'
+BEGIN
+  RAISE NOTICE $$id = %$$, tpid;
+  SELECT * INTO textpart FROM text_parts AS tp WHERE tp.id = tpid;
+END;
+'
+LANGUAGE plpgsql;

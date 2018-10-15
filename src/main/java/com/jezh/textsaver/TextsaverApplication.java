@@ -1,7 +1,9 @@
 package com.jezh.textsaver;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -13,16 +15,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 //@Import(DataSourceConfig.class)
 @ComponentScan("com.jezh.textsaver")
-@EnableJpaRepositories(basePackages = "com.jezh.textsaver.repository")
-@EnableTransactionManagement
-
-// https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html#boot-features-configure-datasource
-// "By default, all packages below your main configuration class (the one annotated with @EnableAutoConfiguration or
-// @SpringBootApplication) are searched." So there is no need in this annotation if the main class is located in root package.
-//@EntityScan(basePackages = "com.jezh.textsaver.entity")
-
-// To activate auditing in the classes marked @EntityListeners(AuditingEntityListener.class)
-@EnableJpaAuditing
+// Since @WebMvcTest throws an error: IllegalArgumentException: At least one JPA metamodel must be present!,
+// I moved all the @Enable* annotations to a dedicated @Configuration class  TextsaverConfig.
 public class TextsaverApplication {
 
 	public static void main(String[] args) {

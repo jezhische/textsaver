@@ -13,6 +13,18 @@ CREATE TABLE IF NOT EXISTS public.text_parts (
   , CONSTRAINT fk_textParts_textCommonData FOREIGN KEY (text_common_data_id) REFERENCES text_common_data (id)
 );
 
+CREATE OR REPLACE FUNCTION get_textpart_by_id(IN tpid BIGINT) RETURNS public.text_parts AS
+$$
+BEGIN
+  RAISE NOTICE 'id = %', tpid;
+  RETURN (SELECT DISTINCT tp FROM text_parts AS tp WHERE tp.id = tpid);
+END;
+$$
+  LANGUAGE plpgsql;
+
+-- SELECT tp.* FROM public.text_parts AS tp WHERE tp = get_textpart_by_id(28);
+SELECT * FROM get_textpart_by_id(28);
+
 
 CREATE OR REPLACE FUNCTION concat_selected_fields(in_t public.text_parts) RETURNS text AS $$
 BEGIN
@@ -28,7 +40,8 @@ SELECT concat_selected_fields(tp.*) FROM public.text_parts AS tp WHERE tp.id = 2
 -- SETOF - set of (tables in this case)
 -- get_tp_by_id(VARIADIC id INTEGER[])  (must be like WHERE tp.id = get_tp_by_id.id[2]), then SELECT get_tp_by_id(28, 29);
 -- user_id users.user_id%TYPE;     имя имя_таблицы%ROWTYPE;
-CREATE OR REPLACE FUNCTION get_tp_by_id(id INTEGER) RETURNS SETOF public.text_parts AS $$
+CREATE OR REPLACE FUNCTION get_tp_by_id(id INTEGER) RETURNS SETOF public.text_parts AS
+$$
 BEGIN
   RETURN QUERY SELECT * FROM public.text_parts AS tp WHERE tp.id = get_tp_by_id.id;
 END

@@ -134,6 +134,12 @@ public void testFindNextByCurrentInSequence() {
             nextTextPart.getPreviousItem() + ", nextItem = " + nextTextPart.getNextItem());
 }
 
+    @Test
+    public void testFindSortedTextPartBunchByStartId() {
+        List<TextPart> testList = textPartRepository.findSortedTextPartBunchByStartId(28L, 4);
+        testList.forEach(System.out::println);
+    }
+
 //    @Test
 //    public void testIndexPreviousItems() {
 //        textPartRepository.indexPreviousItems();
