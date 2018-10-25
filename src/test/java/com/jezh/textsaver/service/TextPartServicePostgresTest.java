@@ -42,7 +42,6 @@ public class TextPartServicePostgresTest {
                 .body("TextPartServicePostgresTest/")
                 .textCommonData(textCommonDataService.findAll().get(0))
                 .nextItem((long)(Math.random() * 10000))
-                .previousItem((long)(Math.random() * 10000))
                 .build();
     }
 
@@ -64,20 +63,20 @@ public class TextPartServicePostgresTest {
         service.findSortedSetByTextCommonDataId(27L).forEach(System.out::println);
     }
 
-    @Test
-    public void testFindPreviousByCurrentInSequence() {
-        textPart = service.findSortedSetByTextCommonDataId(26L).stream().findAny().get();
-        System.out.println("********************************** current textPart: previousItem = " +
-                textPart.getPreviousItem() + ", nextItem = " + textPart.getNextItem());
-        if (textPart.getPreviousItem() == null) {
-            System.out.println("there is no previous item");
-            return;
-        } else {
-        TextPart previousTextPart = service.findPreviousByCurrentInSequence(textPart).get();
-        System.out.println("********************************** previous textPart: previousItem = " +
-                previousTextPart.getPreviousItem() + ", nextItem = " + previousTextPart.getNextItem());
-        }
-    }
+//    @Test
+//    public void testFindPreviousByCurrentInSequence() {
+//        textPart = service.findSortedSetByTextCommonDataId(26L).stream().findAny().get();
+//        System.out.println("********************************** current textPart: previousItem = " +
+//                textPart.getPreviousItem() + ", nextItem = " + textPart.getNextItem());
+//        if (textPart.getPreviousItem() == null) {
+//            System.out.println("there is no previous item");
+//            return;
+//        } else {
+//        TextPart previousTextPart = service.findPreviousByCurrentInSequence(textPart).get();
+//        System.out.println("********************************** previous textPart: previousItem = " +
+//                previousTextPart.getPreviousItem() + ", nextItem = " + previousTextPart.getNextItem());
+//        }
+//    }
 
     @Test
     public void testFindSortedTextPartBunchByStartId() {

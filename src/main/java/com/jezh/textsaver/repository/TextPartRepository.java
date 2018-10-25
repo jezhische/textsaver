@@ -18,30 +18,49 @@ import java.util.Optional;
 //@RepositoryRestResource(collectionResourceRel = "text-parts", path = "text-parts")
 @Repository
 public interface TextPartRepository extends JpaRepository<TextPart, Long> {
-    Optional<TextPart> findByPreviousItem(Long previousItem);
 
+    /**
+     * find textPart by the field 'name' of bounded textCommonData
+     */
     List<TextPart> findByTextCommonDataName(String textCommonDataName);
 
-    @Query("select tp from TextPart tp where tp.previousItem = (select p.nextItem from TextPart p where p = ?1)")
-    Optional<TextPart> findNextByCurrentInSequence(TextPart current);
+    /**
+     * find textPart by 'nextItem' field
+     */
+    Optional<TextPart> findByNextItem(Long nextItem);
 
-    @Query("select tp from TextPart tp where tp.nextItem = (select p.previousItem from TextPart p where p = ?1)")
+    /**
+     * find previous textPart by current one
+     */
+    @Query("select previous from TextPart previous where previous.nextItem = (select current.id from TextPart current where current = ?1)")
     Optional<TextPart> findPreviousByCurrentInSequence(TextPart current);
 
-    /** find all the textPart with the given textCommonData id in an order, where textPart.nextItem = nextTextPart.id */
+    /**
+     * find next textPart by current one
+     */
+    @Query ("select next from TextPart as next where next.id = (select current.nextItem from TextPart as current where current = ?1)")
+    Optional<TextPart> findNextByCurrentInSequence(TextPart current);
+
+    /**
+     * find all the textPart with the given textCommonData id in an order,
+     * where currentTextPart.nextItem = nextTextPart.id
+     */
     @Query(value = "SELECT * FROM public.get_all_texparts_ordered_set(?1)", nativeQuery = true)
     List<TextPart> findSortedSetByTextCommonDataId(Long textCommonDataId);
 
-
-    /** find a list of textPart in an order, where textPart.nextItem = nextTextPart.id, with the given size and start
-     * from given textPart.id */
+    /**
+     * find a list of textPart in an order, where currentTextPart.nextItem = nextTextPart.id, with the given size
+     * and start from given textPart.id
+     */
     @Query(value = "SELECT * FROM public.get_textparts_ordered_set(?1, ?2)", nativeQuery = true)
     List<TextPart> findSortedTextPartBunchByStartId(Long startId, int size);
 
-
-    @Query(value = "SELECT * FROM public.get_textpart_by_id(?1)", nativeQuery = true)
+    /**
+     * fint textPart by id
+     */
+    @Query(value = "SELECT * FROM public.find_textpart_by_id(?1)", nativeQuery = true)
     Optional<TextPart> findTextPartById(Long id);
 
-
+    List<TextPart> findAllByTextCommonDataId(Long id);
 
 }

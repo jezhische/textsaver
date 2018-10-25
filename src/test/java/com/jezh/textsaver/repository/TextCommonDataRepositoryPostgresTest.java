@@ -33,7 +33,7 @@ public class TextCommonDataRepositoryPostgresTest extends BasePostgresConnecting
     public void setUp() throws Exception {
         textCommonData = TextCommonData.builder().name("TextCommonDataRepositoryPostgresTest").build();
         textPart = TextPart.builder()
-                .body("TextPartRepositoryTest/ testCreate()/ repository.saveAndFlush(textPart)")
+                .body("TextCommonDataRepositoryPostgresTest")
                 .build();
     }
 

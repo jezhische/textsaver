@@ -51,7 +51,6 @@ public class ApplicationTest {
         textPartTwo = TextPart
                 .builder()
                 .body("test")
-                .previousItem(1L)
                 .nextItem(4L)
                 .lastUpdate(new Date())
                 .build();
@@ -112,7 +111,8 @@ public class ApplicationTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].previousItem", Matchers.is((int)someTextCommonDataId)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id",
+                        Matchers.is((int)getFirstItemFromSomeTextCommonData(someTextCommonDataId))))
                 .andDo(mvcResult -> {
                     String json = mvcResult.getResponse().getContentAsString();
                     Arrays.asList(json.split("}")).forEach(System.out::println);
@@ -129,6 +129,7 @@ public class ApplicationTest {
         }
 
     }
+
 // -------------------------------------------------------
 
     /**
@@ -182,12 +183,22 @@ public class ApplicationTest {
         MvcResult textCommonDataResut = mockMvc
                 .perform(MockMvcRequestBuilders.get("/text-common-data"))
                 .andReturn();
-// fixme: try to use something like jsonPath to get the result
+// FIXME: 24.10.2018 try to use something like jsonPath to get the result
         String json = textCommonDataResut.getResponse().getContentAsString();
         return ((TextCommonData) TestUtil.convertArrayElementOfJSONStringArrayToObject(
                 json, TextCommonData[].class, elNumber)).getId();
     }
 
+// --------------------------------------------------------------------------------
+
+    /** get textCommonData.firstItem */
+    private long getFirstItemFromSomeTextCommonData(long someTextCommonDataId) throws Exception {
+        MvcResult textCommonDataResut = mockMvc
+                .perform(MockMvcRequestBuilders.get("/text-common-data/" + someTextCommonDataId))
+                .andReturn();
+        String json = textCommonDataResut.getResponse().getContentAsString();
+        return ((TextCommonData) TestUtil.convertJSONStringToObject(json, TextCommonData.class)).getFirstItem();
+    }
 // --------------------------------------------------------------------------------
 
 

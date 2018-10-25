@@ -12,14 +12,15 @@ public interface TextPartService {
     TextPart update(TextPart textPart);
     TextPart getOne(Long id);
     Optional<TextPart> findTextPartById(Long id);
-    Optional<TextPart> findByPreviousItem(Long previousItem);
+    Optional<TextPart> findByNextItem(Long nextItem);
 
     List<TextPart> findAll();
 
-    List<TextPart> findSortedSetByTextCommonDataId(Long textCommonDataId);
-
     Optional<TextPart> findNextByCurrentInSequence(TextPart current);
     Optional<TextPart> findPreviousByCurrentInSequence(TextPart current);
+
+
+    List<TextPart> findSortedSetByTextCommonDataId(Long textCommonDataId);
 
     List<TextPart> findSortedTextPartBunchByStartId(Long startId, int size);
 //    void delete(TextPart textPart);

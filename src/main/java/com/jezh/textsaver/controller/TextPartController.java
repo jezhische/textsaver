@@ -77,7 +77,7 @@ public class TextPartController {
      * find a bunch of textPart in the sorted order start from the given textPart id and with the given size.
      * If request parameter is not specified, find all the textPart with given textCommonDataId in this order
      */
-    @GetMapping(path = "/text-parts")
+    @GetMapping(path = "/text-parts") // FIXME: 24.10.2018 add (NullPointer) exceptions handling
     public ResponseEntity<List<TextPart>> findSortedTextPartBunchByStartId(
             @PathVariable("commonDataId") Long textCommonDataId,
             @RequestParam(value = "startId", required = false) Long startId,
@@ -86,7 +86,8 @@ public class TextPartController {
         if (startId == null && size == null) {
         return ResponseEntity.ok().body(textPartService.findSortedSetByTextCommonDataId(textCommonDataId));
         } else if (startId == null && size != 0) {
-            return ResponseEntity.ok().body(textPartService.findSortedTextPartBunchByStartId(textCommonDataId, size));
+            Long firstTextPartId = textCommonDataService.findTextCommonDataById(textCommonDataId).get().getFirstItem();
+            return ResponseEntity.ok().body(textPartService.findSortedTextPartBunchByStartId(firstTextPartId, size));
         } else {
             return ResponseEntity.ok().body(textPartService.findSortedTextPartBunchByStartId(startId, size));
         }

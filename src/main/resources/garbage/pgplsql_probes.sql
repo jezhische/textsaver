@@ -105,3 +105,30 @@ $body$
 LANGUAGE plpgsql;
 
 SELECT * FROM get_textparts_ordered_set(28, 10);
+
+
+CREATE OR REPLACE FUNCTION get_all_texparts_ordered_set(IN this_text_common_data_id BIGINT) RETURNS SETOF public.text_parts AS --126
+'
+DECLARE
+  r public.text_parts%ROWTYPE;
+  next_id INTEGER;
+BEGIN
+  r := (SELECT tp FROM public.text_parts AS tp WHERE tp.previous_item = this_text_common_data_id);
+  next_id := (r::text_parts).next_item;
+  RETURN NEXT r;
+  FOR r IN SELECT * FROM public.text_parts AS tp WHERE tp.text_common_data_id = this_text_common_data_id
+  LOOP
+--     RAISE NOTICE $$current r.next_item: %, r.id: %$$, (r::text_parts).next_item, (r::text_parts).id;
+    r := (SELECT tp FROM public.text_parts AS tp WHERE tp.id = next_id);
+    next_id := (r::text_parts).next_item;
+    IF ((r::public.text_parts).id IS NULL) THEN
+      CONTINUE;
+    END IF;
+    RETURN NEXT r;
+  END LOOP;
+  RETURN;
+END
+'
+LANGUAGE plpgsql;
+
+-- SELECT * FROM get_all_texparts_ordered_set(26);

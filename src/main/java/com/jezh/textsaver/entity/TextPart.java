@@ -17,9 +17,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "text_parts", indexes = {
-        @Index(name = "idx_prev_it", columnList = "previous_item"),
-        @Index(name = "idx_next_it", columnList = "next_item")})
+@Table(name = "text_parts", indexes = {@Index(name = "idx_next_it", columnList = "next_item")})
 //@Data // getters, setters, equals, hashCode, toString
 @Getter
 @Setter
@@ -27,7 +25,6 @@ import java.util.Objects;
 @Builder
 /* for test purpose */
 @AllArgsConstructor
-//@RequiredArgsConstructor(onConstructor_ = @Autowired)
 @JsonIgnoreProperties(value = {"lastUpdate"},
         /*to support defining "read-only" properties: */ allowGetters = true)
 @EntityListeners(AuditingEntityListener.class)
@@ -54,12 +51,6 @@ public class TextPart extends AbstractIdentifier {
     private String body;
 
     /**
-     * link to the previous text part
-     * */
-    @Column(name = "previous_item", nullable = true, unique = true)
-    private Long previousItem;
-
-    /**
      * link to the next text part
      * */
     @Column(name = "next_item", nullable = true, unique = true)
@@ -83,7 +74,7 @@ public class TextPart extends AbstractIdentifier {
     * for enabling to modify application in future to sort text parts by the last modifying date
     * to track the last editions
     */
-    @Column(name = "last_update")
+    @Column(name = "last_update", columnDefinition= "TIMESTAMP WITH TIME ZONE")
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     private Date lastUpdate;
@@ -127,7 +118,6 @@ public class TextPart extends AbstractIdentifier {
         return "TextPart{" +
                 "id=" + id +
                 ", body='" + body + '\'' +
-                ", previousItem=" + previousItem +
                 ", nextItem=" + nextItem +
 //                ", textCommonDataName=" + textCommonData.getName() +
                 ", lastUpdate=" + lastUpdate +

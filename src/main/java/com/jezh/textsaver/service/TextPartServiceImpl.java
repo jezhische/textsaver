@@ -23,12 +23,9 @@ public class TextPartServiceImpl implements TextPartService {
 
     @Override
     public TextPart create(TextPart current, TextPart newOne, TextPart next) {
-        newOne.setPreviousItem(current.getId());
-        boolean nextIsNotNull = next != null;
-        if (nextIsNotNull) newOne.setNextItem(next.getId());
-        repository.saveAndFlush(newOne);
-//        current.se
-        return null;
+        if (current != null) current.setNextItem(newOne.getId());
+        if (next != null) newOne.setNextItem(next.getId());
+        return repository.saveAndFlush(newOne);
     }
 
     @Override
@@ -43,12 +40,12 @@ public class TextPartServiceImpl implements TextPartService {
 
     @Override
     public Optional<TextPart> findTextPartById(Long id) {
-        return repository.findById(id);
+        return repository.findTextPartById(id);
     }
 
     @Override
-    public Optional<TextPart> findByPreviousItem(Long previousItem) {
-        return repository.findByPreviousItem(previousItem);
+    public Optional<TextPart> findByNextItem(Long nextItem) {
+        return repository.findByNextItem(nextItem);
     }
 
     @Override
@@ -70,7 +67,8 @@ public class TextPartServiceImpl implements TextPartService {
 
     @Override
     public Optional<TextPart> findNextByCurrentInSequence(TextPart current) {
-        return repository.findNextByCurrentInSequence(current);
+        Long nextId = current.getNextItem();
+        return repository.findTextPartById(nextId);
     }
 
     @Override

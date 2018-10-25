@@ -45,6 +45,10 @@ public class TextCommonData extends AbstractIdentifier {
     @Column
     private String name;
 
+    // id of text_part that is the first in the sequence
+    @Column
+    private Long firstItem;
+
     // creating date
     @Column(name = "creating_date")
 // only with Date and Calendar: it converts the date and time values from Java Object to compatible database type

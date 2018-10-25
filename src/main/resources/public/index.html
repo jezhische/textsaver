@@ -36,6 +36,7 @@
 
 
 <script>
+    /** this array allows to note if any text is already called */
     let dataAccessCounter = [];
 
     $(function () {
@@ -51,73 +52,65 @@
             console.log(`This is ${soMany} times easier!   tot\r\r\rou`);
         });
 
+// ================================================================================ MAIN BUSINESS LOGIC
 
-// GET all TEXT PART with given textCommonDataId
-        function extractTextParts(textCommonDataId) {
+// --------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------- GET and RENDER all the TEXT PART with given textCommonDataId
+// --------------------------------------------------------------------------------------------------------------------
+
+/** get all the textparts from db in proper order, create textarea for each one and fill the textarea with its content */
+        function extractTextPartsToHtml(textCommonDataId) {
+            /** id for the form that will be created by createTextCommonDataElement() method  */
             let textFormId = 'txt' + textCommonDataId;
 
             /** when first call of given function with such textCommonDataId, create form element */
             createTextCommonDataElement(textFormId);
 
-            /** get data. To avoid data duplication, check the flag dataAccessCounter */
+            /** get data (i.e. sorted array of textpart objects), create textarea for each object and render its content.
+             * To avoid data duplication, check the flag in dataAccessCounter */
             if (!dataAccessCounter.includes(textCommonDataId)) {
                 $.ajax({
                     type:'GET',
+                    /** get all the textparts */ // FIXME: make to get a textpart bunch with limited size
                     url:'text-common-data/'+ textCommonDataId + '/text-parts',
                     success: function (data, textStatus, jqXHR) {
-                        // first version of array sorting:
-                        let sortedData = sortArray(data, textCommonDataId);
                         // check the array filling
-                        sortedData.forEach(sd => console.log('id: ' + sd.id + ', ' +
-                            'nextItem: ' + sd.nextItem + ', body: '+ sd.body + '/ '));
+                        data.forEach(data => console.log('id: ' + data.id + ', ' +
+                            'nextItem: ' + data.nextItem + '/ '));
 
-                        /** create the textarea elements and fill them */
-                        sortedData.forEach(sd => {
-                            let thisTextareaId = 'ta' + sd.id;
+                        /** create the textarea elements and fill them with the textparts content */
+                        data.forEach(data => {
+                            let thisTextareaId = 'ta' + data.id;
+
+                            /** create current textarea element */
                             createTextareaElement(textFormId, thisTextareaId);
 
-                            /** fill content */
-                            $('#' + thisTextareaId).html('id: ' + sd.id + ', ' +
-                                'nextItem: ' + sd.nextItem + ', body: '+ sd.body + '/ ');
-
-                            /** to auto grow the created textarea height according loaded content */
-                            $('#' + thisTextareaId).height($('#' + thisTextareaId)[0].scrollHeight);
-
+                            /** fill it with content and auto grow its height according loaded content */
+                                fillTextareaWithContent(thisTextareaId, data);
                         });
 
 // todo: установить на .change, чтобы когда textarea опустела, она становилась hidden (и при закрытии уничтожалась), чтобы
-// при выделении или движении стрелки происходило перескакивание на соседнюю область - а это как сделать?
-// todo: И СОЧЕТАНИЕ КЛАВИШ Ctrl+Z, Shift+Ctrl+Z
-
-                        console.log('extractTextParts(' + textCommonDataId + ') textStatus: ' + textStatus);
+// при выделении или движении стрелки (в т.ч. Ctrl + RIGHT) или выделении стрелкой (SHIFT + RIGHT, Ctrl + SHIFT + RIGHT)
+// происходило перескакивание на соседнюю область - а это как сделать?
+                        // check
+                        console.log('extractTextPartsToHtml(' + textCommonDataId + ') textStatus: ' + textStatus);
 
                         /** set the flag "dataAccessCounter.includes(textCommonDataId)" to true */
                         dataAccessCounter.push(textCommonDataId);
                     },
+                    // todo: to write appropriate methods
                     error: function (jqXHR, textStatus, errorThrown) {
+                        console.log('some error');
                     }
                 });
             }
         }
 
-// ----------------------------------------------------------------------------------------------------------
-        /** create and append textarea child element to existing form element: */
-        function createTextareaElement(formId, textareaId) {
-            if ($('#' + textareaId).html() === undefined) {
-                $('#' + formId).append(
-                    '        <textarea wrap="soft" cols="50" id="' + textareaId + '"' +
-                    /** HTML oninput Event Attribute here allows to set the height of this textarea dynamically
-                     * in accordance with the number of entered lines, when an element gets user input.
-                     * Scroll bar won't be sappeared */
-                    // "this" references current element, i.e. this textarea, "px" means "pixels"
-                    'oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\'></textarea>'
-                );
-            }
-        }
+// ===================================================================================== AUXILIARY FUNCTIONS
 
-// ---------------------------------------------------------------------------------------------------------------
         /** when first call of given function with such textCommonDataId, create form element */
         function createTextCommonDataElement(textFormId) {
+            // condition check to avoid duplication
             if ($('#' + textFormId).html() === undefined) {
                 $('#text').append(function (index, html) {
                     return $('<form id="' + textFormId + '" style="margin-left: 60px">' +
@@ -126,6 +119,34 @@
             }
         }
 // ----------------------------------------------------------------------------------------------------------------
+
+        /** create and append textarea child element to existing form element: */
+        function createTextareaElement(formId, textareaId) {
+            // condition check to avoid duplication
+            if ($('#' + textareaId).html() === undefined) {
+                $('#' + formId).append(
+                    //todo: set convenient textarea width by cols number setting
+                    '        <textarea wrap="soft" cols="100" id="' + textareaId + '"' +
+                    /** HTML oninput Event Attribute here allows to set the height of this textarea dynamically
+                     * in accordance with the number of entered lines, when an element gets user input.
+                     * Scroll bar won't be appeared */
+                    // "this" references current element, i.e. this textarea, "px" means "pixels"
+                    ' oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\'></textarea>'
+                );
+            }
+        }
+// ---------------------------------------------------------------------------------------------------------------
+
+        /** fill textarea element with content and auto grow its height according loaded content */
+        function fillTextareaWithContent(thisTextareaId, data) {
+            let thisTextArea = $('#' + thisTextareaId);
+            thisTextArea.html('id: ' + data.id + ', ' +
+                'nextItem: ' + data.nextItem + ', body: '+ data.body + '/ ');
+            /** to auto grow the created textarea height according loaded content */
+            thisTextArea.height(thisTextArea[0].scrollHeight);
+        }
+// ---------------------------------------------------------------------------------------------------------------
+
         /** first version of array sorting */
         function sortArray(array, textCommonDataId) {
             let sortedArray = [];
@@ -153,29 +174,15 @@
             return sortedArray;
         }
 
-        // console.log(extractTextParts());
+// =========================================================================================== PERFORMING
 
-
-
-        // console.log(extractTextPartVersion2());
-
-// PUT TEXT PART
-//         $('#helper2').click(function (e) {
-//             e.preventDefault();
-//             // $('#hel2txt').html('adding retrieved value in textarea ta32 from textpart32');
-//             extractTextParts('#ta32', 32);
-//             // setTimeout(function () {
-//             //     console.log(outerData.id + ' ' + isComplited)
-//             // }, 100);
-//         });
         $('#helper2').click(function (e) {
             e.preventDefault();
-                extractTextParts(26/*, '#ta32'*/);
+                extractTextPartsToHtml(36);
         });
 
         $('#txt32').submit(function (e) {
             e.preventDefault();
-            // extractTextParts('#ta32', 32);
         })
     });
 </script>

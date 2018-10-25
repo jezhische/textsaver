@@ -132,7 +132,7 @@ public class JdbsConnectionTest {
         List<TextPart> textParts = new ArrayList<>();
         Long id = 0L;
         while (result.next()) {
-            id = result.getLong(4);}
+            id = result.getLong(4);} // fixme: NUMBER OF THE COLUMN
         TextCommonData textCommonData = TextCommonData.builder().build();
         textCommonData.setId(id);
 // Second iteration through ResultSet object is possible, since I've set ResutSet type as ResultSet.TYPE_SCROLL_INSENSITIVE
@@ -140,10 +140,9 @@ public class JdbsConnectionTest {
             TextPart textPart = TextPart
                     .builder()
                     .body(result.getString(1))
-                    .previousItem(result.getLong(2))
                     .nextItem(result.getLong(3))
                     .textCommonData(textCommonData)
-                    .lastUpdate(result.getDate(5))
+                    .lastUpdate(result.getDate(5)) // fixme: NUMBER OF THE COLUMN
                     .build();
             textParts.add(textPart);
         }

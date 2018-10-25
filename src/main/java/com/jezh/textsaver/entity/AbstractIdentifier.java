@@ -12,6 +12,7 @@ import javax.persistence.MappedSuperclass;
 /**
  * Common "id" part for all entities.
  * Allows to simplify entity's equals() and hashCode() to make indexing and looking up easier.
+ * ALL id of any entities will be unique
  * */
 // @MappedSuperclass: Designates a class whose mapping information is applied to the entities that inherit from it.
 // A mapped superclass has no separate table defined for it.

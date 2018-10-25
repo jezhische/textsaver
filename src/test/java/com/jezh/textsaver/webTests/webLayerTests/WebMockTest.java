@@ -56,7 +56,6 @@ public class WebMockTest {
         textPart = TextPart
                 .builder()
                 .body("test")
-                .previousItem(1L)
                 .nextItem(3L)
                 .lastUpdate(new Date())
                 .build();

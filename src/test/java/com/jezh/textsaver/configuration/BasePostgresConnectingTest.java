@@ -22,7 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 @DataJpaTest
 // "By default, data JPA tests are transactional and roll back at the end of each test.  If that is not what you want,
 // you can disable transaction management for a test or for the whole class as follows:"
-@Transactional(propagation = Propagation.NOT_SUPPORTED)
+@Transactional/*(propagation = Propagation.NOT_SUPPORTED)*/
+@Rollback(value = false)
 // " If, however, you prefer to run tests against a real database...:"
 @AutoConfigureTestDatabase(/*connection = EmbeddedDatabaseConnection.NONE, */replace = AutoConfigureTestDatabase.Replace.NONE)
 //@Rollback(value = false)
