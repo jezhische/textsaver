@@ -1,0 +1,2 @@
+http://localhost:8074/textsaver/v2/api-docs
+http://localhost:8074/textsaver/swagger-ui.html

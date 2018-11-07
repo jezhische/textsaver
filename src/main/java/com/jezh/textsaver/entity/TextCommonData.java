@@ -1,6 +1,7 @@
 package com.jezh.textsaver.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.jezh.textsaver.extensions.AbstractIdentifier;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -33,11 +34,6 @@ import java.util.*;
 // for Date fields proper assigning; need @EnableJpaAuditing to activate auditing in the classes marked this annotation
 @EntityListeners(AuditingEntityListener.class)
 public class TextCommonData extends AbstractIdentifier {
-
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(nullable = false, unique = true)
-//    private Long id;
 
     // the name of the text
 //  @NotBlank - must contain at least one non-whitespace character; for CharSequence
@@ -74,6 +70,8 @@ public class TextCommonData extends AbstractIdentifier {
         return super.hashCode();
     }
 
+
+
     //// "You can also use this annotation (by combining it with AccessLevel.NONE) to suppress generating a... setter."
 //// "This lets you override the behaviour of a @Getter, @Setter or @Data annotation on a class."
 //    @Setter(AccessLevel.NONE)
@@ -103,13 +101,13 @@ public class TextCommonData extends AbstractIdentifier {
 //        }
 //    }
 //
-//    public void removeTextParts(TextPart...textParts) throws EntityNotFoundException, SQLWarning {
+//    public void removeTextParts(TextPart...textParts) throws ResNotFoundException, SQLWarning {
 //        if (this.textParts != null && this.textParts.size() != 0) {
 //            for (TextPart textPart : textParts) {
 //                if (this.textParts.contains(textPart)) {
 //                    this.textParts.remove(textPart);
 //                    textPart.setTextCommonData(null);
-//                } else throw new EntityNotFoundException(
+//                } else throw new ResNotFoundException(
 //                        String.format("The textPart entity with id %d is not found", textPart.getId()),
 //                        new SQLException());
 //            }

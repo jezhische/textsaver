@@ -1,4 +1,4 @@
-package com.jezh.textsaver.entity;
+package com.jezh.textsaver.extensions;
 
 
 import lombok.Getter;

@@ -1,22 +1,23 @@
 package com.jezh.textsaver.controller;
 
+import com.jezh.textsaver.dto.TextPartDTO;
 import com.jezh.textsaver.entity.TextPart;
-import com.jezh.textsaver.exceptions.EntityNotFoundException;
 import com.jezh.textsaver.service.TextCommonDataService;
 import com.jezh.textsaver.service.TextPartService;
+import ma.glasnost.orika.MapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -31,25 +32,46 @@ public class TextPartController {
     @Autowired
     private TextCommonDataService textCommonDataService;
 
+    @Autowired
+    Environment env;
+
+    @LocalServerPort
+    private int port;
+
+    @Autowired
+    private MapperFactory mapperFactory;
+
     @PostMapping(path = "/text-parts")
-    public ResponseEntity<TextPart> create(@Valid @RequestBody TextPart textPart,
-                                           UriComponentsBuilder uriBuilder,
-                                           BindingResult bindingResult) {
-        textPartService.create(textPart);
+//    @ResponseStatus(HttpStatus.CREATED)  // for update HttpStatus.OK
+    public ResponseEntity<TextPartDTO> createTextPart(@Valid @RequestBody TextPartDTO textPartDTO,
+                                                      UriComponentsBuilder uriBuilder,
+                                                      BindingResult bindingResult) {
+        // здесь с помощью статического метода Manager проверяем textPartDTO на соответствие, ошибки и т.п.
+        TextPart textPart = convertToEntity(textPartDTO);
+        TextPart textPartCreated = textPartService.create(textPart);
+        TextPartDTO textPartDTOCreated = convertToDTO(textPartCreated);
         HttpHeaders headers = new HttpHeaders();
-
-//        UriComponents uriComponents = UriComponentsBuilder
-//                .fromUriString("http://example.com/hotels/{hotel}")
-//                .queryParam("q", "{q}")
-//                .encode()
-//                .build();
-//        URI uri = uriComponents.expand("Westin", "123").toUri();
-
-        headers.setLocation(uriBuilder.path("/text-parts/{textPartId}").encode().buildAndExpand(textPart.getId()).toUri());
-        return new ResponseEntity<TextPart>(headers, HttpStatus.CREATED);
+        URI uri = /*UriComponentsBuilder.newInstance()*/
+                uriBuilder
+//                .scheme("http")
+//                .host("localhost")
+                .port(port)
+                .path("/" + env.getRequiredProperty("server.servlet.context-path") +
+                        "/text-common-data/{commonDataId}/text-parts/{textPartId}")
+                .encode()
+                .buildAndExpand(textPartDTOCreated.getTextCommonData().getId(), textPartDTOCreated.getId())
+                .toUri();
+//                URI uri = ServletUriComponentsBuilder
+//                        .fromCurrentRequest()
+//                        .path("/{textPartId}")
+//                        .encode()
+//                        .buildAndExpand(textPartDTOCreated.getTextCommonData().getId(), textPartDTOCreated.getId())
+//                        .toUri();
+        headers.setLocation(uri);
+        return new ResponseEntity<TextPartDTO>(textPartDTOCreated, headers, HttpStatus.CREATED);
     }
 
-    /** find all the textParts with given textCommonData id */
+    /* find all the textParts with given textCommonData id */
 //    @GetMapping (path = "/text-parts")
 //    public ResponseEntity<?> getTextPartListByTextCommonDataId(@PathVariable("commonDataId") Long textCommonDataId) {
 //        return ResponseEntity.ok().body(textPartService.findByTextCommonDataId(textCommonDataId));
@@ -59,10 +81,11 @@ public class TextPartController {
     @GetMapping (path = "/text-parts/{textPartId}")
     public ResponseEntity<TextPart> findTextPartById(@PathVariable Long textPartId) {
         TextPart textPart = null;
-        try {
+//        try {
         textPart = textPartService.findTextPartById(textPartId)
-                .orElseThrow(() -> new EntityNotFoundException("textPart with such id is not found", new SQLException()));
-        } catch (EntityNotFoundException ex) {return ResponseEntity.notFound().build();}
+                .get();
+//                .orElseThrow(() -> new ResNotFoundException("textPart with such id is not found", new SQLException()));
+//        } catch (ResNotFoundException ex) {return ResponseEntity.notFound().build();}
         return ResponseEntity.ok().body(textPart);
     }
 
@@ -91,5 +114,15 @@ public class TextPartController {
         } else {
             return ResponseEntity.ok().body(textPartService.findSortedTextPartBunchByStartId(startId, size));
         }
+    }
+
+// ================================================================================================= UTILITY
+
+    private TextPartDTO convertToDTO(TextPart textPart) {
+        return mapperFactory.getMapperFacade(TextPart.class, TextPartDTO.class).map(textPart);
+    }
+
+    private TextPart convertToEntity(TextPartDTO textPartDTO) {
+        return mapperFactory.getMapperFacade(TextPart.class, TextPartDTO.class).mapReverse(textPartDTO);
     }
 }

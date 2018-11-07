@@ -85,9 +85,10 @@ public class TextPartRepositoryPostgresTest extends BasePostgresConnectingTest {
     @Test
     public void assignFirstItemForAnyTextPartFromDb_thenAssignChosenTextCommonDataId() {
         List<TextPart> textParts = textPartRepository.findAll();
+        textParts.forEach(textPart -> textPart.setNextItem(null));
         TextCommonData textCommonData = textCommonDataRepository.findAll().get(0);
-        Long firstIrem = TestUtil.assignFirstItem(textCommonData, textParts);
-        System.out.println("************************************************* firstIrem: " + firstIrem);
+        Long firstItem = TestUtil.assignFirstItem(textCommonData, textParts);
+        System.out.println("************************************************* firstItem: " + firstItem);
         textCommonDataRepository.saveAndFlush(textCommonData);
         Assert.assertNotNull(textCommonDataRepository.findById(textCommonData.getId()).get().getFirstItem());
         Assert.assertEquals(textCommonData.getFirstItem(),
@@ -97,7 +98,7 @@ public class TextPartRepositoryPostgresTest extends BasePostgresConnectingTest {
         Assert.assertEquals(textCommonData.getId(), textParts.stream().findAny().get().getTextCommonData().getId());
 // TODO: почему без этой записи все равно происходит обновление всех textPart в бд?
 //        textParts.forEach(textPart -> textPartRepository.saveAndFlush(textPart));
-        textParts = TestUtil.setTextPartsNextItemOrder(textParts, firstIrem);
+        textParts = TestUtil.setTextPartsNextItemOrder(textParts, firstItem);
 
     }
 

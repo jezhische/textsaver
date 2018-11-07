@@ -2,19 +2,14 @@ package com.jezh.textsaver.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.jezh.textsaver.extensions.AbstractIdentifier;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 //import org.springframework.data.rest.core.annotation.RestResource;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Objects;
 
 @Entity
 @Table(name = "text_parts", indexes = {@Index(name = "idx_next_it", columnList = "next_item")})
@@ -54,7 +49,7 @@ public class TextPart extends AbstractIdentifier {
      * link to the next text part
      * */
     @Column(name = "next_item", nullable = true, unique = true)
-    private Long nextItem;
+        private Long nextItem;
 
     /**
      * This field will not be serialized to/from JSON, since there is no need to retrieve it from this entity. To avoid
@@ -66,7 +61,7 @@ public class TextPart extends AbstractIdentifier {
     @ManyToOne(fetch = FetchType.LAZY) // default FetchType.EAGER - it's JPA requirement,
     // since in hibernate all select fetching is LAZY
     @JoinColumn(name = "text_common_data_id")
-    private TextCommonData textCommonData;
+        private TextCommonData textCommonData;
 
 
 

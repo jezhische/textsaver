@@ -1,8 +1,14 @@
 package com.jezh.textsaver.webTests.fullStackTests;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.jezh.textsaver.controller.TextPartController;
+import com.jezh.textsaver.dto.TextPartDTO;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
 import com.jezh.textsaver.service.TextCommonDataService;
+import com.jezh.textsaver.service.TextCommonDataServiceTest;
 import com.jezh.textsaver.service.TextPartService;
 import com.jezh.textsaver.util.TestUtil;
 import org.hamcrest.Matchers;
@@ -14,20 +20,28 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.FlashMap;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.Random;
 
 // almost the full stack is used, but without the cost of starting the server. @SpringBootTest loads the full contexts,
 // so I can use service requests to data base.
@@ -43,8 +57,14 @@ public class ApplicationTest {
 //    @Autowired
 //    private TextPartService textPartService;
 
+    @Autowired
+    private Environment env;
+
     private TextPart textPartTwo, textPartThree, textPartFour;
     private TextCommonData textCommonData;
+    private Long existingTextCommonDataId;
+    private TextPartDTO textPartDTO;
+    private ObjectMapper objectMapper;
 
     @Before
     public void setUp() throws Exception {
@@ -60,11 +80,22 @@ public class ApplicationTest {
         textPartFour = TextPart.builder().nextItem(3L).build();
         textPartFour.setId(4L);
 
+        existingTextCommonDataId = getSomeTextCommonDataIdFromDB(1);
+
         textCommonData = TextCommonData
                 .builder()
                 .name("testTextCommonData")
                 .build();
-        textCommonData.setId(1L);
+        textCommonData.setId(existingTextCommonDataId);
+
+        textPartDTO = TextPartDTO.builder()
+                .body("textPartDTO application test")
+                .lastUpdate(new Date())
+                .nextItem(new Random().nextLong())
+                .textCommonData(textCommonData)
+                .build();
+
+        objectMapper = new ObjectMapper();
     }
 
     @After
@@ -73,6 +104,7 @@ public class ApplicationTest {
         textPartThree = null;
         textPartFour = null;
         textCommonData = null;
+        textPartDTO = null;
     }
 
 // =============================================================================================== textCommonData tests
@@ -174,6 +206,66 @@ public class ApplicationTest {
             System.out.println("************************************************" + i + ": OK");
         }
     }
+
+// -----------------------------------------------------------------------------------------
+
+    @Test
+    public void testCreateTextPart() throws Exception {
+//        existingTextCommonDataId = getSomeTextCommonDataIdFromDB(0);
+
+        objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
+        String json = objectWriter.writeValueAsString(textPartDTO);
+        MvcResult result = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .post("/text-common-data/" + existingTextCommonDataId + "/text-parts")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content(json))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn();
+        System.out.println("******************************************" + result.getResponse().getContentAsString());
+        System.out.println("****************************" + env.getRequiredProperty("server.port", Integer.class));
+    }
+
+
+// ==================================================================================== TEST CustomRestExceptionHandler
+
+// ------------------------------------------------------------------------------------------------------- 400
+    @Test
+    public void testHandleMethodArgumentTypeMismatch_whenStringInsteadOfLong_thenBadRequest() throws Exception {
+        long someTextCommonDataId = getSomeTextCommonDataIdFromDB(1);
+        MvcResult result = mockMvc
+                .perform(MockMvcRequestBuilders.get("/text-common-data/"
+                        + someTextCommonDataId
+                        + "/text-parts"
+                        // here String instead of Long
+                        + "/ccc"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("should be of type")))
+                .andReturn();
+        Assert.assertEquals(TextPartController.class, ((HandlerMethod) result.getHandler()).getBeanType());
+        Assert.assertEquals(MethodArgumentTypeMismatchException.class, result.getResolvedException().getClass());
+    }
+
+// ----------------------------------------------------------------------------------------------------- 404
+    @Test
+    public void testHandleNoHandlerFoundException() throws Exception {
+        long someTextCommonDataId = getSomeTextCommonDataIdFromDB(1);
+        MvcResult result = mockMvc
+                .perform(MockMvcRequestBuilders.get("/text-common-data/"
+                        + someTextCommonDataId
+                        + "/text-partsyy"
+                        + "/1"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+//                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("No handler found for")))
+                .andReturn();
+//        Assert.assertEquals(NoHandlerFoundException.class, result.getResolvedException().getClass());
+    }
+
+// ----------------------------------------------------------------------------------------------------- 404
 
 
 // ====================================================================================================== TEST UTIL

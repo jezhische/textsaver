@@ -1,7 +1,7 @@
 package com.jezh.textsaver.controller;
 
 import com.jezh.textsaver.entity.TextCommonData;
-import com.jezh.textsaver.exceptions.EntityNotFoundException;
+import com.jezh.textsaver.exception.ResNotFoundException;
 import com.jezh.textsaver.service.TextCommonDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +31,8 @@ public class TextCommonDataController {
         TextCommonData textCommonData = null;
         try {
             textCommonData = textCommonDataService.findTextCommonDataById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("textPart with such id is not found", new SQLException()));
-        } catch (EntityNotFoundException ex) {return ResponseEntity.notFound().build();}
+                    .orElseThrow(() -> new ResNotFoundException("textPart with such id is not found", new SQLException()));
+        } catch (ResNotFoundException ex) {return ResponseEntity.notFound().build();}
         return ResponseEntity.ok().body(textCommonData);
     }
 }

@@ -38,4 +38,16 @@ public class TextCommonDataServiceTest extends BasePostgresConnectingTest {
         Assert.assertNotNull(dataList);
         dataList.forEach(System.out::println);
     }
+
+// ======================================================================================= TEST UTIL
+
+    public Long getExistingTextCommonDataId() {
+        List<TextCommonData> dataList = textCommonDataService.findAll();
+        return dataList.size() == 0? null : dataList.get(0).getId();
+    }
+
+    @Test
+    public void testGetExistingTextCommonDataId() {
+        System.out.println(getExistingTextCommonDataId());
+    }
 }
