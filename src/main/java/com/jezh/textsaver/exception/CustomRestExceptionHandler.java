@@ -149,8 +149,8 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
      * @return a ResponseEntity instance containing all the basic exception info in the ApiExceptionDetails container */
         @ExceptionHandler({NoSuchElementException.class})
     //    @ResponseStatus(HttpStatus.NOT_FOUND)
-        public ResponseEntity<Object> handleEntityNotFoundException(NoSuchElementException ex) {
-            String error = "No handler found for " + ex.getLocalizedMessage();
+        public ResponseEntity<Object> handleEntityNotFoundException(NoSuchElementException ex, WebRequest request) {
+            String error = "No handler found for " + request.getContextPath();
             ApiExceptionDetails details = ApiExceptionDetails.builder()
                     .status(HttpStatus.NOT_FOUND)
                     .message(ex.getLocalizedMessage())
