@@ -41,12 +41,12 @@ public class TextPartRepositoryTest {
 
     @Test
     public void testRetrieveOne() {
-        Assert.assertEquals("TUaIVJRQKa", repository.findById(226L).orElse(new TextPart()).getBody());
+        Assert.assertEquals("TUaIVJRQKa", repository.findTextPartById(226L).orElse(new TextPart()).getBody());
     }
 
     @Test
     public void testUpdateOne() {
-        TextPart textPart = repository.findById(226L).orElseThrow(() -> new RuntimeException("the textPart item with this id is not found"));
+        TextPart textPart = repository.findTextPartById(226L).orElseThrow(() -> new RuntimeException("the textPart item with this id is not found"));
         textPart.setBody("TUaIVJRQKa");
         repository.save(textPart);
     }

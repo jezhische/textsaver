@@ -1,17 +1,9 @@
 package com.jezh.textsaver.exception;
 
 import com.jezh.textsaver.controller.TextCommonDataController;
-import com.jezh.textsaver.controller.TextPartController;
-import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -19,14 +11,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.annotation.Resource;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
@@ -158,17 +147,17 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
      * @see ApiExceptionDetails
      * @see #handleException(Exception, WebRequest)
      * @return a ResponseEntity instance containing all the basic exception info in the ApiExceptionDetails container */
-//        @ExceptionHandler({NoSuchElementException.class})
-//    //    @ResponseStatus(HttpStatus.NOT_FOUND)
-//        public ResponseEntity<Object> handleEntityNotFoundException(NoSuchElementException ex) {
-//            String error = "No handler found for " + ex.getLocalizedMessage();
-//            ApiExceptionDetails details = ApiExceptionDetails.builder()
-//                    .status(HttpStatus.NOT_FOUND)
-//                    .message(ex.getLocalizedMessage())
-//                    .errors(Arrays.asList(error))
-//                    .build();
-//            return new ResponseEntity<Object>(details, new HttpHeaders(), details.getStatus());
-//        }
+        @ExceptionHandler({NoSuchElementException.class})
+    //    @ResponseStatus(HttpStatus.NOT_FOUND)
+        public ResponseEntity<Object> handleEntityNotFoundException(NoSuchElementException ex) {
+            String error = "No handler found for " + ex.getLocalizedMessage();
+            ApiExceptionDetails details = ApiExceptionDetails.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message(ex.getLocalizedMessage())
+                    .errors(Arrays.asList(error))
+                    .build();
+            return new ResponseEntity<Object>(details, new HttpHeaders(), details.getStatus());
+        }
 
 // ------------------------------------------------------------------------------- 404 DON'T WORK????
 

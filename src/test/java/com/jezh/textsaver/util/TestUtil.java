@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+//import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
 import com.jezh.textsaver.repository.TextCommonDataRepository;
@@ -32,8 +32,8 @@ public class TestUtil {
     public static <T> Object convertJSONStringToObject(String json, Class<T> objectClass) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); //??
-        JavaTimeModule module = new JavaTimeModule(); //??
-        mapper.registerModule(module);
+//        JavaTimeModule module = new JavaTimeModule(); //??
+//        mapper.registerModule(module);
 //mapper.readValues()
         return mapper.readValue(json, objectClass);
     }
@@ -43,8 +43,8 @@ public class TestUtil {
             String jsonArray, Class<T[]> objectArrayClass, int elNumber) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); //??
-        JavaTimeModule module = new JavaTimeModule(); //??
-        mapper.registerModule(module);
+//        JavaTimeModule module = new JavaTimeModule(); //??
+//        mapper.registerModule(module);
         T[] tcdArray = mapper.readValue(jsonArray, objectArrayClass);
         return elNumber < tcdArray.length? tcdArray[elNumber] : null;
     }

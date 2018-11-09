@@ -34,7 +34,7 @@ public class TextCommonDataServiceImpl implements TextCommonDataService {
 
     @Override
     public Optional<TextCommonData> findTextCommonDataById(Long id) {
-        return repository.findById(id);
+        return repository.findTextCommonDataById(id);
     }
 
     @Override

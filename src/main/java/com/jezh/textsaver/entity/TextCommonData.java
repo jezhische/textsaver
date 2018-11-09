@@ -8,8 +8,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import java.util.*;
+import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 
 /*
@@ -37,7 +37,7 @@ public class TextCommonData extends AbstractIdentifier {
 
     // the name of the text
 //  @NotBlank - must contain at least one non-whitespace character; for CharSequence
-    @NotBlank
+    @NotNull
     @Column
     private String name;
 

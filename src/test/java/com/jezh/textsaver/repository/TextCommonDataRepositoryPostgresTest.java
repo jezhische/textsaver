@@ -54,7 +54,7 @@ public class TextCommonDataRepositoryPostgresTest extends BasePostgresConnecting
         textCommonData = textCommonDataRepository.findAll().get(0);
         Assert.assertNotNull(textCommonData);
         textCommonDataRepository.delete(textCommonData);
-        Assert.assertFalse(textCommonDataRepository.findById(textCommonData.getId()).isPresent());
+        Assert.assertFalse(textCommonDataRepository.findTextCommonDataById(textCommonData.getId()).isPresent());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class TextCommonDataRepositoryPostgresTest extends BasePostgresConnecting
 //        textCommonData = textCommonDataRepository.findAll().get(0);
 //        textCommonData = textCommonDataRepository.getOne(7L); // LazyInitializationException: could not initialize
 //        // proxy [com.jezh.textsaver.entity.TextCommonData#7] - no Session
-        textCommonData = textCommonDataRepository.findById(26L).get();
+        textCommonData = textCommonDataRepository.findTextCommonDataById(26L).get();
         textCommonData.setName("eighth");
         textCommonDataRepository.saveAndFlush(textCommonData);
     }

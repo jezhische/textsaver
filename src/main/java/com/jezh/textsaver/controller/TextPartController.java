@@ -6,7 +6,7 @@ import com.jezh.textsaver.service.TextCommonDataService;
 import com.jezh.textsaver.service.TextPartService;
 import ma.glasnost.orika.MapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.LocalServerPort;
+//import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,8 +35,8 @@ public class TextPartController {
     @Autowired
     Environment env;
 
-    @LocalServerPort
-    private int port;
+//    @LocalServerPort
+//    private int port;
 
     @Autowired
     private MapperFactory mapperFactory;
@@ -55,10 +55,10 @@ public class TextPartController {
                 uriBuilder
 //                .scheme("http")
 //                .host("localhost")
-                .port(port)
+                .port(env.getRequiredProperty("local.server.port"))
                 .path("/" + env.getRequiredProperty("server.servlet.context-path") +
                         "/text-common-data/{commonDataId}/text-parts/{textPartId}")
-                .encode()
+//                .encode()
                 .buildAndExpand(textPartDTOCreated.getTextCommonData().getId(), textPartDTOCreated.getId())
                 .toUri();
 //                URI uri = ServletUriComponentsBuilder

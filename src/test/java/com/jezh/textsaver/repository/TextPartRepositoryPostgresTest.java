@@ -63,7 +63,7 @@ public class TextPartRepositoryPostgresTest extends BasePostgresConnectingTest {
     @Test
     public void testRetrieveOne() {
         textPart = textPartRepository.findAll().get(0);
-        Assert.assertEquals(textPart.getBody(), textPartRepository.findById(textPart.getId()).orElse(new TextPart()).getBody());
+        Assert.assertEquals(textPart.getBody(), textPartRepository.findTextPartById(textPart.getId()).orElse(new TextPart()).getBody());
     }
 
     @Test
@@ -90,9 +90,9 @@ public class TextPartRepositoryPostgresTest extends BasePostgresConnectingTest {
         Long firstItem = TestUtil.assignFirstItem(textCommonData, textParts);
         System.out.println("************************************************* firstItem: " + firstItem);
         textCommonDataRepository.saveAndFlush(textCommonData);
-        Assert.assertNotNull(textCommonDataRepository.findById(textCommonData.getId()).get().getFirstItem());
+        Assert.assertNotNull(textCommonDataRepository.findTextCommonDataById(textCommonData.getId()).get().getFirstItem());
         Assert.assertEquals(textCommonData.getFirstItem(),
-                textCommonDataRepository.findById(textCommonData.getId()).get().getFirstItem());
+                textCommonDataRepository.findTextCommonDataById(textCommonData.getId()).get().getFirstItem());
 
         textParts = TestUtil.assignTextPartsForeignKey(textCommonData, textParts);
         Assert.assertEquals(textCommonData.getId(), textParts.stream().findAny().get().getTextCommonData().getId());
@@ -106,7 +106,7 @@ public class TextPartRepositoryPostgresTest extends BasePostgresConnectingTest {
     @Test
     public void testUpdateForeignKey() {
 //        textPart = textPartRepository.findAll().get(0);
-        TextPart textPart = textPartRepository.findById(5L).get();
+        TextPart textPart = textPartRepository.findTextPartById(5L).get();
 //        textPart.setTextCommonData(null);
         textPart.setTextCommonData(textCommonDataRepository.findAll().get(0));
         textPartRepository.saveAndFlush(textPart);
