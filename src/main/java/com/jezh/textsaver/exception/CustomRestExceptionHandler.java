@@ -3,10 +3,14 @@ package com.jezh.textsaver.exception;
 import com.jezh.textsaver.controller.TextCommonDataController;
 import com.jezh.textsaver.controller.TextPartController;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -28,6 +32,7 @@ import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /** Handler for common REST exceptions handling extends {@code ResponseEntityExceptionHandler}.
  * The {@link #handleException(Exception, WebRequest)} method, that is the facade method of the parent
@@ -40,8 +45,10 @@ import java.util.List;
  * @author https://www.baeldung.com/global-error-handler-in-a-spring-rest-api
  * @author Ivan Kuchuhurnyi
  */
-@ControllerAdvice(basePackageClasses = {TextCommonDataController.class, TextPartController.class})
-@RestController
+
+//@Order(value = Ordered.HIGHEST_PRECEDENCE)
+@ControllerAdvice(basePackageClasses = {TextCommonDataController.class})
+//@Component
 public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
 // ------------------------------------------------------------------------------------------------------ 400
@@ -124,15 +131,15 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
 
     //    =====================================================================
-//// ------------------------------------------------------------------------------- 404 DON'T WORK????
-//    /** thrown when no handlers found to fulfill the request. NB that 404 error is handled by DispatcherServlet
-//     * by default, so to throw this exception, it's required to set the property {@code setThrowExceptionIfNoHandlerFound}
-//     * of DispatcherServlet to true ( is set in {@link com.jezh.textsaver.TextsaverApplication}).
-//     * @see ApiExceptionDetails
-//     * @see #handleException(Exception, WebRequest)
-//     * @return a ResponseEntity instance containing all the basic exception info in the ApiExceptionDetails container */
+// ------------------------------------------------------------------------------- 404 DON'T WORK????
+    /** thrown when no handlers found to fulfill the request. NB that 404 error is handled by DispatcherServlet
+     * by default, so to throw this exception, it's required to set the property {@code setThrowExceptionIfNoHandlerFound}
+     * of DispatcherServlet to true ( is set in {@link com.jezh.textsaver.TextsaverApplication}).
+     * @see ApiExceptionDetails
+     * @see #handleException(Exception, WebRequest)
+     * @return a ResponseEntity instance containing all the basic exception info in the ApiExceptionDetails container */
     @Override
-    protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
+    public ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
                                                                    HttpStatus status, WebRequest request) {
         String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
         ApiExceptionDetails details = ApiExceptionDetails.builder()
@@ -151,17 +158,17 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
      * @see ApiExceptionDetails
      * @see #handleException(Exception, WebRequest)
      * @return a ResponseEntity instance containing all the basic exception info in the ApiExceptionDetails container */
-    //    @ExceptionHandler({ResNotFoundException.class})
-    ////    @ResponseStatus(HttpStatus.NOT_FOUND)
-    //    public ResponseEntity<Object> handleEntityNotFoundException(ResNotFoundException ex) {
-    //        String error = "No handler found for " + ex.getLocalizedMessage();
-    //        ApiExceptionDetails details = ApiExceptionDetails.builder()
-    //                .status(HttpStatus.NOT_FOUND)
-    //                .message(ex.getLocalizedMessage())
-    //                .errors(Arrays.asList(error))
-    //                .build();
-    //        return new ResponseEntity<Object>(details, new HttpHeaders(), details.getStatus());
-    //    }
+//        @ExceptionHandler({NoSuchElementException.class})
+//    //    @ResponseStatus(HttpStatus.NOT_FOUND)
+//        public ResponseEntity<Object> handleEntityNotFoundException(NoSuchElementException ex) {
+//            String error = "No handler found for " + ex.getLocalizedMessage();
+//            ApiExceptionDetails details = ApiExceptionDetails.builder()
+//                    .status(HttpStatus.NOT_FOUND)
+//                    .message(ex.getLocalizedMessage())
+//                    .errors(Arrays.asList(error))
+//                    .build();
+//            return new ResponseEntity<Object>(details, new HttpHeaders(), details.getStatus());
+//        }
 
 // ------------------------------------------------------------------------------- 404 DON'T WORK????
 
@@ -173,7 +180,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
      * @return a ResponseEntity instance containing all the basic exception info in the ApiExceptionDetails container
      * */
     @Override
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+//    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex,
                                                                          HttpHeaders headers, HttpStatus status,
                                                                          WebRequest request) {
