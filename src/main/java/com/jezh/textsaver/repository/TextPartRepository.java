@@ -1,5 +1,6 @@
 package com.jezh.textsaver.repository;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jezh.textsaver.entity.TextPart;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -56,11 +57,16 @@ public interface TextPartRepository extends JpaRepository<TextPart, Long> {
     List<TextPart> findSortedTextPartBunchByStartId(Long startId, int size);
 
     /**
+     * find a list of textPart in an order, where currentTextPart.nextItem = nextTextPart.id, start from given textPart.id
+     */
+    @Query(value = "SELECT * FROM public.get_remaining_texparts_ordered_set(?1)", nativeQuery = true)
+    List<TextPart> findRemainingSortedTextPartBunchByStartId(Long startId);
+
+    /**
      * fint textPart by id
      */
     @Query(value = "SELECT * FROM public.find_textpart_by_id(?1)", nativeQuery = true)
     Optional<TextPart> findTextPartById(Long id);
 
     List<TextPart> findAllByTextCommonDataId(Long id);
-
 }

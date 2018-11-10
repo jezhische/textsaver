@@ -13,9 +13,12 @@ import java.util.Optional;
 @Transactional
 public class TextCommonDataServiceImpl implements TextCommonDataService {
 
-    @Autowired
     private TextCommonDataRepository repository;
 
+    @Autowired
+    public TextCommonDataServiceImpl(TextCommonDataRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public TextCommonData create(TextCommonData textCommonData) {

@@ -13,8 +13,12 @@ import java.util.Optional;
 @Transactional
 public class TextPartServiceImpl implements TextPartService {
 
-    @Autowired
     private TextPartRepository repository;
+
+    @Autowired
+    public TextPartServiceImpl(TextPartRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public TextPart create(TextPart textPart) {
@@ -63,6 +67,12 @@ public class TextPartServiceImpl implements TextPartService {
     @Override
     public List<TextPart> findSortedTextPartBunchByStartId(Long startId, int size) {
         return repository.findSortedTextPartBunchByStartId(startId, size);
+    }
+
+    /** find a bunch of sequenced textParts, starting with 'startId' id up to the end of list */
+    @Override
+    public List<TextPart> findRemainingSortedTextPartBunchByStartId(Long startId) {
+        return repository.findRemainingSortedTextPartBunchByStartId(startId);
     }
 
     @Override

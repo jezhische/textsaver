@@ -2,6 +2,7 @@ package com.jezh.textsaver;
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,6 +10,7 @@ import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfig
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -28,9 +30,9 @@ public class TextsaverApplication {
 
 	public static void main(String[] args) {
         ConfigurableApplicationContext applicationContext = SpringApplication.run(TextsaverApplication.class, args);
-        for (String beanName : applicationContext.getBeanDefinitionNames()) {
-            System.out.println("******************** " + beanName);
-        }
+//        for (String beanName : applicationContext.getBeanDefinitionNames()) {
+//            System.out.println("******************** " + beanName);
+//        }
 
         // to handle NoHandlerFoundException
         DispatcherServlet dispatcherServlet = (DispatcherServlet)applicationContext.getBean("dispatcherServlet");
@@ -39,6 +41,14 @@ public class TextsaverApplication {
 //                .forEach(handlerMapping -> System.out.println("==========================" + handlerMapping));
 //        dispatcherServlet.setDetectAllHandlerExceptionResolvers(false);
     }
+
+//    @Bean
+//    public CommandLineRunner getCommandLineRunner(ApplicationContext applicationContext) {
+//        DispatcherServlet dispatcherServlet = (DispatcherServlet)applicationContext.getBean("dispatcherServlet");
+//        dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
+//// override void run(String... args) to create new CommandLineRunner()
+//        return args -> {};
+//    }
 
     @Bean
     public MapperFactory mapperFactory() {

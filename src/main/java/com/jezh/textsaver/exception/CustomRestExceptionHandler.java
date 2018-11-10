@@ -17,10 +17,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingPathVariableException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -47,7 +44,8 @@ import java.util.NoSuchElementException;
  */
 
 //@Order(value = Ordered.HIGHEST_PRECEDENCE)
-@ControllerAdvice(basePackageClasses = {TextCommonDataController.class})
+//@ControllerAdvice(basePackageClasses = {TextCommonDataController.class})
+@RestControllerAdvice
 //@Component
 public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -106,8 +104,8 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         ApiExceptionDetails details = ApiExceptionDetails.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .message(ex.getLocalizedMessage())
-                .errors(Arrays.asList("Parameters invalid. The " + ex.getVariableName() + " variable is missed. " +
-                        "Please review the guideline"))
+                .error("Parameters invalid. The " + ex.getVariableName() + " variable is missed. " +
+                        "Please review the guideline")
                 .build();
         return new ResponseEntity<Object>(details, new HttpHeaders(), details.getStatus());
     }
@@ -124,28 +122,30 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         ApiExceptionDetails details = ApiExceptionDetails.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .message(ex.getLocalizedMessage())
-                .errors(Arrays.asList(error))
+                .error(error)
                 .build();
         return new ResponseEntity<Object>(details, new HttpHeaders(), details.getStatus());
     }
 
 
     //    =====================================================================
-// ------------------------------------------------------------------------------- 404 DON'T WORK????
-    /** thrown when no handlers found to fulfill the request. NB that 404 error is handled by DispatcherServlet
-     * by default, so to throw this exception, it's required to set the property {@code setThrowExceptionIfNoHandlerFound}
-     * of DispatcherServlet to true ( is set in {@link com.jezh.textsaver.TextsaverApplication}).
+// -------------------------------------------------------------------------------------------------------------- 404
+    /** executes when NoHandlerFoundException is thrown, i.e. when no handlers found to fulfill the request.
+     * NB that 404 error is handled by DispatcherServlet by default, so to throw this exception, it's required
+     * to set the property {@code setThrowExceptionIfNoHandlerFound} of DispatcherServlet to true
+     * ( is set in {@link com.jezh.textsaver.TextsaverApplication}).
      * @see ApiExceptionDetails
      * @see #handleException(Exception, WebRequest)
      * @return a ResponseEntity instance containing all the basic exception info in the ApiExceptionDetails container */
     @Override
     public ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
                                                                    HttpStatus status, WebRequest request) {
-        String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
+        String error = ex.getClass().getSimpleName();
         ApiExceptionDetails details = ApiExceptionDetails.builder()
                 .status(HttpStatus.NOT_FOUND)
-                .message(ex.getLocalizedMessage())
-                .errors(Arrays.asList(error))
+//                .message("controller method has thrown " + ex.getClass().getSimpleName())
+                .message(ex.getLocalizedMessage()) // = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL()
+                .error(error)
                 .build();
         return handleExceptionInternal(ex, details, headers, status, request);
     }
@@ -158,17 +158,17 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
      * @see ApiExceptionDetails
      * @see #handleException(Exception, WebRequest)
      * @return a ResponseEntity instance containing all the basic exception info in the ApiExceptionDetails container */
-//        @ExceptionHandler({NoSuchElementException.class})
-//    //    @ResponseStatus(HttpStatus.NOT_FOUND)
-//        public ResponseEntity<Object> handleEntityNotFoundException(NoSuchElementException ex) {
-//            String error = "No handler found for " + ex.getLocalizedMessage();
-//            ApiExceptionDetails details = ApiExceptionDetails.builder()
-//                    .status(HttpStatus.NOT_FOUND)
-//                    .message(ex.getLocalizedMessage())
-//                    .errors(Arrays.asList(error))
-//                    .build();
-//            return new ResponseEntity<Object>(details, new HttpHeaders(), details.getStatus());
-//        }
+        @ExceptionHandler({NoSuchElementException.class})
+    //    @ResponseStatus(HttpStatus.NOT_FOUND)
+        public ResponseEntity<Object> handleEntityNotFoundException(NoSuchElementException ex, WebRequest request) {
+            String error = "No handler found for " + request.getDescription(false);
+            ApiExceptionDetails details = ApiExceptionDetails.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message(ex.getMessage())
+                    .error(error)
+                    .build();
+            return new ResponseEntity<Object>(details, new HttpHeaders(), details.getStatus());
+        }
 
 // ------------------------------------------------------------------------------- 404 DON'T WORK????
 
@@ -190,7 +190,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         ApiExceptionDetails details = ApiExceptionDetails.builder()
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
                 .message(ex.getLocalizedMessage())
-                .errors(Arrays.asList(sb.toString()))
+                .error(sb.toString())
                 .build();
         return super.handleHttpRequestMethodNotSupported(ex, headers, status, request);
     }

@@ -23,6 +23,8 @@ public interface TextPartService {
     List<TextPart> findSortedSetByTextCommonDataId(Long textCommonDataId);
 
     List<TextPart> findSortedTextPartBunchByStartId(Long startId, int size);
+
+    List<TextPart> findRemainingSortedTextPartBunchByStartId(Long startId);
 //    void delete(TextPart textPart);
 //    void deleteAll();
 //    void deleteById(Long id);

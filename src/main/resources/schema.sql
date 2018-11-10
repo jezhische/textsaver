@@ -31,6 +31,38 @@ CREATE INDEX IF NOT EXISTS idx_next_it
   USING hash
   (next_item);
 
+CREATE OR REPLACE FUNCTION get_remaining_texparts_ordered_set(IN this_text_part_id BIGINT) RETURNS SETOF public.text_parts AS
+'
+DECLARE
+  r public.text_parts%ROWTYPE;
+  next_id BIGINT;
+  this_text_common_data_id BIGINT;
+BEGIN
+  r := (SELECT tp FROM public.text_parts AS tp WHERE tp.id = this_text_part_id);
+--   there is need in explicit casting in non-SQL expressions, so r casts to text_parts type
+  this_text_common_data_id := (r::public.text_parts).text_common_data_id;
+  next_id := (r::public.text_parts).next_item;
+  RETURN NEXT r;
+  IF (next_id IS NULL) THEN
+    RETURN;
+  END IF;
+  FOR r IN SELECT * FROM public.text_parts AS tp WHERE tp.text_common_data_id = this_text_common_data_id
+  LOOP
+    r := (SELECT tp FROM public.text_parts AS tp WHERE tp.id = next_id);
+    next_id := (r::text_parts).next_item;
+    --   Since the search runs through the whole set of text_part, when it encounters r.nextItem = null, then the function
+    --   returns next r = null. To avoid such result:
+    IF ((r::public.text_parts).id IS NULL) THEN
+      CONTINUE;
+    END IF;
+    RETURN NEXT r;
+  END LOOP;
+END
+'
+LANGUAGE plpgsql;
+
+-- SELECT * FROM get_remaining_texparts_ordered_set(62);
+
 
 CREATE OR REPLACE FUNCTION get_all_texparts_ordered_set(IN this_text_common_data_id BIGINT) RETURNS SETOF public.text_parts AS
 -- NB: function body must be something like "one statement" for JPA, so the "dollars quotes" $$ there are
@@ -38,7 +70,8 @@ CREATE OR REPLACE FUNCTION get_all_texparts_ordered_set(IN this_text_common_data
 '
 DECLARE
   r public.text_parts%ROWTYPE;
-  next_id INTEGER;
+  --   FIXME: maybe BIGINT, not INTEGER???
+  next_id BIGINT;
 BEGIN
   r := (SELECT tp FROM public.text_parts AS tp WHERE tp.id =
   (SELECT tcd.first_item FROM text_common_data AS tcd WHERE tcd.id = this_text_common_data_id));
@@ -62,7 +95,8 @@ END
 '
 LANGUAGE plpgsql;
 
-SELECT * FROM get_all_texparts_ordered_set(36);
+
+-- SELECT * FROM get_all_texparts_ordered_set(36);
 
 
 -- NB: BIGINT for Long type variable
@@ -71,7 +105,7 @@ CREATE OR REPLACE FUNCTION get_textparts_ordered_set(IN start_id BIGINT, IN size
 '
 DECLARE
   r public.text_parts%ROWTYPE;
-  next_id INTEGER;
+  next_id BIGINT;
 BEGIN
   next_id := start_id;
   FOR i IN 1..$2  -- NB: two dots, not three
@@ -92,7 +126,7 @@ END;
 '
 LANGUAGE plpgsql;
 
-SELECT * FROM get_textparts_ordered_set(52, 10);
+-- SELECT * FROM get_textparts_ordered_set(52, 10);
 
 
 CREATE OR REPLACE FUNCTION find_textpart_by_id(IN tpid BIGINT, OUT textpart text_parts) AS

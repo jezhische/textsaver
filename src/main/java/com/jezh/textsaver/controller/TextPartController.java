@@ -8,13 +8,14 @@ import ma.glasnost.orika.MapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.http.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import java.net.URI;
@@ -35,6 +36,7 @@ public class TextPartController {
     @Autowired
     Environment env;
 
+    // the same as @Value("${local.server.port}")
     @LocalServerPort
     private int port;
 
@@ -42,7 +44,6 @@ public class TextPartController {
     private MapperFactory mapperFactory;
 
     @PostMapping(path = "/text-parts")
-//    @ResponseStatus(HttpStatus.CREATED)  // for update HttpStatus.OK
     public ResponseEntity<TextPartDTO> createTextPart(@Valid @RequestBody TextPartDTO textPartDTO,
                                                       UriComponentsBuilder uriBuilder,
                                                       BindingResult bindingResult) {
@@ -51,22 +52,13 @@ public class TextPartController {
         TextPart textPartCreated = textPartService.create(textPart);
         TextPartDTO textPartDTOCreated = convertToDTO(textPartCreated);
         HttpHeaders headers = new HttpHeaders();
-        URI uri = /*UriComponentsBuilder.newInstance()*/
-                uriBuilder
-//                .scheme("http")
-//                .host("localhost")
-                .port(port)
-                .path("/" + env.getRequiredProperty("server.servlet.context-path") +
-                        "/text-common-data/{commonDataId}/text-parts/{textPartId}")
-                .encode()
-                .buildAndExpand(textPartDTOCreated.getTextCommonData().getId(), textPartDTOCreated.getId())
-                .toUri();
-//                URI uri = ServletUriComponentsBuilder
-//                        .fromCurrentRequest()
-//                        .path("/{textPartId}")
-//                        .encode()
-//                        .buildAndExpand(textPartDTOCreated.getTextCommonData().getId(), textPartDTOCreated.getId())
-//                        .toUri();
+        URI uri = uriBuilder
+                        .port(port)
+                        .path("/" + env.getRequiredProperty("server.servlet.context-path") +
+                                "/text-common-data/{commonDataId}/text-parts/{textPartId}")
+                        .encode()
+                        .buildAndExpand(textPartDTOCreated.getTextCommonData().getId(), textPartDTOCreated.getId())
+                        .toUri();
         headers.setLocation(uri);
         return new ResponseEntity<TextPartDTO>(textPartDTOCreated, headers, HttpStatus.CREATED);
     }
@@ -79,22 +71,27 @@ public class TextPartController {
 
     /** find textPart by id */
     @GetMapping (path = "/text-parts/{textPartId}")
-    public ResponseEntity<TextPart> findTextPartById(@PathVariable Long textPartId) {
-        TextPart textPart = null;
-//        try {
-        textPart = textPartService.findTextPartById(textPartId)
-                .get();
-//                .orElseThrow(() -> new ResNotFoundException("textPart with such id is not found", new SQLException()));
-//        } catch (ResNotFoundException ex) {return ResponseEntity.notFound().build();}
+    public ResponseEntity<TextPart> findTextPartById(@PathVariable Long textPartId, @PathVariable Long commonDataId, HttpServletRequest request)
+            throws NoHandlerFoundException {
+        TextPart textPart = textPartService.findTextPartById(textPartId)
+                .orElseThrow(() ->
+//                        new NoHandlerFoundException("GET", "/text-common-data/"+ commonDataId + "/text-parts/"
+//                        + textPartId, new HttpHeaders()));
+//                        new NoHandlerFoundException(request.getMethodValue(), request.getURI().getPath(), new HttpHeaders()));
+                        new NoHandlerFoundException(request.getMethod(), request.getRequestURI(), new HttpHeaders()));
         return ResponseEntity.ok().body(textPart);
     }
-
-//    @GetMapping(path = "/text-parts/")
 
 //    @GetMapping (path = "/text-parts/{id}")
 //    public ResponseEntity<TextPart> getTextPartById() {
 //
 //    }
+
+        @GetMapping(value = "/text-parts", params = {"page"})
+        public ResponseEntity<TextPartDTO> findPage(@RequestParam("page") int page) {
+//            Page<TextPartDTO> resultPage =
+        return null;
+        }
 
     /**
      * find a bunch of textPart in the sorted order start from the given textPart id and with the given size.
@@ -108,6 +105,8 @@ public class TextPartController {
         // Optional int parameter 'size' is present but cannot be translated into a null value due to being declared as a primitive type."
         if (startId == null && size == null) {
         return ResponseEntity.ok().body(textPartService.findSortedSetByTextCommonDataId(textCommonDataId));
+        } else if (startId != null && size == null) {
+            return ResponseEntity.ok().body(textPartService.findRemainingSortedTextPartBunchByStartId(startId));
         } else if (startId == null && size != 0) {
             Long firstTextPartId = textCommonDataService.findTextCommonDataById(textCommonDataId).get().getFirstItem();
             return ResponseEntity.ok().body(textPartService.findSortedTextPartBunchByStartId(firstTextPartId, size));

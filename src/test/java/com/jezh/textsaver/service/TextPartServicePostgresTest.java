@@ -88,6 +88,15 @@ public class TextPartServicePostgresTest {
     }
 
     @Test
+    public void testFindRemainingSortedTextPartBunchByStartId() {
+        List<TextPart> result = service.findRemainingSortedTextPartBunchByStartId(50L);
+        result.forEach(System.out::println);
+        for (int i = 0; i < result.size() - 1; i++) {
+            Assert.assertEquals(result.get(i).getNextItem(), result.get(i + 1).getId());
+        }
+    }
+
+    @Test
     public void testUpdate() {
     }
 

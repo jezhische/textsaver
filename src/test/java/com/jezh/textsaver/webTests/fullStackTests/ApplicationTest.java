@@ -7,6 +7,7 @@ import com.jezh.textsaver.controller.TextPartController;
 import com.jezh.textsaver.dto.TextPartDTO;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
+import com.jezh.textsaver.exception.ApiExceptionDetails;
 import com.jezh.textsaver.service.TextCommonDataService;
 import com.jezh.textsaver.service.TextCommonDataServiceTest;
 import com.jezh.textsaver.service.TextPartService;
@@ -38,6 +39,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import javax.xml.ws.Response;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -225,7 +227,31 @@ public class ApplicationTest {
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andReturn();
         System.out.println("******************************************" + result.getResponse().getContentAsString());
-        System.out.println("****************************" + env.getRequiredProperty("server.port", Integer.class));
+        System.out.println("****************************" + env.getRequiredProperty("local.server.port", Integer.class));
+    }
+
+// ------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void test_unique_next_item_for_null_whenCreateTextPart() throws Exception {
+        objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
+        String json = objectWriter.writeValueAsString(TextPartDTO.builder()
+                .body("test_unique_next_item_for_null_whenCreateTextPart")
+                .lastUpdate(new Date())
+                .nextItem(null)
+                .textCommonData(textCommonData)
+                .build());
+        MvcResult result = mockMvc
+                .perform(MockMvcRequestBuilders
+                        .post("/text-common-data/" + existingTextCommonDataId + "/text-parts")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content(json))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn();
+        System.out.println("******************************************" + result.getResponse().getContentAsString());
+        System.out.println("****************************" + env.getRequiredProperty("local.server.port", Integer.class));
     }
 
 
@@ -250,23 +276,34 @@ public class ApplicationTest {
     }
 
 // ----------------------------------------------------------------------------------------------------- 404
-    @Test
-    public void testHandleNoHandlerFoundException() throws Exception {
-        long someTextCommonDataId = getSomeTextCommonDataIdFromDB(1);
-        MvcResult result = mockMvc
-                .perform(MockMvcRequestBuilders.get("/text-common-data/"
-                        + someTextCommonDataId
-                        + "/text-partsyy"
-                        + "/1"))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
-//                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("No handler found for")))
-                .andReturn();
-//        Assert.assertEquals(NoHandlerFoundException.class, result.getResolvedException().getClass());
-    }
+//    @Test
+//    public void testHandleNoHandlerFoundException() throws Exception {
+//        long someTextCommonDataId = getSomeTextCommonDataIdFromDB(1);
+//        MvcResult result = mockMvc
+//                .perform(MockMvcRequestBuilders.get("/text-common-data/"
+//                        + someTextCommonDataId
+//                        + "/text-partsyy"
+//                        + "/1"))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andExpect(MockMvcResultMatchers.status().isNotFound())
+////                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("No handler found for")))
+//                .andReturn();
+////        Assert.assertEquals(NoHandlerFoundException.class, result.getResolvedException().getClass());
+//    }
 
 // ----------------------------------------------------------------------------------------------------- 404
+//    @Test/*(expected = NoHandlerFoundException.class)*/
+//    public void whenFindTextPartByIdNotFound_thenNoHandlerFoundException() throws Exception {
+//        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("textsaver/text-common-data/36/text-parts/1"))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andReturn();
+//        MockHttpServletResponse response = result.getResponse();
+//        System.out.println("***********************" + response.getContentAsString());
+////        ApiExceptionDetails details = ((ApiExceptionDetails) TestUtil.convertJSONStringToObject(response.getContentAsString(), ApiExceptionDetails.class));
+//    }
 
+
+// --------------------------------------------------------------------------------
 
 // ====================================================================================================== TEST UTIL
 
@@ -292,6 +329,8 @@ public class ApplicationTest {
         return ((TextCommonData) TestUtil.convertJSONStringToObject(json, TextCommonData.class)).getFirstItem();
     }
 // --------------------------------------------------------------------------------
+
+
 
 
 
