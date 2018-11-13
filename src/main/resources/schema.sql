@@ -70,7 +70,6 @@ CREATE OR REPLACE FUNCTION get_all_texparts_ordered_set(IN this_text_common_data
 '
 DECLARE
   r public.text_parts%ROWTYPE;
-  --   FIXME: maybe BIGINT, not INTEGER???
   next_id BIGINT;
 BEGIN
   r := (SELECT tp FROM public.text_parts AS tp WHERE tp.id =
@@ -97,6 +96,36 @@ LANGUAGE plpgsql;
 
 
 -- SELECT * FROM get_all_texparts_ordered_set(36);
+
+
+CREATE OR REPLACE FUNCTION get_all_texparts_id_ordered_set(IN this_text_common_data_id BIGINT) RETURNS SETOF BIGINT AS
+'
+DECLARE
+  r public.text_parts%ROWTYPE;
+  next_id BIGINT;
+BEGIN
+  r := (SELECT tp FROM public.text_parts AS tp WHERE tp.id =
+  (SELECT tcd.first_item FROM text_common_data AS tcd WHERE tcd.id = this_text_common_data_id));
+  next_id := (r::text_parts).next_item;
+  RETURN NEXT (r::text_parts).id;
+  FOR r IN SELECT * FROM public.text_parts AS tp WHERE tp.text_common_data_id = this_text_common_data_id   -- попробовать здесь функцию get_textpart_by_id
+  LOOP
+    r := (SELECT tp FROM public.text_parts AS tp WHERE tp.id = next_id);
+    --     casting to text_parts to specify type explicitly to get field next_item from r composite type
+    next_id := (r::text_parts).next_item;
+--   Since the search runs through the whole set of text_part, when it encounters r.nextItem = null, then the function
+--   returns next r = null. To avoid such result:
+    IF ((r::public.text_parts).id IS NULL) THEN
+      CONTINUE;
+    END IF;
+    RETURN NEXT (r::text_parts).id;
+  END LOOP;
+  RETURN;
+END
+'
+LANGUAGE plpgsql;
+
+-- SELECT * FROM get_all_texparts_id_ordered_set(36);
 
 
 -- NB: BIGINT for Long type variable

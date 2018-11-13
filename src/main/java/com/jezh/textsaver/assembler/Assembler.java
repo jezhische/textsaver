@@ -4,7 +4,7 @@ import com.jezh.textsaver.service.TextPartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class Assembler {
 
     private final TextPartService textPartService;

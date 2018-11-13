@@ -9,6 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.http.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -42,6 +47,14 @@ public class TextPartController {
 
     @Autowired
     private MapperFactory mapperFactory;
+
+    /**
+     * this list will be filled when findSortedPageByTextCommonDataId() method will be called with
+     * request parameter("page")  pageNumber = 0, and must to contain id of all the textPart in sorted order, where
+     * the number in order of element in the list is equal to the page number in order */
+    private List<Long> sortedTextPartIdList;
+    private long totalElements, totalPages;
+    private PagedResources<TextPart> pagedResources;
 
     @PostMapping(path = "/text-parts")
     public ResponseEntity<TextPartDTO> createTextPart(@Valid @RequestBody TextPartDTO textPartDTO,
@@ -87,11 +100,11 @@ public class TextPartController {
 //
 //    }
 
-        @GetMapping(value = "/text-parts", params = {"page"})
-        public ResponseEntity<TextPartDTO> findPage(@RequestParam("page") int page) {
-//            Page<TextPartDTO> resultPage =
-        return null;
-        }
+//        @GetMapping(value = "/text-parts", params = {"page"})
+//        public ResponseEntity<TextPartDTO> findPage(@RequestParam("page") int page) {
+////            Page<TextPartDTO> resultPage =
+//        return null;
+//        }
 
     /**
      * find a bunch of textPart in the sorted order start from the given textPart id and with the given size.
@@ -115,7 +128,55 @@ public class TextPartController {
         }
     }
 
+
+    @GetMapping(value = "/text-parts/pages", params = {"page", "size"})
+    public HttpEntity<PagedResources<TextPart>> findSortedPageByTextCommonDataId(
+            PagedResourcesAssembler assembler,
+            @PathVariable long commonDataId,
+            @RequestParam("page") int pageNumber,
+            @RequestParam int size,
+            HttpServletRequest request) throws NoHandlerFoundException {
+        if (pagedResources == null) {
+            sortedTextPartIdList = textPartService.findSortedTextPartIdByTextCommonDataId(commonDataId);
+            Page<TextPart> page = textPartService.findSortedPagesByTextCommonDataId(commonDataId, PageRequest.of(pageNumber, size));
+            totalElements = page.getTotalElements();
+            totalPages = page.getTotalPages();
+            pagedResources = assembler.toResource(page);
+        }
+        PagedResources<TextPart> desiredTextPartPagedResources = null;
+        if (pageNumber > sortedTextPartIdList.size() - 1) {
+            throw new NoHandlerFoundException(request.getMethod(), request.getRequestURI(), new HttpHeaders());
+        } else {
+            TextPart desiredTextPart = textPartService
+                    .findTextPartById(sortedTextPartIdList.get(pageNumber))
+                    .orElseThrow(() -> new NoHandlerFoundException(request.getMethod(), request.getRequestURI(), new HttpHeaders()));
+            PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(size, pageNumber, totalElements, totalPages);
+            String link = request.getRequestURL().append("?page=").toString();
+            Link self = new Link(new StringBuffer(link).append(pageNumber).append("&size=").append(size).toString(), "self");
+            Link first = pagedResources.getLink("first");
+            Link last = pagedResources.getLink("last");
+            Link previous = new Link(new StringBuffer(link).append(pageNumber - 1).append("&size=").append(size).toString(), "previous");
+            Link next = new Link(new StringBuffer(link).append(pageNumber + 1).append("&size=").append(size).toString(), "next");
+            desiredTextPartPagedResources =
+                    pageNumber == 0 ?
+                    new PagedResources<>(Arrays.asList(desiredTextPart), metadata, first, self, next, last) :
+                    pageNumber == sortedTextPartIdList.size() - 1 ?
+                    new PagedResources<>(Arrays.asList(desiredTextPart), metadata, first, previous, self, last) :
+                    new PagedResources<>(Arrays.asList(desiredTextPart), metadata, first, previous, self, next, last);
+        }
+            return new ResponseEntity<>(desiredTextPartPagedResources, HttpStatus.OK);
+    }
+
 // ================================================================================================= UTILITY
+
+//    private PagedResources<TextPart> getMetadata(PagedResourcesAssembler assembler, long commonDataId, int pageNumber, int size) {
+//        // to fill sortedTextPartIdList with the textParts identifiers.
+//        sortedTextPartIdList = textPartService.findSortedTextPartIdByTextCommonDataId(commonDataId);
+//        Page<TextPart> page = textPartService.findSortedPagesByTextCommonDataId(commonDataId, PageRequest.of(pageNumber, size));
+//        totalElements = page.getTotalElements();
+//        totalPages = page.getTotalPages();
+//        return assembler.toResource(page);
+//    }
 
     private TextPartDTO convertToDTO(TextPart textPart) {
         return mapperFactory.getMapperFacade(TextPart.class, TextPartDTO.class).map(textPart);
@@ -124,4 +185,10 @@ public class TextPartController {
     private TextPart convertToEntity(TextPartDTO textPartDTO) {
         return mapperFactory.getMapperFacade(TextPart.class, TextPartDTO.class).mapReverse(textPartDTO);
     }
+
+
+// Что является ресурсом - страница или то, что на ней размещено?
+// Страница у меня не может быть ресурсом, поскольку если я уничтожаю, например, сущность на 5-й странице, сама страница
+// должна остаться, и на нее будет помещена новая сущность. А если страница - это ресурс, то я потеряю ее навсегда,
+// и не будет у меня 5-й страницы.
 }

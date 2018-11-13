@@ -24,10 +24,10 @@ $(function () {
 
     /** get all the textparts from db in proper order, create textarea for each one and fill the textarea with its content */
     function extractTextPartsToHtml(textCommonDataId) {
-        /* id for the form that will be created by createTextCommonDataElement() method  */
+        /** id for the form that will be created by createTextCommonDataElement() method  */
         let textFormId = 'txt' + textCommonDataId;
 
-        /** when first call of given function with such textCommonDataId, create form element */
+        /* when first call of given function with such textCommonDataId, create form element */
         createTextCommonDataElement(textFormId);
 
         /* get data (i.e. sorted array of textpart objects), create textarea for each object and render its content.
@@ -92,10 +92,8 @@ $(function () {
     function createTextCommonDataElement(textFormId) {
         // condition check to avoid duplication
         if ($('#' + textFormId).html() === undefined) {
-            $('#text').append(function (index, html) {
-                return $('<form id="' + textFormId + '" style="margin-left: 60px">' +
-                    '<input type="submit" value="close" class="button-bar"></form>')
-            });
+            $('#text').append('<form id="' + textFormId + '" style="margin-left: 60px">' +
+                    '<input type="submit" value="close" class="button-bar"></form>');
         }
     }
 // ----------------------------------------------------------------------------------------------------------------

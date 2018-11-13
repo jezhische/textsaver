@@ -2,6 +2,8 @@ package com.jezh.textsaver.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jezh.textsaver.entity.TextPart;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 //import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,4 +72,18 @@ public interface TextPartRepository extends JpaRepository<TextPart, Long> {
     Optional<TextPart> findTextPartById(Long id);
 
     List<TextPart> findAllByTextCommonDataId(Long id);
+
+// ====================================================================================
+// https://docs.spring.io/spring-data/jpa/docs/current-SNAPSHOT/reference/html/#jpa.query-methods.sorting
+@Query(value = "SELECT * FROM public.get_all_texparts_ordered_set(?1)",
+        countQuery = "SELECT count(*) FROM public.get_all_texparts_ordered_set(?1)",
+        nativeQuery = true)
+Page<TextPart> findSortedPageByTextCommonDataId(Long textCommonDataId, Pageable pageable);
+
+// NB: id BIGSERIAL PRIMARY KEY will be cast to BigInteger and cannot be cast to Long automatically
+    @Query(value = "SELECT * FROM public.get_all_texparts_id_ordered_set(?1)", nativeQuery = true)
+List<BigInteger> findSortedTextPartIdByTextCommonDataId(Long textCommonDataId);
 }
+
+
+

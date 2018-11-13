@@ -10,6 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -138,6 +140,21 @@ public class TextPartRepositoryPostgresTest extends BasePostgresConnectingTest {
         List<TextPart> sortedList = textPartRepository.findSortedSetByTextCommonDataId(textCommonDataForeignKeyId);
         sortedList.forEach(textPart -> System.out.printf("id: %d, nextItem: %d;\n", textPart.getId(), textPart.getNextItem()));
         // for the last element of sortedList test condition won't be met, as its nextItem don't refer some next textPart
+        for (int i = 0; i < sortedList.size() - 1; i++) {
+            Assert.assertEquals(sortedList.get(i + 1).getId(), sortedList.get(i).getNextItem());
+        }
+    }
+
+    @Test
+    public void testFindSortedTextPartsByTextCommonDataId() {
+        Long textCommonDataForeignKeyId =
+                ((TextPart) TestUtil.getRandomElementFromArray(textPartRepository.findAll().toArray()))
+                        .getTextCommonData().getId();
+//                36L;
+        Page<TextPart> page = textPartRepository.findSortedPageByTextCommonDataId(textCommonDataForeignKeyId,
+                PageRequest.of(0, 13));
+        page.forEach(textPart1 -> System.out.printf("id: %d, nextItem: %d;\n", textPart1.getId(), textPart1.getNextItem()));
+        List<TextPart> sortedList = page.getContent();
         for (int i = 0; i < sortedList.size() - 1; i++) {
             Assert.assertEquals(sortedList.get(i + 1).getId(), sortedList.get(i).getNextItem());
         }

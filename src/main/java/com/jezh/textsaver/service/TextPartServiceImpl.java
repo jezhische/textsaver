@@ -3,9 +3,14 @@ package com.jezh.textsaver.service;
 import com.jezh.textsaver.entity.TextPart;
 import com.jezh.textsaver.repository.TextPartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,11 +45,6 @@ public class TextPartServiceImpl implements TextPartService {
     @Override
     public TextPart getOne(Long id) {
         return repository.getOne(id);
-    }
-
-    @Override
-    public Optional<TextPart> findTextPartById(Long id) {
-        return repository.findTextPartById(id);
     }
 
     @Override
@@ -86,4 +86,30 @@ public class TextPartServiceImpl implements TextPartService {
         return repository.findPreviousByCurrentInSequence(current);
     }
 
+// =========================================================================
+
+
+    @Override
+    public Page<TextPart> findSortedPagesByTextCommonDataId(Long textCommonDataId, Pageable pageable) {
+        return repository.findSortedPageByTextCommonDataId(textCommonDataId, pageable);
+    }
+
+//    @Override
+//    public Page<TextPart> findSortedPageByNumber(Integer pageNumber, Pageable pageable) {
+//        return repository.findSortedPageById(pageNumber, pageable);
+//    }
+
+    @Override
+    public Optional<TextPart> findTextPartById(Long id) {
+        return repository.findTextPartById(id);
+    }
+
+    // NB: id BIGSERIAL PRIMARY KEY will be cast to BigInteger and cannot be cast to Long automatically
+    @Override
+    public List<Long> findSortedTextPartIdByTextCommonDataId(Long textCommonDataId) {
+        List<BigInteger> obtained = repository.findSortedTextPartIdByTextCommonDataId(textCommonDataId);
+        List<Long> desired = new ArrayList<>();
+        obtained.forEach(bigInteger -> desired.add(bigInteger.longValueExact()));
+        return desired;
+    }
 }
