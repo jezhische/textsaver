@@ -221,7 +221,10 @@ public class TestUtil {
         return textParts;
     }
 
-
+    /** assign body to transfer helpful data */
+    public static void assignTextPartBodyToTransferHelpfulData(List<TextPart> textParts) {
+        textParts.forEach(textPart -> textPart.setBody("id: " + textPart.getId() + " nextId: " + textPart.getNextItem()));
+    }
 
 // ============================================================================================================ TESTS
 String jsonArray = "[{\"name\":\"TextCommonDataRepositoryPostgresTest/ testCreate()/ textCommonDataRepository." +

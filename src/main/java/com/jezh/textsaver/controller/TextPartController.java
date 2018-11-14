@@ -2,6 +2,7 @@ package com.jezh.textsaver.controller;
 
 import com.jezh.textsaver.dto.TextPartDTO;
 import com.jezh.textsaver.entity.TextPart;
+import com.jezh.textsaver.dto.TextPartControllerTransientDataRepo;
 import com.jezh.textsaver.service.TextCommonDataService;
 import com.jezh.textsaver.service.TextPartService;
 import ma.glasnost.orika.MapperFactory;
@@ -44,6 +45,9 @@ public class TextPartController {
     // the same as @Value("${local.server.port}")
     @LocalServerPort
     private int port;
+
+//    @Autowired
+    private TextPartControllerTransientDataRepo dataRepo;
 
     @Autowired
     private MapperFactory mapperFactory;
@@ -151,7 +155,7 @@ public class TextPartController {
                     .findTextPartById(sortedTextPartIdList.get(pageNumber))
                     .orElseThrow(() -> new NoHandlerFoundException(request.getMethod(), request.getRequestURI(), new HttpHeaders()));
             PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(size, pageNumber, totalElements, totalPages);
-            String link = request.getRequestURL().append("?page=").toString();
+            StringBuffer link = request.getRequestURL().append("?page=");
             Link self = new Link(new StringBuffer(link).append(pageNumber).append("&size=").append(size).toString(), "self");
             Link first = pagedResources.getLink("first");
             Link last = pagedResources.getLink("last");

@@ -97,10 +97,12 @@ public class TextPartRepositoryPostgresTest extends BasePostgresConnectingTest {
                 textCommonDataRepository.findById(textCommonData.getId()).get().getFirstItem());
 
         textParts = TestUtil.assignTextPartsForeignKey(textCommonData, textParts);
+
         Assert.assertEquals(textCommonData.getId(), textParts.stream().findAny().get().getTextCommonData().getId());
 // TODO: почему без этой записи все равно происходит обновление всех textPart в бд?
 //        textParts.forEach(textPart -> textPartRepository.saveAndFlush(textPart));
         textParts = TestUtil.setTextPartsNextItemOrder(textParts, firstItem);
+        TestUtil.assignTextPartBodyToTransferHelpfulData(textParts);
 
     }
 

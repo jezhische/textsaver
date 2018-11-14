@@ -16,6 +16,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
@@ -26,6 +28,10 @@ import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 @ComponentScan("com.jezh.textsaver")
 // Since @WebMvcTest throws an error: IllegalArgumentException: At least one JPA metamodel must be present!,
 // I moved all the @Enable* annotations to a dedicated @Configuration class  DataSourceConfig.
+
+// https://stackoverflow.com/questions/21346387/how-to-correctly-use-pagedresourcesassembler-from-spring-data
+@EnableSpringDataWebSupport
+@EnableHypermediaSupport(type = { EnableHypermediaSupport.HypermediaType.HAL })
 public class TextsaverApplication {
 
 	public static void main(String[] args) {
@@ -37,18 +43,7 @@ public class TextsaverApplication {
         // to handle NoHandlerFoundException
         DispatcherServlet dispatcherServlet = (DispatcherServlet)applicationContext.getBean("dispatcherServlet");
         dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
-//        dispatcherServlet.getHandlerMappings()
-//                .forEach(handlerMapping -> System.out.println("==========================" + handlerMapping));
-//        dispatcherServlet.setDetectAllHandlerExceptionResolvers(false);
     }
-
-//    @Bean
-//    public CommandLineRunner getCommandLineRunner(ApplicationContext applicationContext) {
-//        DispatcherServlet dispatcherServlet = (DispatcherServlet)applicationContext.getBean("dispatcherServlet");
-//        dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
-//// override void run(String... args) to create new CommandLineRunner()
-//        return args -> {};
-//    }
 
     @Bean
     public MapperFactory mapperFactory() {
