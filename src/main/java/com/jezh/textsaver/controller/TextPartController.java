@@ -1,19 +1,18 @@
 package com.jezh.textsaver.controller;
 
-import com.jezh.textsaver.dto.TextPartDTO;
-import com.jezh.textsaver.entity.TextPart;
+import com.jezh.textsaver.businessLayer.TextPartLinkAssembler;
+import com.jezh.textsaver.businessLayer.TextPartPageRepresentationConverter;
 import com.jezh.textsaver.dto.TextPartControllerTransientDataRepo;
+import com.jezh.textsaver.dto.TextPartPagedLinkedRepresentation;
+import com.jezh.textsaver.entity.TextPart;
 import com.jezh.textsaver.service.TextCommonDataService;
 import com.jezh.textsaver.service.TextPartService;
-import ma.glasnost.orika.MapperFactory;
+import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -22,14 +21,16 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
-import java.net.URI;
-import java.util.Arrays;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
-import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RestController
+@EnableHypermediaSupport(type = { EnableHypermediaSupport.HypermediaType.HAL })
 @RequestMapping("/text-common-data/{commonDataId}")
 public class TextPartController {
 
@@ -40,55 +41,26 @@ public class TextPartController {
     private TextCommonDataService textCommonDataService;
 
     @Autowired
-    Environment env;
+    private TextPartControllerTransientDataRepo repository;
+
+    @Autowired
+    private TextPartPageRepresentationConverter converter;
+
+    @Autowired
+    TextPartLinkAssembler assembler;
+
+    @Autowired
+    private Environment env;
 
     // the same as @Value("${local.server.port}")
     @LocalServerPort
     private int port;
 
-//    @Autowired
-    private TextPartControllerTransientDataRepo dataRepo;
 
-    @Autowired
-    private MapperFactory mapperFactory;
-
-    /**
-     * this list will be filled when findSortedPageByTextCommonDataId() method will be called with
-     * request parameter("page")  pageNumber = 0, and must to contain id of all the textPart in sorted order, where
-     * the number in order of element in the list is equal to the page number in order */
-    private List<Long> sortedTextPartIdList;
-    private long totalElements, totalPages;
-    private PagedResources<TextPart> pagedResources;
-
-    @PostMapping(path = "/text-parts")
-    public ResponseEntity<TextPartDTO> createTextPart(@Valid @RequestBody TextPartDTO textPartDTO,
-                                                      UriComponentsBuilder uriBuilder,
-                                                      BindingResult bindingResult) {
-        // здесь с помощью статического метода Manager проверяем textPartDTO на соответствие, ошибки и т.п.
-        TextPart textPart = convertToEntity(textPartDTO);
-        TextPart textPartCreated = textPartService.create(textPart);
-        TextPartDTO textPartDTOCreated = convertToDTO(textPartCreated);
-        HttpHeaders headers = new HttpHeaders();
-        URI uri = uriBuilder
-                        .port(port)
-                        .path("/" + env.getRequiredProperty("server.servlet.context-path") +
-                                "/text-common-data/{commonDataId}/text-parts/{textPartId}")
-                        .encode()
-                        .buildAndExpand(textPartDTOCreated.getTextCommonData().getId(), textPartDTOCreated.getId())
-                        .toUri();
-        headers.setLocation(uri);
-        return new ResponseEntity<TextPartDTO>(textPartDTOCreated, headers, HttpStatus.CREATED);
-    }
-
-    /* find all the textParts with given textCommonData id */
-//    @GetMapping (path = "/text-parts")
-//    public ResponseEntity<?> getTextPartListByTextCommonDataId(@PathVariable("commonDataId") Long textCommonDataId) {
-//        return ResponseEntity.ok().body(textPartService.findByTextCommonDataId(textCommonDataId));
-//    }
 
     /** find textPart by id */
     @GetMapping (path = "/text-parts/{textPartId}")
-    public ResponseEntity<TextPart> findTextPartById(@PathVariable Long textPartId, @PathVariable Long commonDataId, HttpServletRequest request)
+    public ResponseEntity<TextPart> findTextPartById(@PathVariable Long textPartId, /*@PathVariable Long commonDataId,*/ HttpServletRequest request)
             throws NoHandlerFoundException {
         TextPart textPart = textPartService.findTextPartById(textPartId)
                 .orElseThrow(() ->
@@ -105,8 +77,8 @@ public class TextPartController {
 //    }
 
 //        @GetMapping(value = "/text-parts", params = {"page"})
-//        public ResponseEntity<TextPartDTO> findPage(@RequestParam("page") int page) {
-////            Page<TextPartDTO> resultPage =
+//        public ResponseEntity<TextPartPagedLinkedRepresentation> findPage(@RequestParam("page") int page) {
+////            Page<TextPartPagedLinkedRepresentation> resultPage =
 //        return null;
 //        }
 
@@ -132,63 +104,111 @@ public class TextPartController {
         }
     }
 
+//================================================================================================================ GET:
+//                                          open document, find page by document id (textCommonData id) and page number
 
-    @GetMapping(value = "/text-parts/pages", params = {"page", "size"})
-    public HttpEntity<PagedResources<TextPart>> findSortedPageByTextCommonDataId(
-            PagedResourcesAssembler assembler,
+    /** <b>Open document by its id (textCommonData id). First rendered page is specified by textNumber parameter</b>
+     * <p>
+     * Standard Spring Data JPA pagination assumes that each time the page is invoked, Hibernate makes three calls:
+     * <p>
+     * Hibernate: SELECT * FROM public.get_all_texparts_ordered_set(?) limit ? offset ?
+     * <p>
+     * Hibernate: SELECT count(*) FROM public.get_all_texparts_ordered_set(?)
+     * <p>
+     * Hibernate: SELECT * FROM public.find_textpart_by_id(?)
+     * <p>
+     * It makes sense in asynchronous application, when several users have access to the same db rows, and the
+     * data base items could be changed between two page calls.
+     * <p>
+     * This application assumes that data base will be reformatted only after current document closing
+     * or after pushing "save" button, and only one user has access to the same rows at the same time.
+     * To avoid expensive data base requests, the relevant metadata should be saved in the special repository
+     * of {@code TextPartControllerTransientDataRepo} type, and then controller uses in in its pages calls */
+    @GetMapping(value = "/text-parts/pages", params = {"page"})
+    public HttpEntity<TextPartPagedLinkedRepresentation> findPageByTextCommonDataId(
             @PathVariable long commonDataId,
             @RequestParam("page") int pageNumber,
-            @RequestParam int size,
-            HttpServletRequest request) throws NoHandlerFoundException {
-        if (pagedResources == null) {
-            sortedTextPartIdList = textPartService.findSortedTextPartIdByTextCommonDataId(commonDataId);
-            Page<TextPart> page = textPartService.findSortedPagesByTextCommonDataId(commonDataId, PageRequest.of(pageNumber, size));
-            totalElements = page.getTotalElements();
-            totalPages = page.getTotalPages();
-            pagedResources = assembler.toResource(page);
+            HttpServletRequest request
+    ) throws NoHandlerFoundException {
+        if (!repository.isRunning()) {
+                repository = TextPartControllerTransientDataRepo.builder()
+                        .listOfSortedTextPartId(textPartService.findSortedTextPartIdByTextCommonDataId(commonDataId))
+                        .isRunning(true)
+                        .build();
+                repository.setTotalPages(repository.getListOfSortedTextPartId().size());
         }
-        PagedResources<TextPart> desiredTextPartPagedResources = null;
-        if (pageNumber > sortedTextPartIdList.size() - 1) {
-            throw new NoHandlerFoundException(request.getMethod(), request.getRequestURI(), new HttpHeaders());
-        } else {
-            TextPart desiredTextPart = textPartService
-                    .findTextPartById(sortedTextPartIdList.get(pageNumber))
+        repository.setPageNumber(pageNumber);
+        TextPart textPart = textPartService
+                // the page number must belong to the set {1; totalPages}
+                    .findTextPartById(repository.getListOfSortedTextPartId().get(pageNumber - 1))
                     .orElseThrow(() -> new NoHandlerFoundException(request.getMethod(), request.getRequestURI(), new HttpHeaders()));
-            PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(size, pageNumber, totalElements, totalPages);
-            StringBuffer link = request.getRequestURL().append("?page=");
-            Link self = new Link(new StringBuffer(link).append(pageNumber).append("&size=").append(size).toString(), "self");
-            Link first = pagedResources.getLink("first");
-            Link last = pagedResources.getLink("last");
-            Link previous = new Link(new StringBuffer(link).append(pageNumber - 1).append("&size=").append(size).toString(), "previous");
-            Link next = new Link(new StringBuffer(link).append(pageNumber + 1).append("&size=").append(size).toString(), "next");
-            desiredTextPartPagedResources =
-                    pageNumber == 0 ?
-                    new PagedResources<>(Arrays.asList(desiredTextPart), metadata, first, self, next, last) :
-                    pageNumber == sortedTextPartIdList.size() - 1 ?
-                    new PagedResources<>(Arrays.asList(desiredTextPart), metadata, first, previous, self, last) :
-                    new PagedResources<>(Arrays.asList(desiredTextPart), metadata, first, previous, self, next, last);
+//        System.out.println("*************************************************************************" + textPart);
+
+        TextPartPagedLinkedRepresentation linkedPage;
+        try {
+//            System.out.println("********************************************" + repository.isRunning() +
+//            "*********" + repository.getListOfSortedTextPartId() + "***************" + repository.getPageNumber() + "**" + repository.getTotalPages());
+            linkedPage = assembler.getLinkedPage(textPart, commonDataId, pageNumber, request, repository);
+//            System.out.println("*************************************************************************" + linkedPage);
+        } catch (Exception e) {
+            throw new NoHandlerFoundException(request.getMethod(), request.getRequestURL().toString(), new HttpHeaders());
         }
-            return new ResponseEntity<>(desiredTextPartPagedResources, HttpStatus.OK);
+        return new ResponseEntity<>(linkedPage, HttpStatus.OK);
     }
 
-// ================================================================================================= UTILITY
 
-//    private PagedResources<TextPart> getMetadata(PagedResourcesAssembler assembler, long commonDataId, int pageNumber, int size) {
-//        // to fill sortedTextPartIdList with the textParts identifiers.
-//        sortedTextPartIdList = textPartService.findSortedTextPartIdByTextCommonDataId(commonDataId);
-//        Page<TextPart> page = textPartService.findSortedPagesByTextCommonDataId(commonDataId, PageRequest.of(pageNumber, size));
-//        totalElements = page.getTotalElements();
-//        totalPages = page.getTotalPages();
-//        return assembler.toResource(page);
+
+    @PutMapping(value = "/text-parts/pages", params = {"page"})
+    public HttpEntity<Date> updatePage(
+            @RequestBody TextPartPagedLinkedRepresentation linkedPage,
+            @RequestParam(value = "page") int pageNumber,
+            HttpServletRequest request
+    ) throws NoHandlerFoundException, ParseException {
+        String body = linkedPage.getBody();
+        Date current = textPartService.updateById( // FIXME: 17.11.2018 format date to UTC+2.00
+                repository.getListOfSortedTextPartId().get(pageNumber - 1),
+                body,
+                new Date())
+                .orElseThrow(() -> new NoHandlerFoundException(request.getMethod(), request.getRequestURL().toString(), new HttpHeaders()));
+        return new ResponseEntity<>(current, new HttpHeaders(), HttpStatus.OK);
+    }
+
+
+//================================================================================================================ POST:
+//                                                   create fully new textpart (or )
+
+    @PostMapping(value = "/text-parts"/*, consumes = {MediaTypes.HAL_JSON_UTF8_VALUE, MediaTypes.HAL_JSON_VALUE}*/)
+    public ResponseEntity<Void> createTextPart(
+            /*@Valid */@RequestBody TextPartPagedLinkedRepresentation textPartPagedLinkedRepresentation,
+            UriComponentsBuilder uriBuilder,
+            BindingResult bindingResult) {
+        // здесь с помощью статического метода Manager проверяем textPartPagedLinkedRepresentation на соответствие, ошибки и т.п.
+        TextPart textPart = converter.convertToEntity(textPartPagedLinkedRepresentation);
+        TextPart textPartCreated = textPartService.create(textPart);
+//        TextPartPagedLinkedRepresentation textPartResourceCreated = textPartManager.convertToLinkedPage(textPartCreated);
+//        HttpHeaders headers = new HttpHeaders();
+//        URI uri = uriBuilder
+//                        .port(port)
+//                        .path("/" + env.getRequiredProperty("server.servlet.context-path") +
+//                                "/text-common-data/{commonDataId}/text-parts/{textPartId}")
+//                        .encode()
+//                        .buildAndExpand(textPartCreated.getTextCommonData().getId(), textPartCreated.getId())
+//                        .toUri();
+//        headers.setLocation(uri);
+//        return new ResponseEntity<TextPartPagedLinkedRepresentation>(textPartResourceCreated, headers, HttpStatus.CREATED);
+
+//        headers.add("Location", authorResourceAssembler.linkToSingleResource(savedAuthor).getHref() );
+        return new ResponseEntity<Void>(new HttpHeaders(), HttpStatus.CREATED);
+    }
+
+
+
+    /* find all the textParts with given textCommonData id */
+//    @GetMapping (path = "/text-parts")
+//    public ResponseEntity<?> getTextPartListByTextCommonDataId(@PathVariable("commonDataId") Long textCommonDataId) {
+//        return ResponseEntity.ok().body(textPartService.findByTextCommonDataId(textCommonDataId));
 //    }
 
-    private TextPartDTO convertToDTO(TextPart textPart) {
-        return mapperFactory.getMapperFacade(TextPart.class, TextPartDTO.class).map(textPart);
-    }
-
-    private TextPart convertToEntity(TextPartDTO textPartDTO) {
-        return mapperFactory.getMapperFacade(TextPart.class, TextPartDTO.class).mapReverse(textPartDTO);
-    }
 
 
 // Что является ресурсом - страница или то, что на ней размещено?

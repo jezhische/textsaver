@@ -31,9 +31,9 @@ public class TestUtil {
 
     public static <T> Object convertJSONStringToObject(String json, Class<T> objectClass) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); //??
-        JavaTimeModule module = new JavaTimeModule(); //??
-        mapper.registerModule(module);
+//        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); //??
+//        JavaTimeModule module = new JavaTimeModule(); //??
+//        mapper.registerModule(module);
 //mapper.readValues()
         return mapper.readValue(json, objectClass);
     }
@@ -42,9 +42,9 @@ public class TestUtil {
     public static <T> Object convertArrayElementOfJSONStringArrayToObject(
             String jsonArray, Class<T[]> objectArrayClass, int elNumber) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); //??
-        JavaTimeModule module = new JavaTimeModule(); //??
-        mapper.registerModule(module);
+//        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); //??
+//        JavaTimeModule module = new JavaTimeModule(); //??
+//        mapper.registerModule(module);
         T[] tcdArray = mapper.readValue(jsonArray, objectArrayClass);
         return elNumber < tcdArray.length? tcdArray[elNumber] : null;
     }
@@ -258,17 +258,15 @@ String jsonArray = "[{\"name\":\"TextCommonDataRepositoryPostgresTest/ testCreat
 
     public static void main(String[] args) throws Exception {
         TextCommonData data = ((TextCommonData) convertJSONStringToObject(
-                "{\"name\":\"eighth\",\"creatingDate\":\"2018-09-13T06:43:22.345+0000\",\"updatingDate\":\"2018-09-13T17:10:42.199+0000\",\"id\":26}",
+                "{\"name\":\"eighth\",\"creatingDate\":\"2018-09-13T06:43:22.345+0000\",\"updatingDate\":\"2018-09-13T17:10:42.199+0000\",\"id\":36}",
                 TextCommonData.class));
         System.out.println(data);
         System.out.println(data.getId());
         System.out.println(data.getCreatingDate());
         System.out.println("-----------------------------------------------------------------------");
 
-        String jsonArray = "[{\"name\":\"TextCommonDataRepositoryPostgresTest/ testCreate()/ textCommonDataRepository." +
-                "saveAndFlush(textCommonData)\",\"creatingDate\":\"2018-09-13T06:43:34.656+0000\",\"updatingDate\":\"" +
-                "2018-09-13T06:43:34.656+0000\",\"id\":27},{\"name\":\"eighth\",\"creatingDate\":\"2018-09-13T06:43:22." +
-                "345+0000\",\"updatingDate\":\"2018-09-13T17:10:42.199+0000\",\"id\":26}]\n";
+        String jsonArray = "[{\"name\":\"somename\",\"creatingDate\":\"000\",\"updatingDate\":\"" +
+                "0000\",\"id\":37},{\"name\":\"eighth\",\"creatingDate\":\"000\",\"updatingDate\":\"000\",\"id\":36}]";
         TextCommonData tcd = ((TextCommonData) convertArrayElementOfJSONStringArrayToObject(jsonArray,
                 TextCommonData[].class, 1));
         System.out.println(tcd);

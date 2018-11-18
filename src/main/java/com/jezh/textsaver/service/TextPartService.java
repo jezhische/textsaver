@@ -4,13 +4,13 @@ import com.jezh.textsaver.entity.TextPart;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 public interface TextPartService {
     TextPart create(TextPart textPart);
     TextPart create(TextPart current, TextPart newOne, TextPart next);
-    TextPart update(TextPart textPart);
     TextPart getOne(Long id);
     Optional<TextPart> findByNextItem(Long nextItem);
 
@@ -35,5 +35,11 @@ public interface TextPartService {
     Optional<TextPart> findTextPartById(Long id);
 
     List<Long> findSortedTextPartIdByTextCommonDataId(Long textCommonDataId);
+
+    Optional<Date> updateById(Long id, String body, Date updated);
+
+//    Optional<TextPart> update(Long textPartId);
+    Optional<TextPart> update(TextPart textPart);
+
 
 }

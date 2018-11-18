@@ -151,7 +151,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 //    =====================================================================
 
-// ------------------------------------------------------------------------------- 404 DON'T WORK????
+// ----------------------------------------------------------------------------------------------------- 404
     /** thrown when no handlers found to fulfill the request. NB that 404 error is handled by DispatcherServlet
      * by default, so to throw this exception, it's required to set the property {@code setThrowExceptionIfNoHandlerFound}
      * of DispatcherServlet to true ( is set in {@link com.jezh.textsaver.TextsaverApplication}).
@@ -170,8 +170,20 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
             return new ResponseEntity<Object>(details, new HttpHeaders(), details.getStatus());
         }
 
-// ------------------------------------------------------------------------------- 404 DON'T WORK????
-
+// ------------------------------------------------------------------------------------------------------ 404 
+// FIXME: 15.11.2018 Добавить сюда линки на правильную страницу (на 0, например) и список релевантных номеров страниц
+    @ExceptionHandler({ArrayIndexOutOfBoundsException.class, IndexOutOfBoundsException.class})
+    public ResponseEntity<Object> handleArrayIndexOutOfBoundsException(Exception ex, WebRequest request) {
+        String error = "Page " + request.getParameter("page")
+                + " not found. There is no such page number in this document: <br/>"
+                + request.getDescription(false);
+        ApiExceptionDetails details = ApiExceptionDetails.builder()
+                .status(HttpStatus.NOT_FOUND)
+                .message(error)
+                .error("reason: " + ex.getLocalizedMessage())
+                .build();
+        return new ResponseEntity<Object>(details, new HttpHeaders(), details.getStatus());
+    }
 
 // ------------------------------------------------------------------------------------------------------ 405
     /** thrown when one sends a requested with an unsupported HTTP method
@@ -186,13 +198,23 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                          WebRequest request) {
         StringBuilder sb = new StringBuilder();
         sb.append(ex.getMethod()).append(" method is not supported for this request. Supported methods are ");
-        ex.getSupportedHttpMethods().forEach(t -> sb.append(t + " "));
+        ex.getSupportedHttpMethods().forEach(t -> sb.append(t).append(" "));
         ApiExceptionDetails details = ApiExceptionDetails.builder()
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
                 .message(ex.getLocalizedMessage())
                 .error(sb.toString())
                 .build();
         return super.handleHttpRequestMethodNotSupported(ex, headers, status, request);
+    }
+
+        @ExceptionHandler(NullPointerException.class)
+    protected ResponseEntity<Object> handleNullPointerException(NullPointerException ex, WebRequest request) {
+        ApiExceptionDetails details = ApiExceptionDetails.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .message(ex.getLocalizedMessage() + ": " + request.getDescription(false))
+                .error("The document could be not opened yet. Please try first to open the document.")
+                .build();
+        return ResponseEntity.status(details.getStatus()).headers(new HttpHeaders()).body(details);
     }
 
 //    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)

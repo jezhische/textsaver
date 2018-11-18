@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,8 +82,15 @@ public interface TextPartRepository extends JpaRepository<TextPart, Long> {
 Page<TextPart> findSortedPageByTextCommonDataId(Long textCommonDataId, Pageable pageable);
 
 // NB: id BIGSERIAL PRIMARY KEY will be cast to BigInteger and cannot be cast to Long automatically
-    @Query(value = "SELECT * FROM public.get_all_texparts_id_ordered_set(?1)", nativeQuery = true)
+@Query(value = "SELECT * FROM public.get_all_texparts_id_ordered_set(?1)", nativeQuery = true)
 List<BigInteger> findSortedTextPartIdByTextCommonDataId(Long textCommonDataId);
+
+
+    @Query (value = "SELECT * FROM public.update_text_part_by_id(?1, ?2, ?3)", nativeQuery = true)
+    Optional<Date> updateById(Long id, String body, Date updated);
+
+//    @Query (value = "SELECT * FROM public.update_text_part_by_id(?1, ?2, ?3)", nativeQuery = true)
+//    Optional<Date> updateByTextPartId(Long id, String body, Date updated);
 }
 
 

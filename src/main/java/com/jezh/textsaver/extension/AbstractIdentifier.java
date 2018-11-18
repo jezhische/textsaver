@@ -1,4 +1,4 @@
-package com.jezh.textsaver.extensions;
+package com.jezh.textsaver.extension;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

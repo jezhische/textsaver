@@ -1,7 +1,7 @@
 package com.jezh.textsaver.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.jezh.textsaver.extensions.AbstractIdentifier;
+import com.jezh.textsaver.extension.AbstractIdentifier;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;

@@ -7,13 +7,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableJpaRepositories(basePackages = "com.jezh.textsaver.repository")
 @EnableTransactionManagement
-// https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html#boot-features-configure-datasource
-// "By default, all packages below your main configuration class (the one annotated with @EnableAutoConfiguration or
-// @SpringBootApplication) are searched." So there is no need in this annotation if the main class is located in root package.
-//@EntityScan(basePackages = "com.jezh.textsaver.entity")
-
 // To activate auditing in the classes marked @EntityListeners(AuditingEntityListener.class)
 @EnableJpaAuditing
-@EntityScan("com.jezh.textsaver.extensions")
+// https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html#boot-features-configure-datasource
+// Since AbstractIdentifier class is located in the directory "extension", different from "entity" directory,
+// there is need in this scan:
+@EntityScan("com.jezh.textsaver.extension")
 public class DataSourceConfig {
 }

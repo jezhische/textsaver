@@ -2,7 +2,7 @@ package com.jezh.textsaver.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.jezh.textsaver.extensions.AbstractIdentifier;
+import com.jezh.textsaver.extension.AbstractIdentifier;
 import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -48,11 +48,18 @@ public class TextPart extends AbstractIdentifier {
     /**
      * link to the next text part. NB though unique = true, this constraint don't spread to null value
      * */
+    @JsonIgnore
     @Column(name = "next_item", nullable = true, unique = true)
         private Long nextItem;
 
     /**
-     * This field will not be serialized to/from JSON, since there is no need to retrieve it from this entity. To avoid
+     * This field will not be serialized to/from JSON, since there is no need to retrieve it from this entity.
+     * The only reason to have this field existing is the request to db to find all the text_parts items
+     * in certain order from the selection like the following:
+     * <p>
+     * FOR r IN SELECT * FROM public.text_parts AS tp WHERE tp.text_common_data_id = this_text_common_data_id LOOP...END LOOP
+     * <p>
+     * To avoid
      * "InvalidDefinitionException: No serializer found for class org.hibernate.proxy.pojo.javassist.JavassistLazyInitializer..."
      * (JavassistLazyInitializer is a Javassist-based lazy initializer proxy, that handles fetching of the underlying
      * entity for a proxy), I need to disable this field for serialization

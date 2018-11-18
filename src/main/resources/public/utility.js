@@ -1,11 +1,11 @@
 // ===================================================================================== AUXILIARY FUNCTIONS
 
-/** when first call of given function with such textCommonDataId, create form element */
-function createTextCommonDataElement(textFormId) {
+/** when first call of given function with such textCommonDataId, create document pages form element */
+function createPageTextFormElement(textFormId) {
     // condition check to avoid duplication
     if ($('#' + textFormId).html() === undefined) {
         $('#text').append('<form id="' + textFormId + '" style="margin-left: 60px">' +
-            '<input type="submit" value="close" class="button-bar"></form>');
+            '<br/><br/><input type="submit" value="close" class="button-bar"></form>');
     }
 }
 // ----------------------------------------------------------------------------------------------------------------
@@ -35,10 +35,11 @@ function createTextareaElement(formId, textareaId) {
 /** fill textarea element with content and auto grow its height according loaded content */
 function fillTextareaWithContent(textarea, data) {
     // let thisTextArea = $('#' + thisTextareaId);
-    textarea.val('id: ' + data.id + ', ' +
-        'nextItem: ' + data.nextItem + ', body: '+ data.body + '/ ');
+    textarea.val('page: ' + data.pageNumber + ', ' +
+        ', body: '+ data.body + '/ ');
     /** to auto grow the created textarea height according loaded content */
     textarea.height(textarea[0].scrollHeight);
+    textarea[0].maxHeight = 50; // fixme: don't know is it working right
 }
 // ===================================--------------------------------------------------------- TEXTAREA EVENT HANDLERS
 

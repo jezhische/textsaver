@@ -28,9 +28,6 @@ import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 @ComponentScan("com.jezh.textsaver")
 // Since @WebMvcTest throws an error: IllegalArgumentException: At least one JPA metamodel must be present!,
 // I moved all the @Enable* annotations to a dedicated @Configuration class  DataSourceConfig.
-
-// https://stackoverflow.com/questions/21346387/how-to-correctly-use-pagedresourcesassembler-from-spring-data
-@EnableSpringDataWebSupport
 @EnableHypermediaSupport(type = { EnableHypermediaSupport.HypermediaType.HAL })
 public class TextsaverApplication {
 

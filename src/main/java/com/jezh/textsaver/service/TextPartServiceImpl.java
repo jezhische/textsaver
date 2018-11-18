@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,10 +38,10 @@ public class TextPartServiceImpl implements TextPartService {
         return repository.saveAndFlush(newOne);
     }
 
-    @Override
-    public TextPart update(TextPart textPart) {
-        return repository.saveAndFlush(textPart);
-    }
+//    @Override
+//    public TextPart update(TextPart textPart) {
+//        return repository.saveAndFlush(textPart);
+//    }
 
     @Override
     public TextPart getOne(Long id) {
@@ -111,5 +112,15 @@ public class TextPartServiceImpl implements TextPartService {
         List<Long> desired = new ArrayList<>();
         obtained.forEach(bigInteger -> desired.add(bigInteger.longValueExact()));
         return desired;
+    }
+
+    @Override
+    public Optional<Date> updateById(Long id, String body, Date updated) {
+        return repository.updateById(id, body, updated);
+    }
+
+    @Override
+    public Optional<TextPart> update(TextPart textPart) {
+        return Optional.of(repository.saveAndFlush(textPart));
     }
 }

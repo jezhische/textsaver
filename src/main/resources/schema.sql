@@ -176,3 +176,34 @@ BEGIN
 END
 '
 LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION update_text_part_by_id(tpid BIGINT, updated_body TEXT, updated TIMESTAMP) RETURNS TIMESTAMP AS
+'
+BEGIN
+  UPDATE public.text_parts AS tp
+    SET body = updated_body,
+      last_update = updated
+  WHERE tp.id = tpid;
+--   RETURN updated;
+  RETURN (SELECT tp.last_update FROM public.text_parts AS tp WHERE tp.id = tpid);
+END
+'
+  LANGUAGE plpgsql;
+
+SELECT * FROM update_text_part_by_id(44, 'new body: 44 next 46');
+
+-- CREATE OR REPLACE FUNCTION update_text_part_by_id(tpid BIGINT, updated_body TEXT) RETURNS TIMESTAMP AS
+-- '
+-- BEGIN
+--   UPDATE public.text_parts AS tp
+--     SET body = updated_body
+--   WHERE tp.id = tpid;
+-- --   RETURN updated;
+--   RETURN (SELECT tp.last_update FROM public.text_parts AS tp WHERE tp.id = tpid);
+-- END
+-- '
+-- LANGUAGE plpgsql;
+--
+-- SELECT * FROM public.update_text_part_by_id(44, 'new body - updated: 44 next 46');
