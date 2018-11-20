@@ -1,13 +1,58 @@
 // ===================================================================================== AUXILIARY FUNCTIONS
 
 /** when first call of given function with such textCommonDataId, create document pages form element */
-function createPageTextFormElement(textFormId) {
+function createPageTextFormElement(textCommonDataId, isDocumentOpen) {
     // condition check to avoid duplication
-    if ($('#' + textFormId).html() === undefined) {
-        $('#text').append('<form id="' + textFormId + '" style="margin-left: 60px">' +
-            '<br/><br/><input type="submit" value="close" class="button-bar"></form>');
+    if (!isDocumentOpen) { // TODO: don't forget to let down the flag. The flag was raised in the end of ajax get
+        let closeButton = '<br/><br/><input id="close-btn" type="submit" value="close" onclick="closeDoc()">';
+        let bookmarkButtonsArea = '<br/><p id="bukmark-buttons"></p>';
+        // soft wrap means word wrap (перенос по словам)
+        let pageTextarea = '<textarea id="page-tarea" wrap="soft" cols="100"' +
+        /** HTML oninput Event Attribute here allows to set the height of this textarea dynamically
+         * in accordance with the number of entered lines, when an element gets user input.
+         * Scroll bar won't be appeared */
+        // "this" references current element, i.e. this textarea, "px" means "pixels"
+        ' oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\'></textarea>'
+
+        // <div id="text"></div> is located on the index.html. The method must be .html(), not .append(),
+        // to replace existing document page form element by the new one when page number is changed
+        $('#text').html('<form id="' + textCommonDataId + '" style="margin-left: 60px">' +
+            closeButton +
+            bookmarkButtonsArea +
+            pageTextarea +
+            bookmarkButtonsArea +
+            '</form>');
+        isDocumentOpen = true;
     }
 }
+// ----------------------------------------------------------------------------------------------------------------
+/** close current document by 'close' button */
+function closeDoc() {
+    // TODO: here must be function to save all the changes
+    $('#text').html('');
+    isDocumentOpen = false;
+}
+
+// ----------------------------------------------------------------------------------------------------------------
+
+
+// ----------------------------------------------------------------------------------------------------------------
+// /** create buttons row with certain pages (including bookmarks) links  */
+// function getPagesReferenceButtons(docFormId, data) {
+//     // $('#' + docFormId).append('<div id=page-buttons></div>')
+//     // $('#page-buttons').append('<input type="submit" value="' + data.pageNumber + '" class="button-bar">');
+//     let links = data._links;
+//     let nextLink = links.next.href;
+//     console.log('nextLink ======== ' + nextLink);
+//     $('#' + docFormId).append('<div id=page-buttons>' +
+//         '<button type="button" id="'+ data.pageNumber + '" >' + data.pageNumber + '</button>' +
+//         // '<button type="button" id="'+ data.pageNumber + '" onclick="extractPage(' + nextLink + ')">' + data.pageNumber + '</button>' +
+//         '</div>');
+//     $('#' + data.pageNumber).click(function () {
+//         extractPage(nextLink);
+//     });
+// }
+
 // ----------------------------------------------------------------------------------------------------------------
 
 /** create and append textarea child element to existing form element: */
@@ -16,7 +61,7 @@ function createTextareaElement(formId, textareaId) {
     // condition check to avoid duplication
     if (textarea.html() === undefined) {
         // append to parent element
-        $('#' + formId).append(
+        $('#' + formId).append(  // FIXME html()? append()?
             //todo: set convenient textarea width by cols number setting
             // soft wrap means word wrap (перенос по словам)
             '        <textarea wrap="soft" cols="100" id="' + textareaId + '"' +
