@@ -1,7 +1,5 @@
-/** this array allows to note if any text (i.e. textCommonData) is already called */
-let dataAccessCounter = [];
-/** the flag to check if any document is opened */
-let isDocumentOpen;
+/** to check if this page is already opened */
+let currentPageLink;
 /**  */
 let docFormId;
 
@@ -10,44 +8,40 @@ let textpartsQualifier = [];
 
 $(function () {
     $('#helper1').click(function (e) {
-        // .html( function ), where Function( Integer index, htmlString oldhtml ) => htmlString... Within the
-        // function, "this" refers to the current element in the set. (in this case, that is object HTMLButtonElement)
-        $('#hel1txt').html('<h1>ui<div style="display:none;">ou</div>hou</h1>');
-        $('#hel1txt').html((index, oldhtml) => {return oldhtml + '<p>' + $('#ta26').html() + '</p>'});
-        $('#hel1txt').html((index, oldhtml) => {return oldhtml + '<p id="rrr">tot\r\r\rou</p>'});
-        $('#hel1txt').html((index, oldhtml) => {return oldhtml + $('p#hel1txt p#rrr').html()});
-        $('#ta26').append($('p#hel1txt p#rrr').html());
-        let soMany = 10;
-        console.log(`This is ${soMany} times easier!   tot\r\r\rou`);
+        // // .html( function ), where Function( Integer index, htmlString oldhtml ) => htmlString... Within the
+        // // function, "this" refers to the current element in the set. (in this case, that is object HTMLButtonElement)
+        // $('#hel1txt').html('<h1>ui<div style="display:none;">ou</div>hou</h1>');
+        // $('#hel1txt').html((index, oldhtml) => {return oldhtml + '<p>' + $('#ta26').html() + '</p>'});
+        // $('#hel1txt').html((index, oldhtml) => {return oldhtml + '<p id="rrr">tot\r\r\rou</p>'});
+        // $('#hel1txt').html((index, oldhtml) => {return oldhtml + $('p#hel1txt p#rrr').html()});
+        // $('#ta26').append($('p#hel1txt p#rrr').html());
+        // let soMany = 10;
+        // console.log(`This is ${soMany} times easier!   tot\r\r\rou`);
     });
 
 // ================================================================================ MAIN BUSINESS LOGIC
+
+// --------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------- GET and RENDER references for all the documents that persisted in db
+// --------------------------------------------------------------------------------------------------------------------
 
 
 // --------------------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------- GET and RENDER all the TEXT PART with given textCommonDataId
 // --------------------------------------------------------------------------------------------------------------------
 
-    /** get page from db, create necessary page tags on the index.html and fill them with them content */
+    /** create necessary form for page rendering in the index.html.
+     * And then fill it with it's content (extractPage(linkFirst)) */
     function extractDocToHtml(textCommonDataId) {
         /** id for the document pages form that will be created by createPageTextFormElement() method  */
          docFormId = textCommonDataId;
 
-        /* when first call of given function with such textCommonDataId, create document pages form element
+        /* when first call of given function with such textCommonDataId, create page form element
         into the tag <div id="text"></div> on the index.html */
-        createPageTextFormElement(textCommonDataId, isDocumentOpen);
+        createPageTextFormElement(textCommonDataId);
 
-        createButtonsRowElement(textCommonDataId);
-// TODO: навесить на кнопку close, также созданную методом createPageTextFormElement, функцию сохранения-закрытия
-// TODO: здесь идет аякс-гет обращение к TextCommonDataController или PageReferencesController, который возвращает набор закладок,
-// и дальше, видимо, именно здесь нужно создать ряд кнопок с номерами страниц
-
-        // наверное, здесь get аякс, вызывающий список линков закладок, у которого в success аякс типа вызов функции extractPage(link)
-        // (причем в аргументы она получает link как первую закладку, остальные в виде объекта или массива пока хранятся и извлекаются
-        // следующей функцией), у которой в success аякс создание кнопок из закладок + кнопок из линков + контент в textarea
-
-        let linkFirst = 'text-common-data/'+ textCommonDataId + '/text-parts/pages?page=1';
-        extractPage(linkFirst);
+        let pageLink = 'text-common-data/'+ textCommonDataId + '/text-parts/pages?page=1';
+        extractPage(pageLink);
     }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -55,11 +49,10 @@ $(function () {
 // --------------------------------------------------------------------------------------------------------------------
 
     function extractPage(link) {
-        // console.log('begin to desintegrate previous page content');
         console.log('extraction beginning: ' + link);
-        /* get page, create textarea and buttons for it and render its content.
-         * To avoid data duplication, check the flag in dataAccessCounter */
-        // if (!dataAccessCounter.includes(docFormId)) {
+
+       /** get and render page content. To avoid content duplication,     */
+        if (link !== currentPageLink) {
             $.ajax({
                 type:'GET',
                 /* get all the textparts */
@@ -98,15 +91,10 @@ $(function () {
                     createTextareaContentEventHandlers(textarea);
                     // });
 
-// todo: установить на .change, чтобы когда textarea опустела, она становилась hidden (и при закрытии уничтожалась), чтобы
-// при выделении или движении стрелки (в т.ч. Ctrl + RIGHT) или выделении стрелкой (SHIFT + RIGHT, Ctrl + SHIFT + RIGHT)
-// происходило перескакивание на соседнюю область - а это как сделать?
-                        // check
                         console.log('extractDocToHtml(' + docFormId + ') textStatus: ' + textStatus);
 
-                        /** set the flag "dataAccessCounter.includes(textCommonDataId)" to true */
-                        dataAccessCounter.push(docFormId);
-                    // $('#text').html(data.message);
+                        /** for "if" check to avoid page loading duplication */ // TODO: don't forget to assign undefined when document closed
+                        currentPageLink = link;
                 },
                 // todo: to write appropriate methods
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -119,7 +107,7 @@ $(function () {
                     console.log('some error: ' + textStatus + ': ' + jqXHR.status);
                 }
             });
-        // }
+        }
     }
 
 // -------------------------------------------------------------------------------------------------------------------
@@ -157,8 +145,4 @@ $(function () {
         // extractPage('http://localhost:8074/textsaver/text-common-data/36/text-parts/pages?page=2');
 
     });
-
-    $('#txt32').submit(function (e) {
-        e.preventDefault();
-    })
 });

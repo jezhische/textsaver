@@ -27,9 +27,9 @@ import java.util.*;
 @AllArgsConstructor
 // https://www.callicoder.com/spring-boot-rest-api-tutorial-with-mysql-jpa-hibernate/
 //  "Spring Boot uses Jackson for Serializing and Deserializing Java objects to and from JSON.
-//This annotation is used because we don’t want the clients of the rest api to supply the creatingDate and updatingDate values.
+//This annotation is used because we don’t want the clients of the rest api to supply the createdDate and updatedDate values.
 // If they supply these values then we’ll simply ignore them. However, we’ll include these values in the JSON response."
-@JsonIgnoreProperties(value = {"creatingDate", "updatingDate"},
+@JsonIgnoreProperties(value = {"createdDate", "updatedDate"},
         /*to support defining "read-only" properties*/ allowGetters = true)
 // for Date fields proper assigning; need @EnableJpaAuditing to activate auditing in the classes marked this annotation
 @EntityListeners(AuditingEntityListener.class)
@@ -51,14 +51,14 @@ public class TextCommonData extends AbstractIdentifier {
 // and vice versa.
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
-    private Date creatingDate;
+    private Date createdDate;
 
     @Column(name = "updating_date")
 // only with Date and Calendar: it converts the date and time values from Java Object to compatible database type
 // and vice versa.
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
-    private Date updatingDate;
+    private Date updatedDate;
 
     @Override
     public boolean equals(Object o) {

@@ -1,14 +1,16 @@
 // ===================================================================================== AUXILIARY FUNCTIONS
 
-/** when first call of given function with such textCommonDataId, create document pages form element */
-function createPageTextFormElement(textCommonDataId, isDocumentOpen) {
+/** when first call of given function with such textCommonDataId, create page form element
+ * into the tag <div id="text"></div> on the index.html */
+function createPageTextFormElement(textCommonDataId) {
     // condition check to avoid duplication
-    if (!isDocumentOpen) { // TODO: don't forget to let down the flag. The flag was raised in the end of ajax get
+    if($("#" + textCommonDataId).html() === undefined) { // TODO: don't forget to let down the flag when close document. The flag will be raised in the end of this method
+        console.log('*******$("#" + textCommonDataId).html() = ' + $("#" + textCommonDataId).html() + ', creating form with id = ' + textCommonDataId);
         let closeButton = '<br/><br/><input id="close-btn" type="submit" value="close" onclick="closeDoc()">';
         let bookmarkButtonsArea = '<br/><p id="bukmark-buttons"></p>';
         // soft wrap means word wrap (перенос по словам)
         let pageTextarea = '<textarea id="page-tarea" wrap="soft" cols="100"' +
-        /** HTML oninput Event Attribute here allows to set the height of this textarea dynamically
+        /** HTML oninput event attribute here allows to set the height of this textarea dynamically
          * in accordance with the number of entered lines, when an element gets user input.
          * Scroll bar won't be appeared */
         // "this" references current element, i.e. this textarea, "px" means "pixels"
@@ -22,7 +24,6 @@ function createPageTextFormElement(textCommonDataId, isDocumentOpen) {
             pageTextarea +
             bookmarkButtonsArea +
             '</form>');
-        isDocumentOpen = true;
     }
 }
 // ----------------------------------------------------------------------------------------------------------------
@@ -30,7 +31,7 @@ function createPageTextFormElement(textCommonDataId, isDocumentOpen) {
 function closeDoc() {
     // TODO: here must be function to save all the changes
     $('#text').html('');
-    isDocumentOpen = false;
+    isDocOpen = false;
 }
 
 // ----------------------------------------------------------------------------------------------------------------

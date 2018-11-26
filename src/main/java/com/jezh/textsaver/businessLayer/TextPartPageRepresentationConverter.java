@@ -24,6 +24,7 @@ public class TextPartPageRepresentationConverter {
                 .exclude("nextItem")
                 .exclude("pageNumber")
                 .exclude("totalPages")
+                .exclude("bookmarksLinks")
                 .register();
         this.mapperFactory = mapperFactory;
     }

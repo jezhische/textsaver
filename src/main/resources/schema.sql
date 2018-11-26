@@ -8,6 +8,20 @@
 -- GRANT CONNECT, TEMPORARY ON DATABASE textsaver TO public;
 -- GRANT ALL ON DATABASE textsaver TO postgres WITH GRANT OPTION;
 
+-- DROP DATABASE IF EXISTS textsaver; -- works only if the current role is postgres (superuser)
+
+
+-- DROP SEQUENCE public.hibernate_sequence;
+
+-- CREATE SEQUENCE public.hibernate_sequence
+--   INCREMENT 0
+--   MINVALUE 0
+--   MAXVALUE 0
+--   START 0
+--   CACHE 0;
+-- ALTER TABLE public.hibernate_sequence
+--   OWNER TO postgres;
+
 CREATE TABLE IF NOT EXISTS public.text_common_data (
     id SERIAL PRIMARY KEY
   , name VARCHAR(255)

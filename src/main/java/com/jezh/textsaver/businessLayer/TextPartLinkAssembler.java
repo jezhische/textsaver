@@ -27,23 +27,31 @@ public class TextPartLinkAssembler  {
             TextPart textPart, long commonDataId, int pageNumber, HttpServletRequest request,
             TextPartControllerTransientDataRepo repository) throws NoHandlerFoundException {
         TextPartPagedLinkedRepresentation page = converter.convertToLinkedPage(textPart);
+//        TextPartPagedLinkedRepresentation page = convertToLinkedPage(textPart);
         page.setTotalPages(repository.getTotalPages());
         page.setPageNumber(pageNumber);
         if (pageNumber >= 1 && pageNumber <= repository.getTotalPages())
-            page.add(linkTo(methodOn(TextPartController.class).findPageByTextCommonDataId(
+            page.add(linkTo(methodOn(TextPartController.class).findPageByTextCommonDataIdAndPageNumber(
                     commonDataId, 1, request)).withRel("first"));
         if (pageNumber > 2 && pageNumber <= repository.getTotalPages())
-            page.add(linkTo(methodOn(TextPartController.class).findPageByTextCommonDataId(
+            page.add(linkTo(methodOn(TextPartController.class).findPageByTextCommonDataIdAndPageNumber(
                     commonDataId, pageNumber - 1, request)).withRel("previous"));
 //        if (pageNumber > 1 && pageNumber < repository.getTotalPages())
-            page.add(linkTo(methodOn(TextPartController.class).findPageByTextCommonDataId(
+            page.add(linkTo(methodOn(TextPartController.class).findPageByTextCommonDataIdAndPageNumber(
                     commonDataId, pageNumber, request)).withSelfRel());
         if (pageNumber >=1 && pageNumber < repository.getTotalPages() - 1)
-            page.add(linkTo(methodOn(TextPartController.class).findPageByTextCommonDataId(
+            page.add(linkTo(methodOn(TextPartController.class).findPageByTextCommonDataIdAndPageNumber(
                     commonDataId, pageNumber + 1, request)).withRel("next"));
         if (pageNumber >=1 && pageNumber <= repository.getTotalPages())
-            page.add(linkTo(methodOn(TextPartController.class).findPageByTextCommonDataId(
+            page.add(linkTo(methodOn(TextPartController.class).findPageByTextCommonDataIdAndPageNumber(
                     commonDataId, repository.getTotalPages(), request)).withRel("last"));
         return page;
     }
+
+//    private TextPartPagedLinkedRepresentation convertToLinkedPage(TextPart textPart) {
+//        return TextPartPagedLinkedRepresentation.builder()
+//                .body(textPart.getBody())
+//                .lastUpdate(textPart.getLastUpdate())
+//                .build();
+//    }
 }

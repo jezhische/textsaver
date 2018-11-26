@@ -21,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TextPartControllerTransientDataRepo {
-    /** when {@code TextPartController} method {@code findPageByTextCommonDataId(long, int, HttpServletRequest)} is called
+    /** when {@code TextPartController} method {@code findPageByTextCommonDataIdAndPageNumber(long, int, HttpServletRequest)} is called
      * first time, it fill this list with found textPart ids, sorted in proper order, so that the number of the element of the
      * list matches the requested page number, and the size of the list matches the total page number.
      * @see com.jezh.textsaver.controller.TextPartController */

@@ -26,19 +26,24 @@
         }
     </style>
     <link rel="stylesheet" type="text/css" href="bootstrap3.3.7/css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="inner-styles.css">
     <link rel="icon" type="image/png" href="favicon.ico"/>
         <!--href="../static/favicon.ico"-->
     <script src="jquery-3.3.1.js"></script>
 </head>
 <body>
-<div>
-    Hi, Jezh!
-</div>
-<div style="margin-left:100ch">
-    <a href="http://localhost:8074/textsaver/swagger-ui.html">
-        swagger-ui.html
-    </a>
-</div>
+<!-- http://webcodius.ru/recepty-dlya-sajta/kak-razmestit-elementy-spiska-gorizontalno-ili-gorizontalnoe-menyu-s-pomoshhyu-css.html -->
+<ul id="menu">
+    <li><a href="documents">home</a></li>
+    <li><a href="about">about</a></li>
+    <li><a href="swagger">swagger</a></li>
+</ul>
+
+<!--<div style="margin-left:100ch">-->
+    <!--<a href="http://localhost:8074/textsaver/swagger-ui.html">-->
+        <!--swagger-ui.html-->
+    <!--</a>-->
+<!--</div>-->
 
 <button id="helper1" class="buttons">helper1</button>
 <div><button id="helper2" class="buttons">get_textpart32_value</button></div>
@@ -47,8 +52,8 @@
 
 <div id="text"></div>
 
-
 <script src="main.js"></script>
 <script src="utility.js"></script>
+
 </body>
 </html>

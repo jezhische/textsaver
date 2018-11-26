@@ -96,7 +96,7 @@ public class WebMockTest {
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0]", Matchers.allOf(
                         Matchers.hasKey("id"), Matchers.hasKey("name"),
-                        Matchers.hasKey("creatingDate"), Matchers.hasKey("updatingDate"))))
+                        Matchers.hasKey("createdDate"), Matchers.hasKey("updatedDate"))))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0]", Matchers.hasValue("testTextCommonData")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0]", Matchers.hasValue(1)));
     }

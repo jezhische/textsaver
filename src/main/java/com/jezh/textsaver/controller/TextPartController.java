@@ -82,30 +82,47 @@ public class TextPartController {
 //        return null;
 //        }
 
-    /**
-     * find a bunch of textPart in the sorted order start from the given textPart id and with the given size.
-     * If request parameter is not specified, find all the textPart with given textCommonDataId in this order
-     */
-    @GetMapping(path = "/text-parts") // FIXME: 24.10.2018 add (NullPointer) exceptions handling
-    public ResponseEntity<List<TextPart>> findSortedTextPartBunchByStartId(
-            @PathVariable("commonDataId") Long textCommonDataId,
-            @RequestParam(value = "startId", required = false) Long startId,
-            @RequestParam(value = "size", required = false) Integer size) { // not int or long, otherwise I get "IllegalStateException:
-        // Optional int parameter 'size' is present but cannot be translated into a null value due to being declared as a primitive type."
-        if (startId == null && size == null) {
-        return ResponseEntity.ok().body(textPartService.findSortedSetByTextCommonDataId(textCommonDataId));
-        } else if (startId != null && size == null) {
-            return ResponseEntity.ok().body(textPartService.findRemainingSortedTextPartBunchByStartId(startId));
-        } else if (startId == null && size != 0) {
-            Long firstTextPartId = textCommonDataService.findTextCommonDataById(textCommonDataId).get().getFirstItem();
-            return ResponseEntity.ok().body(textPartService.findSortedTextPartBunchByStartId(firstTextPartId, size));
-        } else {
-            return ResponseEntity.ok().body(textPartService.findSortedTextPartBunchByStartId(startId, size));
-        }
-    }
+//    /**
+//     * find a bunch of textPart in the sorted order start from the given textPart id and with the given size.
+//     * If request parameter is not specified, find all the textPart with given textCommonDataId in this order
+//     */
+//    @GetMapping(path = "/text-parts") // FIXME: 24.10.2018 add (NullPointer) exceptions handling
+//    public ResponseEntity<List<TextPart>> findSortedTextPartBunchByStartId(
+//            @PathVariable("commonDataId") Long textCommonDataId,
+//            @RequestParam(value = "startId", required = false) Long startId,
+//            @RequestParam(value = "size", required = false) Integer size) { // not int or long, otherwise I get "IllegalStateException:
+//        // Optional int parameter 'size' is present but cannot be translated into a null value due to being declared as a primitive type."
+//        if (startId == null && size == null) {
+//        return ResponseEntity.ok().body(textPartService.findSortedSetByTextCommonDataId(textCommonDataId));
+//        } else if (startId != null && size == null) {
+//            return ResponseEntity.ok().body(textPartService.findRemainingSortedTextPartBunchByStartId(startId));
+//        } else if (startId == null && size != 0) {
+//// FIXME: 25.11.2018 нужно вернуть не firstTextPartId, а сущность Bookmark, вынуть из нее закладки, определить, какая страница пойдет и т.д.
+//            Long firstTextPartId = textCommonDataService.findTextCommonDataById(textCommonDataId).get().getFirstItem();
+//            return ResponseEntity.ok().body(textPartService.findSortedTextPartBunchByStartId(firstTextPartId, size));
+//        } else {
+//            return ResponseEntity.ok().body(textPartService.findSortedTextPartBunchByStartId(startId, size));
+//        }
+//    }
 
 //================================================================================================================ GET:
-//                                          open document, find page by document id (textCommonData id) and page number
+//                                          fixme: open document, find page by document id (textCommonData id) and page number
+
+    /**  */
+    @GetMapping(value = "/text-parts")
+    public HttpEntity<TextPartPagedLinkedRepresentation> getLastOpenPageByTextCommonDataId(
+            @PathVariable long commonDataId,
+            HttpServletRequest request
+    ) {
+
+        return null;
+    }
+
+
+
+
+// ================================================================================================================ GET:
+//                                          fixme: open document, find page by document id (textCommonData id) and page number
 
     /** <b>Open document by its id (textCommonData id). First rendered page is specified by textNumber parameter</b>
      * <p>
@@ -123,9 +140,9 @@ public class TextPartController {
      * This application assumes that data base will be reformatted only after current document closing
      * or after pushing "save" button, and only one user has access to the same rows at the same time.
      * To avoid expensive data base requests, the relevant metadata should be saved in the special repository
-     * of {@code TextPartControllerTransientDataRepo} type, and then controller uses in in its pages calls */
+     * of {@code TextPartControllerTransientDataRepo} type, and then controller uses it in pages calls */
     @GetMapping(value = "/text-parts/pages", params = {"page"})
-    public HttpEntity<TextPartPagedLinkedRepresentation> findPageByTextCommonDataId(
+    public HttpEntity<TextPartPagedLinkedRepresentation> findPageByTextCommonDataIdAndPageNumber(
             @PathVariable long commonDataId,
             @RequestParam("page") int pageNumber,
             HttpServletRequest request

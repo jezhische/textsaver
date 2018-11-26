@@ -23,7 +23,8 @@ public abstract class AbstractIdentifier {
 
     @JsonIgnore
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO) // FIXME: 23.11.2018 или вообще убрать стратегию, чтобы работал
+    // единый id для всех страниц?
     @Getter
     @Setter
     protected Long id;

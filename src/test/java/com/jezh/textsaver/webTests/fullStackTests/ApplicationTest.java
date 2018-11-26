@@ -110,7 +110,7 @@ public class ApplicationTest {
                 .andExpect(MockMvcResultMatchers.header().string("Content-Type", "application/json;charset=UTF-8"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0]", Matchers.allOf(
                         Matchers.hasKey("id"), Matchers.hasKey("name"),
-                        Matchers.hasKey("creatingDate"), Matchers.hasKey("updatingDate"))))
+                        Matchers.hasKey("createdDate"), Matchers.hasKey("updatedDate"))))
                 .andDo(mvcResult -> {
                     String jsonArray = mvcResult.getResponse().getContentAsString();
                     System.out.println(jsonArray);
