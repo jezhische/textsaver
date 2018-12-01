@@ -1,19 +1,15 @@
 package com.jezh.textsaver.controller;
 
 import com.jezh.textsaver.businessLayer.TextCommonDataLinkAssembler;
-import com.jezh.textsaver.businessLayer.UtilManager;
+import com.jezh.textsaver.businessLayer.DocDataManager;
 import com.jezh.textsaver.dto.TextCommonDataControllerTransientDataRepo;
 import com.jezh.textsaver.dto.TextCommonDataLinkedRepresentation;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.service.TextCommonDataService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.NoHandlerFoundException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,8 +23,11 @@ public class TextCommonDataController {
     @Autowired
     private TextCommonDataLinkAssembler assembler;
 
+//    @Autowired
+//    private TextCommonDataControllerTransientDataRepo repository;
+
     @Autowired
-    private TextCommonDataControllerTransientDataRepo repository;
+    DocDataManager docDataManager;
 
 
 
@@ -39,30 +38,38 @@ public class TextCommonDataController {
 //    }
 
     /** find all the textCommonData, assign the controller transient data repository fields and return list of models
-     * with everything needed to build links to the saved texts on the html page */
+     * with the links to the saved texts for the html page */
+    // здесь получаю набор ссылок на сохраненные документы, которые будут расположены в левой части экрана. Запрос от
+    // каждой из них будет выглядеть как "http://localhost/documents/TextCommonDataRepositoryPostgresTest-created-date-..."
+    // Значит, при нажатии на ссылку нужно обслужить запрос "documents/{doc-name}" и получить страницу с rel
+    // "self=http://localhost/documents/TextCommonDataRepositoryPostgresTest-created-date-.../pages?page=..."
     @ResponseBody
     @GetMapping(path = "/documents")
     public List<TextCommonDataLinkedRepresentation> getLinkedTextCommonDataList() {
         List<TextCommonData> docsData = textCommonDataService.findAll();
-        List<TextCommonDataLinkedRepresentation> linkedDocsData = assembler.getLinkedDocsData(docsData);
-        repository = TextCommonDataControllerTransientDataRepo.builder()
-                .docIds(new HashMap<>())
-                .build();
-        UtilManager.setTextCommonDataControllerTransientDataRepo(docsData, linkedDocsData, repository);
+        List<TextCommonDataLinkedRepresentation> linkedDocsData =
+                docDataManager.setTextCommonDataControllerTransientDataRepo(docsData);
         return linkedDocsData;
         }
 
 
-    /** find by name in conjunction with created date */
+//    /** find by name in conjunction with created date */
+// Обслужить запрос "http://localhost/documents/TextCommonDataRepositoryPostgresTest-created-date-...": получить список
+// закладок, к которому каждый раз будет обращаться страница (через BookmarkService), получить номер последней
+// открывавшейся страницы и сделать forward
+// на "http://localhost/documents/TextCommonDataRepositoryPostgresTest-created-date-.../pages?page=..."
 //    @ResponseBody
     @GetMapping(value = "documents/{doc-name}")
     public String findByLinkedDocName(
             @PathVariable(value = "doc-name") String name) {
 
-        Long docId = repository.getDocIds().get(name);
-// FIXME: проверка на null и бросить исключение
-        return "redirect:/text-common-data/" + docId + "/text-parts"; //TODO: может быть, не redirect, а forward, чтобы не было
-        // лишнего перекидывания запросами между сервером и клиентом? Почитать!
+        // FIXME: проверка на null и бросить исключение (get возвращает null, если не нашел по ключу)
+        Long docId = docDataManager.getDocIds().get(name);
+
+// todo: тут он заполняет репозиторий контроллера страниц, получает закладки, получает последнюю открытую страницу, открывает ее вместе со всеми ссылками
+// Закладки нужно получать каждый раз при открытии страницы, так что просто включить вызов BookmarkService в метод TextPartController
+
+        return "forward:/text-common-data/" + docId + "/text-parts";
     }
 
 

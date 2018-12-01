@@ -34,6 +34,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+
 // almost the full stack is used, but without the cost of starting the server. @SpringBootTest loads the full contexts,
 // so I can use service requests to data base.
 @RunWith(SpringRunner.class)
@@ -104,7 +107,7 @@ public class ApplicationTest {
     public void testGetTextCommonDataList() throws Exception {
         mockMvc
                 .perform(MockMvcRequestBuilders.get("/text-common-data"))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(MockMvcResultMatchers.header().string("Content-Type", "application/json;charset=UTF-8"))
@@ -131,7 +134,7 @@ public class ApplicationTest {
                 .perform(MockMvcRequestBuilders.get("/text-common-data/"
                         + someTextCommonDataId
                         + "/text-parts"))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id",
@@ -173,7 +176,7 @@ public class ApplicationTest {
                         + "startId=" + someTextCommonDataId
                         + "&"
                         + "size=" + 10))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 /* assert equals of previous_result_element.previousItem and id of given TextCommonData */
@@ -215,7 +218,7 @@ public class ApplicationTest {
                         // have got Status = 415 without following:
                         .contentType(MediaTypes.HAL_JSON)
                         .content(json))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
 //                .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andReturn();
         System.out.println("******************************************" + result.getResponse().getContentAsString());
@@ -238,7 +241,7 @@ public class ApplicationTest {
                         .post("/text-common-data/" + existingTextCommonDataId + "/text-parts")
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .content(json))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andReturn();
         System.out.println("******************************************" + result.getResponse().getContentAsString());
@@ -249,11 +252,19 @@ public class ApplicationTest {
 
     @Test
     public void testUpdatePage() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.put("/text-common-data/36/text-parts/pages?page=49")
+        mockMvc.perform(put("/text-common-data/36/text-parts/pages?page=49")
 //                .contentType(MediaTypes.HAL_JSON_VALUE)
                 .content("{\"body\":\"new body - updated: id: 41 nextId: 93\"}")
         )
-                .andDo(MockMvcResultHandlers.print());
+                .andDo(print());
+    }
+
+// ---------------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void testGetLinkedTextCommonDataList() throws Exception {
+        mockMvc.perform(get("/documents"))
+                .andDo(print());
     }
 
 
@@ -269,7 +280,7 @@ public class ApplicationTest {
                         + "/text-parts"
                         // here String instead of Long
                         + "/ccc"))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("should be of type")))
                 .andReturn();

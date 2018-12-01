@@ -15,6 +15,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class TextCommonDataControllerTransientDataRepo {
 
-//    private boolean isRunning;
+    /** the map to get textCommonData id by textCommonDataLinkedRepresentation name */
     private Map<String, Long> docIds;
 }

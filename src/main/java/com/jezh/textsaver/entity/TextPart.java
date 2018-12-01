@@ -13,7 +13,6 @@ import java.util.Date;
 
 @Entity
 @Table(name = "text_parts", indexes = {@Index(name = "idx_next_it", columnList = "next_item")})
-//@Data // getters, setters, equals, hashCode, toString
 @Getter
 @Setter
 @NoArgsConstructor
@@ -115,6 +114,7 @@ public class TextPart extends AbstractIdentifier {
         return super.equals(obj);
     }
 
+    // don't use the textCommonData because of its LAZY fetch type
     @Override
     public String toString() {
         return "TextPart{" +

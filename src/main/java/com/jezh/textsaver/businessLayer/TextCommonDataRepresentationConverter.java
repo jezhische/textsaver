@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 
 @Service
-public class TextCommonDataLinkedRepresentationConverter {
+public class TextCommonDataRepresentationConverter {
 
     public TextCommonDataLinkedRepresentation convertToLinkedRepresentation(TextCommonData textCommonData) {
         Date createdDate = textCommonData.getCreatedDate();
         return TextCommonDataLinkedRepresentation.builder()
-                .name(UtilManager.getLinkedDocDataName(textCommonData.getName(), createdDate))
+                .name(DocDataManager.getLinkedDocDataName(textCommonData.getName(), createdDate))
                 .createdDate(createdDate)
                 .updatedDate(textCommonData.getUpdatedDate())
                 .build();

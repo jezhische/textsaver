@@ -108,15 +108,14 @@ public class TextPartController {
 //================================================================================================================ GET:
 //                                          fixme: open document, find page by document id (textCommonData id) and page number
 
-    /**  */
-    @GetMapping(value = "/text-parts")
-    public HttpEntity<TextPartPagedLinkedRepresentation> getLastOpenPageByTextCommonDataId(
-            @PathVariable long commonDataId,
-            HttpServletRequest request
-    ) {
-
-        return null;
-    }
+//    /**  */
+//    @GetMapping(value = "/text-parts")
+//    public HttpEntity<TextPartPagedLinkedRepresentation> getLastOpenPageByTextCommonDataId(
+//            @PathVariable long commonDataId,
+//            HttpServletRequest request
+//    ) {
+//
+//    }
 
 
 

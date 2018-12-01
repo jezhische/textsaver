@@ -33,9 +33,13 @@ public class TextPartServiceImpl implements TextPartService {
 
     @Override
     public TextPart create(TextPart current, TextPart newOne, TextPart next) {
-        if (current != null) current.setNextItem(newOne.getId());
         if (next != null) newOne.setNextItem(next.getId());
-        return repository.saveAndFlush(newOne);
+        repository.saveAndFlush(newOne);
+        if (current != null) {
+            current.setNextItem(newOne.getId());
+            repository.saveAndFlush(current);
+        }
+        return newOne;
     }
 
 //    @Override

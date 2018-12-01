@@ -14,10 +14,10 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 @Component
 public class TextCommonDataLinkAssembler {
 
-    private TextCommonDataLinkedRepresentationConverter converter;
+    private TextCommonDataRepresentationConverter converter;
 
     @Autowired
-    public TextCommonDataLinkAssembler(TextCommonDataLinkedRepresentationConverter converter) {
+    public TextCommonDataLinkAssembler(TextCommonDataRepresentationConverter converter) {
         this.converter = converter;
     }
 

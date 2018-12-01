@@ -10,7 +10,7 @@ public class MainMenuController {
 //    /** when the application started, redirect to home page */
 //    @GetMapping(value = "")
 //    public String getHomePage() {
-//        return "redirect:/documents";
+//        return "forward:/documents";
 //    }
 
     @ResponseBody
