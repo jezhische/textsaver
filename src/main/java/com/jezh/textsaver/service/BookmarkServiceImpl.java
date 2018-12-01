@@ -20,23 +20,6 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public List<Bookmark> getAllInSortedOrder(Long textCommonDataId) {
-        return repository.getAllInSortedOrder(textCommonDataId);
-    }
-
-    @Override
-    public Bookmark create(Bookmark current, Bookmark newOne, Bookmark next) {
-        // FIXME: 29.11.2018 ВСТАВИТЬ ИЗМЕНЕНИЕ isLastOpen на true, а у всех остальных - false
-        if (next != null) newOne.setNextBookmarkId(next.getId());
-        repository.saveAndFlush(newOne);
-        if (current != null) {
-            current.setNextBookmarkId(newOne.getId());
-        repository.saveAndFlush(current);
-        }
-        return newOne;
-    }
-
-    @Override
     public Bookmark create(Bookmark newOne) {
         return repository.saveAndFlush(newOne);
     }

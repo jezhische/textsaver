@@ -6,10 +6,10 @@ import com.jezh.textsaver.extension.AbstractIdentifier;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "bookmarks", indexes = {@Index(name = "idx_next_bookmark_id", columnList = "next_bookmark_id"),
-        @Index(name = "idx_is_last_open", columnList = "is_last_open")})
+@Table(name = "bookmarks")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,19 +17,11 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class Bookmark extends AbstractIdentifier {
 
-    @Column(name = "is_last_open")
-    private boolean isLastOpen; // это поле помечается "true" при построении массива (листа), который будет отправлен на страницу,
-    // у первого в списке элемента, а у остальных помечается "false"
-
-    @Column(name = "is_edited")
-    private boolean isEdited;
-
-    @Column(name = "page_number")
-    private Integer pageNumber;
-
-    @JsonIgnore
-    @Column(name = "next_bookmark_id", unique = true)
-    private Long nextBookmarkId;
+    /** List of the numbers of last open pages as the simplest way to create Bookmark list. The use of the
+     * {@code @ElementCollection} here is justified because the list won't include too much elements (up to 10 or 15) */
+    @ElementCollection
+    @Column(name = "last_open_list")
+    private List<Integer> lastOpenList;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY) // default FetchType.EAGER - it's JPA requirement,
@@ -52,15 +44,5 @@ public class Bookmark extends AbstractIdentifier {
         return super.hashCode();
     }
 
-    // don't use the textCommonData because of its LAZY fetch type
-    @Override
-    public String toString() {
-        return "Bookmark{" +
-                "isLastOpen=" + isLastOpen +
-                "isEdited=" + isEdited +
-                ", pageNumber=" + pageNumber +
-                ", id=" + id +
-                ", nextBookmarkId=" + nextBookmarkId +
-                '}';
-    }
+
 }

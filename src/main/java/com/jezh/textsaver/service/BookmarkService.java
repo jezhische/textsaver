@@ -8,10 +8,6 @@ public interface BookmarkService {
 
 //    List<Bookmark> findAll();
 
-    List<Bookmark> getAllInSortedOrder(Long textCommonDataId);
-
-    Bookmark create(Bookmark current, Bookmark newOne, Bookmark next);
-
     Bookmark create(Bookmark newOne);
 
 //    Bookmark delete(Bookmark bookmark);

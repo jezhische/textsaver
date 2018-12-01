@@ -37,9 +37,4 @@ public class BookmarkRepositoryPostgresTest extends BasePostgresConnectingTest {
         assertNotNull(bookmarkRepository.findById(bookmark.getId()));
     }
 
-    @Test
-    public void testGetAllInSortedOrder() {
-        List<Bookmark> list = bookmarkRepository.getAllInSortedOrder(36L);
-        list.forEach(System.out::println);
-    }
 }

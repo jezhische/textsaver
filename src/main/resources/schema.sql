@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS public.text_parts (
   , last_update TIMESTAMP without time zone DEFAULT now()
 -- FOREIGN KEY (text_common_data_id) - ссылка на колонку в этой таблице
   , CONSTRAINT fk_textParts_textCommonData FOREIGN KEY (text_common_data_id) REFERENCES text_common_data (id)
+--     ON UPDATE CASCADE ON DELETE CASCADE -- default NO ACTION
 );
 
 CREATE INDEX IF NOT EXISTS idx_next_it
@@ -46,50 +47,26 @@ CREATE INDEX IF NOT EXISTS idx_next_it
   (next_item);
 
 
-CREATE TABLE IF NOT EXISTS public.bookmarks (
-  id BIGSERIAL PRIMARY KEY
-  , is_last_open BOOLEAN
-  , is_edited BOOLEAN
-  , page_number INTEGER
-  , next_bookmark_id BIGINT
-  , text_common_data_id BIGINT
-  , CONSTRAINT fk_bookmarks_textCommonData FOREIGN KEY (text_common_data_id) REFERENCES text_common_data (id)
+CREATE TABLE IF NOT EXISTS public.bookmarks
+(
+  id BIGSERIAL PRIMARY KEY,
+  text_common_data_id bigint,
+  CONSTRAINT fk_bookmarks_textCommonData FOREIGN KEY (text_common_data_id)
+  REFERENCES public.text_common_data (id)
 );
 
 -- DROP TABLE IF EXISTS public.bookmarks CASCADE;
 
-CREATE INDEX IF NOT EXISTS idx_is_last_open
-  ON public.bookmarks
-      USING HASH (is_last_open);
+-- the table to persist element collection last_open_list in bookmarks
+CREATE TABLE public.bookmark_last_open_list
+(
+  bookmark_id bigint NOT NULL,
+  last_open_list integer,
+  CONSTRAINT fk_bookmarkLastOpenList_bookmarks FOREIGN KEY (bookmark_id)
+  REFERENCES public.bookmarks (id)
+);
 
-CREATE INDEX IF NOT EXISTS idx_next_bookmark_id
-  ON public.bookmarks
-  USING HASH (next_bookmark_id);
-
-CREATE OR REPLACE FUNCTION get_all_bookmarks_in_sorted_order(this_text_common_data_id BIGINT) RETURNS SETOF public.bookmarks AS
-  '
-  DECLARE
-    r public.bookmarks%ROWTYPE;
-    next_bm_id BIGINT;
-    BEGIN
-    r := (SELECT bm FROM public.bookmarks AS bm WHERE bm.text_common_data_id = this_text_common_data_id AND bm.is_last_open = TRUE);
-    next_bm_id := (r::bookmarks).next_bookmark_id;
-    RETURN NEXT r;
-    FOR r IN SELECT * FROM public.bookmarks AS bm WHERE bm.text_common_data_id = this_text_common_data_id
-      LOOP
-      r := (SELECT bm FROM public.bookmarks AS bm WHERE bm.id = next_bm_id);
-      IF (r IS NULL) THEN
-        RETURN;
-      END IF;
-      next_bm_id := (r::bookmarks).next_bookmark_id;
-      RETURN NEXT r;
-    END LOOP;
-  END;
-'
-LANGUAGE plpgsql;
-
-SELECT * FROM public.get_all_bookmarks_in_sorted_order(36);
-
+-- DROP TABLE IF EXISTS public.bookmark_last_open_list CASCADE;
 
 CREATE OR REPLACE FUNCTION get_remaining_texparts_ordered_set(IN this_text_part_id BIGINT) RETURNS SETOF public.text_parts AS
 '

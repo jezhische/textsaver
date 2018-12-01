@@ -38,13 +38,4 @@ public class BookmarkServiceTest extends BasePostgresConnectingTest {
     }
 
 
-    @Test
-    public void createAndInsert() {
-        List<Bookmark> list = bookmarkRepository.getAllInSortedOrder(36L);
-        Bookmark current = list.get(0);
-        Bookmark next = list.get(1);
-        bookmarkService.create(current, bookmark, next);
-        assertEquals(current.getNextBookmarkId(), bookmark.getId());
-        assertEquals(bookmark.getNextBookmarkId(), next.getId());
-    }
 }
