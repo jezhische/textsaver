@@ -210,6 +210,16 @@ public class TestUtil {
         textParts.forEach(textPart -> textPart.setBody("id: " + textPart.getId() + " nextId: " + textPart.getNextItem()));
     }
 
+
+// -------------------------------------------------------------------------------------------------------------------
+    public static int[] createRandom10IntArray() {
+        int[] result = new int[10];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = new Random().nextInt(100);
+        }
+        return result;
+    }
+
 // ============================================================================================================ TESTS
 String jsonArray = "[{\"name\":\"TextCommonDataRepositoryPostgresTest/ testCreate()/ textCommonDataRepository." +
         "saveAndFlush(textCommonData)\",\"createdDate\":\"2018-09-13T06:43:34.656+0000\",\"updatedDate\":\"" +

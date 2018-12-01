@@ -1,5 +1,6 @@
 package com.jezh.textsaver.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jezh.textsaver.extension.AbstractIdentifier;
 import lombok.*;
@@ -21,7 +22,7 @@ import java.util.*;
 @Getter
 @Setter
 // I can to create toString() automatically since I have no more any collection of TextPart
-@ToString
+@ToString(callSuper = true)
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
@@ -59,6 +60,12 @@ public class TextCommonData extends AbstractIdentifier {
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     private Date updatedDate;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "textCommonData", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, orphanRemoval = true, optional = false) // optional = false means not null, and
+    // hibernate doesn't need additional request to check for nullable
+    private Bookmark bookmark;
 
     @Override
     public boolean equals(Object o) {

@@ -13,29 +13,26 @@
 
 -- DROP SEQUENCE public.hibernate_sequence;
 
--- CREATE SEQUENCE public.hibernate_sequence
---   INCREMENT 0
---   MINVALUE 0
---   MAXVALUE 0
---   START 0
---   CACHE 0;
--- ALTER TABLE public.hibernate_sequence
---   OWNER TO postgres;
+CREATE SEQUENCE IF NOT EXISTS public.hibernate_sequence;
+ALTER TABLE public.hibernate_sequence
+  OWNER TO postgres;
 
 CREATE TABLE IF NOT EXISTS public.text_common_data (
-    id BIGSERIAL PRIMARY KEY
+    id BIGINT NOT NULL
   , name VARCHAR(255)
   , first_item BIGINT
   , creating_date TIMESTAMP without time zone DEFAULT now()
   , updating_date TIMESTAMP without time zone DEFAULT now()
+  , CONSTRAINT text_common_data_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.text_parts (
-  id BIGSERIAL PRIMARY KEY
+  id BIGINT NOT NULL
   , body TEXT
   , next_item BIGINT UNIQUE
   , text_common_data_id BIGINT
   , last_update TIMESTAMP without time zone DEFAULT now()
+  , CONSTRAINT text_parts_pkey PRIMARY KEY (id)
 -- FOREIGN KEY (text_common_data_id) - ссылка на колонку в этой таблице
   , CONSTRAINT fk_textParts_textCommonData FOREIGN KEY (text_common_data_id) REFERENCES text_common_data (id)
 --     ON UPDATE CASCADE ON DELETE CASCADE -- default NO ACTION
@@ -49,24 +46,15 @@ CREATE INDEX IF NOT EXISTS idx_next_it
 
 CREATE TABLE IF NOT EXISTS public.bookmarks
 (
-  id BIGSERIAL PRIMARY KEY,
-  text_common_data_id bigint,
+  text_common_data_id BIGINT NOT NULL,
+  last_open_array INTEGER[],
+--   NB: PK and FK are the same
+  CONSTRAINT bookmarks_pkey PRIMARY KEY (text_common_data_id),
   CONSTRAINT fk_bookmarks_textCommonData FOREIGN KEY (text_common_data_id)
   REFERENCES public.text_common_data (id)
 );
 
 -- DROP TABLE IF EXISTS public.bookmarks CASCADE;
-
--- the table to persist element collection last_open_list in bookmarks
-CREATE TABLE public.bookmark_last_open_list
-(
-  bookmark_id bigint NOT NULL,
-  last_open_list integer,
-  CONSTRAINT fk_bookmarkLastOpenList_bookmarks FOREIGN KEY (bookmark_id)
-  REFERENCES public.bookmarks (id)
-);
-
--- DROP TABLE IF EXISTS public.bookmark_last_open_list CASCADE;
 
 CREATE OR REPLACE FUNCTION get_remaining_texparts_ordered_set(IN this_text_part_id BIGINT) RETURNS SETOF public.text_parts AS
 '
@@ -229,7 +217,7 @@ END
 '
   LANGUAGE plpgsql;
 
-SELECT * FROM update_text_part_by_id(44, 'new body: 44 next 46');
+-- SELECT * FROM update_text_part_by_id(44, 'new body: 44 next 46');
 
 -- CREATE OR REPLACE FUNCTION update_text_part_by_id(tpid BIGINT, updated_body TEXT) RETURNS TIMESTAMP AS
 -- '

@@ -2,31 +2,43 @@ package com.jezh.textsaver.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.jezh.textsaver.extension.AbstractIdentifier;
+import com.jezh.textsaver.hybernateType.IntArrayType;
 import lombok.*;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
-import java.util.List;
 
-@Entity
-@Table(name = "bookmarks")
 @Getter
 @Setter
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class Bookmark extends AbstractIdentifier {
+@ToString(exclude = "textCommonData")
 
-    /** List of the numbers of last open pages as the simplest way to create Bookmark list. The use of the
-     * {@code @ElementCollection} here is justified because the list won't include too much elements (up to 10 or 15) */
-    @ElementCollection
-    @Column(name = "last_open_list")
-    private List<Integer> lastOpenList;
+@Entity
+@Table(name = "bookmarks")
+// https://stackoverflow.com/questions/1647583/mapping-a-postgresql-array-with-hibernate
+// https://vladmihalcea.com/how-to-map-java-and-sql-arrays-with-jpa-and-hibernate/
+@TypeDefs(@TypeDef(name = "int-array", typeClass = IntArrayType.class))
+public class Bookmark {
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY) // default FetchType.EAGER - it's JPA requirement,
-    // since in hibernate all select fetching is LAZY
+    @Setter(value = AccessLevel.PRIVATE)
+    @Getter(value = AccessLevel.PRIVATE)
+    @Id
+    private Long id;
+
+    /**
+     * Array of the numbers of last open pages as the simplest way to create Bookmark list.
+     */
+    @Type(type = "int-array")
+    @Column(name = "last_open_array", columnDefinition = "integer[]")
+    private int[] lastOpenArray;
+
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "text_common_data_id")
+    @MapsId // simply it means that bookmark.id == textCommonData.id
     private TextCommonData textCommonData;
 
 //    private String color; // поле "цвет" перенести в DTO, а значения хранятся в ENUM - в двух, типа "красный" и "зеленый".

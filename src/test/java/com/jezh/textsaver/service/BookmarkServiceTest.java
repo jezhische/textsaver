@@ -29,7 +29,7 @@ public class BookmarkServiceTest extends BasePostgresConnectingTest {
 
     @Before
     public void setUp() throws Exception {
-        bookmark = Bookmark.builder().textCommonData(textCommonDataRepository.getOne(36L)).build();
+        bookmark = Bookmark.builder().textCommonData(textCommonDataRepository.getOne(1L)).build();
     }
 
     @After
@@ -37,5 +37,9 @@ public class BookmarkServiceTest extends BasePostgresConnectingTest {
         bookmark = null;
     }
 
-
+    @Test
+    public void testFindById() {
+        Bookmark bookmark = bookmarkRepository.findById(15L).get();
+        System.out.println("******************************************************* " + bookmark);
+    }
 }

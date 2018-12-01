@@ -46,7 +46,7 @@ public class TextCommonDataRepositoryPostgresTest extends BasePostgresConnecting
     @Test
     public void testCreate() {
         Assert.assertNotNull(textCommonDataRepository.saveAndFlush(textCommonData));
-        System.out.println("*****************************************************************" + textCommonData.getId());
+        System.out.println("*****************************************************************" + textCommonData);
     }
 
     @Test
