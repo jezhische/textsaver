@@ -1,8 +1,7 @@
 package com.jezh.textsaver.hybernateType;
 
+import com.jezh.textsaver.entity.BookmarkDef;
 import org.hibernate.type.AbstractSingleColumnStandardBasicType;
-import org.hibernate.type.descriptor.java.JavaTypeDescriptor;
-import org.hibernate.type.descriptor.sql.SqlTypeDescriptor;
 import org.hibernate.usertype.DynamicParameterizedType;
 
 import java.util.Properties;
@@ -11,24 +10,21 @@ import java.util.Properties;
  * https://vladmihalcea.com/how-to-map-java-and-sql-arrays-with-jpa-and-hibernate/
  * https://stackoverflow.com/questions/1647583/mapping-a-postgresql-array-with-hibernate
  * @author Vlad Mihalcea
+ * @author Ivan
  */
-public class IntArrayType extends AbstractSingleColumnStandardBasicType<int[]> implements DynamicParameterizedType{
+public class BookmarkDefArrayType extends AbstractSingleColumnStandardBasicType<BookmarkDef[]> implements DynamicParameterizedType{
 
-//    public IntArrayType(SqlTypeDescriptor sqlTypeDescriptor, JavaTypeDescriptor<int[]> javaTypeDescriptor) {
-//        super(sqlTypeDescriptor, javaTypeDescriptor);
-//    }
-
-    public IntArrayType() {
+    public BookmarkDefArrayType() {
         super(
                 ArraySqlTypeDescriptor.INSTANCE,
-                IntArrayTypeDescriptor.INSTANCE
+                BookmarkDefArrayTypeDescriptor.INSTANCE
         );
     }
 
     // AbstractSingleColumnStandardBasicType method
     @Override
     public String getName() {
-        return "int-array";
+        return "bookmark-def-array";
     }
 
     // AbstractSingleColumnStandardBasicType method
@@ -41,6 +37,6 @@ public class IntArrayType extends AbstractSingleColumnStandardBasicType<int[]> i
     @Override
     public void setParameterValues(Properties parameters) {
         // AbstractSingleColumnStandardBasicType method
-        ((IntArrayTypeDescriptor) getJavaTypeDescriptor()).setParameterValues(parameters);
+        ((BookmarkDefArrayTypeDescriptor) getJavaTypeDescriptor()).setParameterValues(parameters);
     }
 }

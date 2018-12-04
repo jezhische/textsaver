@@ -1,6 +1,7 @@
 package com.jezh.textsaver.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jezh.textsaver.entity.BookmarkDef;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
 import org.junit.Test;
@@ -212,12 +213,20 @@ public class TestUtil {
 
 
 // -------------------------------------------------------------------------------------------------------------------
-    public static int[] createRandom10IntArray() {
-        int[] result = new int[10];
+    public static String[] createRandom10BookmarkDefsArray() {
+        String[] result = new String[10];
         for (int i = 0; i < result.length; i++) {
-            result[i] = new Random().nextInt(100);
+            int pnumber = new Random().nextInt(100);
+            boolean isEdited = ranBool();
+            BookmarkDef bookmarkDef = BookmarkDef.builder().page_number(pnumber).is_edited(isEdited).build();
+            result[i] = bookmarkDef.toString();
         }
         return result;
+    }
+
+    private static boolean ranBool() {
+        int coin = new Random().nextInt(100);
+        return coin % 2 == 0;
     }
 
 // ============================================================================================================ TESTS

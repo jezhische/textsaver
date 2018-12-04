@@ -1,7 +1,8 @@
 package com.jezh.textsaver.hybernateType;
 
 /**
- * https://stackoverflow.com/questions/48017960/save-large-objects-to-postgresql-db-using-hibernate-jpa
+ * https://vladmihalcea.com/how-to-map-java-and-sql-arrays-with-jpa-and-hibernate/
+ * https://stackoverflow.com/questions/1647583/mapping-a-postgresql-array-with-hibernate
  * @author Vlad Mihalcea
  */
 public class IntArrayTypeDescriptor extends AbstractArrayTypeDescriptor<int[]> {

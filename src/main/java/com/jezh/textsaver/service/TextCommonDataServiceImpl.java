@@ -1,6 +1,7 @@
 package com.jezh.textsaver.service;
 
 import com.jezh.textsaver.entity.Bookmark;
+import com.jezh.textsaver.entity.BookmarkDef;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
 import com.jezh.textsaver.repository.BookmarkRepository;
@@ -52,8 +53,10 @@ public class TextCommonDataServiceImpl implements TextCommonDataService {
         textPartRepository.saveAndFlush(textPart);
 
         // create bookmarks
-        int[] lastOpens = new int[bookmarksCount];
-        lastOpens[0] = 1;
+//        BookmarkDef[] lastOpens = new BookmarkDef[bookmarksCount];
+        String[] lastOpens = new String[bookmarksCount];
+        BookmarkDef bookmarkDef = BookmarkDef.builder().page_number(1).build();
+        lastOpens[0] = bookmarkDef.toString();
         Bookmark bookmark = Bookmark.builder().lastOpenArray(lastOpens).build();
         bookmark.setTextCommonData(textCommonData);
         bookmarkRepository.saveAndFlush(bookmark);

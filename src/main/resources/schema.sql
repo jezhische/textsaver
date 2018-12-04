@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS public.text_common_data (
   , CONSTRAINT text_common_data_pkey PRIMARY KEY (id)
 );
 
+-- DROP TABLE IF EXISTS public.text_common_data CASCADE;
+
 CREATE TABLE IF NOT EXISTS public.text_parts (
   id BIGINT NOT NULL
   , body TEXT
@@ -43,11 +45,29 @@ CREATE INDEX IF NOT EXISTS idx_next_it
   USING hash
   (next_item);
 
+-- DROP TABLE IF EXISTS public.text_parts CASCADE;
+
+
+
+-- CREATE TYPE bookmark_def AS (
+--   page_number INTEGER,
+--   is_edited BOOLEAN
+-- );
+
+-- DROP TYPE bookmark_def CASCADE ;
+
+-- CREATE TABLE IF NOT EXISTS bookmark_def (
+--   page_number INTEGER,
+--   is_edited BOOLEAN
+-- );
+
+-- DROP TABLE bookmark_def CASCADE ;
+
 
 CREATE TABLE IF NOT EXISTS public.bookmarks
 (
   text_common_data_id BIGINT NOT NULL,
-  last_open_array INTEGER[],
+  last_open_array text [],
 --   NB: PK and FK are the same
   CONSTRAINT bookmarks_pkey PRIMARY KEY (text_common_data_id),
   CONSTRAINT fk_bookmarks_textCommonData FOREIGN KEY (text_common_data_id)
@@ -55,6 +75,8 @@ CREATE TABLE IF NOT EXISTS public.bookmarks
 );
 
 -- DROP TABLE IF EXISTS public.bookmarks CASCADE;
+
+-- INSERT INTO bookmarks VALUES (13, '{}');
 
 CREATE OR REPLACE FUNCTION get_remaining_texparts_ordered_set(IN this_text_part_id BIGINT) RETURNS SETOF public.text_parts AS
 '

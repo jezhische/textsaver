@@ -32,18 +32,18 @@ public class TextPartControllerTransientDataRepo {
 
 //    private static TextPartControllerTransientDataRepo instance;
 //
-//    private TextPartControllerTransientDataRepo(List<Long> listOfSortedTextPartId, boolean isRunning, int pageNumber, int totalPages) {
+//    private TextPartControllerTransientDataRepo(List<Long> listOfSortedTextPartId, boolean isRunning, int page_number, int totalPages) {
 //        this.listOfSortedTextPartId = listOfSortedTextPartId;
 //        this.isRunning = isRunning;
-//        this.pageNumber = pageNumber;
+//        this.page_number = page_number;
 //        this.totalPages = totalPages;
 //    }
 //
 //    public static TextPartControllerTransientDataRepo getInstance(
-//            List<Long> listOfSortedTextPartId, boolean isRunning, int pageNumber, int totalPages) { // #3
+//            List<Long> listOfSortedTextPartId, boolean isRunning, int page_number, int totalPages) { // #3
 //        if(instance == null){
 //            instance = new TextPartControllerTransientDataRepo(
-//                    listOfSortedTextPartId, isRunning, pageNumber, totalPages);
+//                    listOfSortedTextPartId, isRunning, page_number, totalPages);
 //        }
 //        return instance;
 //    }

@@ -36,7 +36,7 @@ public class TextPartLinkAssembler  {
         if (pageNumber > 2 && pageNumber <= repository.getTotalPages())
             page.add(linkTo(methodOn(TextPartController.class).findPageByTextCommonDataIdAndPageNumber(
                     commonDataId, pageNumber - 1, request)).withRel("previous"));
-//        if (pageNumber > 1 && pageNumber < repository.getTotalPages())
+//        if (page_number > 1 && page_number < repository.getTotalPages())
             page.add(linkTo(methodOn(TextPartController.class).findPageByTextCommonDataIdAndPageNumber(
                     commonDataId, pageNumber, request)).withSelfRel());
         if (pageNumber >=1 && pageNumber < repository.getTotalPages() - 1)

@@ -41,15 +41,15 @@ function closeDoc() {
 // /** create buttons row with certain pages (including bookmarks) links  */
 // function getPagesReferenceButtons(docFormId, data) {
 //     // $('#' + docFormId).append('<div id=page-buttons></div>')
-//     // $('#page-buttons').append('<input type="submit" value="' + data.pageNumber + '" class="button-bar">');
+//     // $('#page-buttons').append('<input type="submit" value="' + data.page_number + '" class="button-bar">');
 //     let links = data._links;
 //     let nextLink = links.next.href;
 //     console.log('nextLink ======== ' + nextLink);
 //     $('#' + docFormId).append('<div id=page-buttons>' +
-//         '<button type="button" id="'+ data.pageNumber + '" >' + data.pageNumber + '</button>' +
-//         // '<button type="button" id="'+ data.pageNumber + '" onclick="extractPage(' + nextLink + ')">' + data.pageNumber + '</button>' +
+//         '<button type="button" id="'+ data.page_number + '" >' + data.page_number + '</button>' +
+//         // '<button type="button" id="'+ data.page_number + '" onclick="extractPage(' + nextLink + ')">' + data.page_number + '</button>' +
 //         '</div>');
-//     $('#' + data.pageNumber).click(function () {
+//     $('#' + data.page_number).click(function () {
 //         extractPage(nextLink);
 //     });
 // }

@@ -17,6 +17,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import static org.junit.Assert.*;
+
 public class TextCommonDataRepositoryPostgresTest extends BasePostgresConnectingTest {
 
     private TextCommonData textCommonData;
@@ -43,16 +45,21 @@ public class TextCommonDataRepositoryPostgresTest extends BasePostgresConnecting
         textPart = null;
     }
 
+//    @Test
+//    public void testFindById() {
+//        assertNotNull(textCommonDataRepository.findById(13L).get());
+//    }
+
     @Test
     public void testCreate() {
-        Assert.assertNotNull(textCommonDataRepository.saveAndFlush(textCommonData));
+        assertNotNull(textCommonDataRepository.saveAndFlush(textCommonData));
         System.out.println("*****************************************************************" + textCommonData);
     }
 
     @Test
     public void testRemove() {
         textCommonData = textCommonDataRepository.findAll().get(0);
-        Assert.assertNotNull(textCommonData);
+        assertNotNull(textCommonData);
         textCommonDataRepository.delete(textCommonData);
         Assert.assertFalse(textCommonDataRepository.findById(textCommonData.getId()).isPresent());
     }

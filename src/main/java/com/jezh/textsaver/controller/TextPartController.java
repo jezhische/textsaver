@@ -163,7 +163,7 @@ public class TextPartController {
         TextPartPagedLinkedRepresentation linkedPage;
         try {
 //            System.out.println("********************************************" + repository.isRunning() +
-//            "*********" + repository.getListOfSortedTextPartId() + "***************" + repository.getPageNumber() + "**" + repository.getTotalPages());
+//            "*********" + repository.getListOfSortedTextPartId() + "***************" + repository.getPage_number() + "**" + repository.getTotalPages());
             linkedPage = assembler.getLinkedPage(textPart, commonDataId, pageNumber, request, repository);
 //            System.out.println("*************************************************************************" + linkedPage);
         } catch (Exception e) {

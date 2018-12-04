@@ -1,6 +1,5 @@
 package com.jezh.textsaver.hybernateType;
 
-import com.jezh.textsaver.util.ArrayUtil;
 import org.hibernate.type.descriptor.WrapperOptions;
 import org.hibernate.type.descriptor.java.AbstractTypeDescriptor;
 import org.hibernate.type.descriptor.java.MutabilityPlan;
@@ -13,7 +12,9 @@ import java.util.Arrays;
 import java.util.Properties;
 
 /**
- * https://stackoverflow.com/questions/48017960/save-large-objects-to-postgresql-db-using-hibernate-jpa
+ * https://vladmihalcea.com/how-to-map-java-and-sql-arrays-with-jpa-and-hibernate/
+ * https://stackoverflow.com/questions/1647583/mapping-a-postgresql-array-with-hibernate
+ *
  * @author Vlad Mihalcea
  */
 public abstract class AbstractArrayTypeDescriptor<T> extends AbstractTypeDescriptor<T> implements DynamicParameterizedType {

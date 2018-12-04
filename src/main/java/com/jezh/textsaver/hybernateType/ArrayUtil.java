@@ -1,9 +1,10 @@
-package com.jezh.textsaver.util;
+package com.jezh.textsaver.hybernateType;
 
 import java.util.Arrays;
 
 /**
  * https://github.com/vladmihalcea/high-performance-java-persistence/blob/bc5a5b81a67cd4e41afb2438260646d04d733210/core/src/main/java/com/vladmihalcea/book/hpjp/hibernate/type/array/ArrayUtil.java
+ * https://vladmihalcea.com/how-to-map-java-and-sql-arrays-with-jpa-and-hibernate/
  * @author Vlad Mihalcea
  */
 public class ArrayUtil {

@@ -6,13 +6,8 @@ import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.util.TestUtil;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class BookmarkRepositoryPostgresTest extends BasePostgresConnectingTest {
 
@@ -28,10 +23,11 @@ public class BookmarkRepositoryPostgresTest extends BasePostgresConnectingTest {
 
     @Before
     public void setUp() throws Exception {
-        textCommonData = textCommonDataRepository.findById(1L).get();
+//        textCommonData = textCommonDataRepository.findById(1L).get();
+        textCommonData = textCommonDataRepository.findById(13L).get();
         bookmark = Bookmark.builder()
                 .textCommonData(textCommonData)
-                .lastOpenArray(TestUtil.createRandom10IntArray())
+                .lastOpenArray(TestUtil.createRandom10BookmarkDefsArray())
                 .build();
     }
 
