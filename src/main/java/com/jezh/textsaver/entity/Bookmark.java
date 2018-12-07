@@ -44,8 +44,8 @@ public class Bookmark {
 
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "text_common_data_id")
-    @MapsId // simply it means that bookmark.id == textCommonData.id
+//    @JoinColumn(name = "text_common_data_id")
+    @MapsId // briefly it means that bookmark.id == textCommonData.id
     private TextCommonData textCommonData;
 
 //    private String color; // поле "цвет" перенести в DTO, а значения хранятся в ENUM - в двух, типа "красный" и "зеленый".

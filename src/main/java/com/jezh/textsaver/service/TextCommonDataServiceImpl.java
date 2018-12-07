@@ -1,17 +1,16 @@
 package com.jezh.textsaver.service;
 
 import com.jezh.textsaver.entity.Bookmark;
-import com.jezh.textsaver.entity.BookmarkDef;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
 import com.jezh.textsaver.repository.BookmarkRepository;
+import com.jezh.textsaver.repository.DocumentDataRepository;
 import com.jezh.textsaver.repository.TextCommonDataRepository;
 import com.jezh.textsaver.repository.TextPartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,29 +39,19 @@ public class TextCommonDataServiceImpl implements TextCommonDataService {
     @Override
     public TextCommonData create(String name) {
         // create textCommonData
-        TextCommonData textCommonData = TextCommonData.builder()
-                .name(name)
-                .createdDate(new Date())
-                .updatedDate(new Date())
-                .build();
+        TextCommonData textCommonData = DocumentDataRepository.createTextCommonData(name);
         textCommonDataRepository.saveAndFlush(textCommonData);
 
         // create textPart
-        TextPart textPart = TextPart.builder().lastUpdate(new Date()).build();
-        textPart.setTextCommonData(textCommonData);
+        TextPart textPart = DocumentDataRepository.createTextPart(textCommonData);
         textPartRepository.saveAndFlush(textPart);
 
         // create bookmarks
-//        BookmarkDef[] lastOpens = new BookmarkDef[bookmarksCount];
-        String[] lastOpens = new String[bookmarksCount];
-        BookmarkDef bookmarkDef = BookmarkDef.builder().page_number(1).build();
-        lastOpens[0] = bookmarkDef.toString();
-        Bookmark bookmark = Bookmark.builder().lastOpenArray(lastOpens).build();
-        bookmark.setTextCommonData(textCommonData);
+        Bookmark bookmark = DocumentDataRepository.createBookmark(bookmarksCount, textCommonData);
         bookmarkRepository.saveAndFlush(bookmark);
 
         // update textCommonData
-        textCommonData.setBookmark(bookmark);
+//        textCommonData.setBookmark(bookmark);
         textCommonData.setFirstItem(textPart.getId());
         return textCommonData;
     }
@@ -86,4 +75,8 @@ public class TextCommonDataServiceImpl implements TextCommonDataService {
     public List<TextCommonData> findAll() {
         return textCommonDataRepository.findAll();
     }
+
+// ====================================================================================================
+
+
 }

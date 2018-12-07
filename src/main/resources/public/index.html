@@ -3,19 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>home</title>
+    <link rel="stylesheet" type="text/css" href="bootstrap3.3.7/css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="inner-styles.css">
+    <link rel="icon" type="image/png" href="favicon.ico"/>
     <style>
-        textarea {
-            border: 0;
-            outline: none;
-            padding: 0;
-            margin: 0;
-            /** to order all the textarea vertically */
-            display: list-item;
-            /** allows to set min height of textarea as 1 row, not as 2 rows as its default value */
-            !important;height: 0;
-            /** remove resize handle (a little triangle in the bottom right of textarea) */
-            resize: none;
-        }
         .buttons{
             margin-left:10px;
             padding: 10px;
@@ -24,11 +15,23 @@
             border-color: #e38d13;
             color: #e38d13
         }
+
+        button.create-btn {
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            padding: .8em 1em calc(.8em + 3px);
+            border-radius: 8px;
+            background: rgb(64,199,129);
+            box-shadow: 0 -1px rgb(53,167,110) inset;
+            transition: 0.1s;
+        }
+        button.create-btn:hover { background: rgb(53, 167, 110); }
+        button.create-btn:active {
+            background: rgb(33,147,90);
+            box-shadow: 0 3px rgb(33,147,90) inset;
+        }
     </style>
-    <link rel="stylesheet" type="text/css" href="bootstrap3.3.7/css/bootstrap.css"/>
-    <link rel="stylesheet" type="text/css" href="inner-styles.css">
-    <link rel="icon" type="image/png" href="favicon.ico"/>
-        <!--href="../static/favicon.ico"-->
     <script src="jquery-3.3.1.js"></script>
 </head>
 <body>
@@ -36,17 +39,21 @@
 <ul id="menu">
     <li><a href="documents">home</a></li>
     <li><a href="about">about</a></li>
-    <li><a href="swagger">swagger</a></li>
+    <li><a href="swagger" target="_blank">swagger</a></li>
 </ul>
+<br>
+<br>
+<div style="display: inline-block">
+    <button id="create-doc" class="create-btn" style="margin-left: 200px">create new doc</button>
+    <button id="helper2" class="buttons" style="margin-left: 200px">get_textpart32_value</button>
+    <!--<input type="button" id="create-doc-btn" value="create new DOC">-->
+</div>
+<br>
+<br>
 
-<!--<div style="margin-left:100ch">-->
-    <!--<a href="http://localhost:8074/textsaver/swagger-ui.html">-->
-        <!--swagger-ui.html-->
-    <!--</a>-->
-<!--</div>-->
 
-<button id="helper1" class="buttons">helper1</button>
-<div><button id="helper2" class="buttons">get_textpart32_value</button></div>
+<!--<button id="helper1" class="buttons">helper1</button>-->
+<!--<div><button id="helper2" class="buttons">get_textpart32_value</button></div>-->
 <p id="hel1txt"></p>
 <p id="hel2txt"></p>
 

@@ -1,6 +1,6 @@
 package com.jezh.textsaver.hybernateType;
 
-import com.jezh.textsaver.entity.BookmarkDef;
+import com.jezh.textsaver.dto.BookmarkDef;
 
 /**
  * https://vladmihalcea.com/how-to-map-java-and-sql-arrays-with-jpa-and-hibernate/

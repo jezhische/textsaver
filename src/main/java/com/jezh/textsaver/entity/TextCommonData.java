@@ -61,11 +61,11 @@ public class TextCommonData extends AbstractIdentifier {
     @LastModifiedDate
     private Date updatedDate;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "textCommonData", cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY, orphanRemoval = true, optional = false) // optional = false means not null, and
-    // hibernate doesn't need additional request to check for nullable
-    private Bookmark bookmark;
+//    @JsonIgnore
+//    @OneToOne(mappedBy = "textCommonData", cascade = CascadeType.ALL,
+//            fetch = FetchType.LAZY, orphanRemoval = true, optional = false) // optional = false means not null, and
+//    // hibernate doesn't need additional request to check for nullable
+//    private Bookmark bookmark;
 
     @Override
     public boolean equals(Object o) {

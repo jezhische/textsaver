@@ -1,6 +1,6 @@
 package com.jezh.textsaver.hybernateType;
 
-import com.jezh.textsaver.entity.BookmarkDef;
+import com.jezh.textsaver.dto.BookmarkDef;
 import org.hibernate.type.AbstractSingleColumnStandardBasicType;
 import org.hibernate.usertype.DynamicParameterizedType;
 

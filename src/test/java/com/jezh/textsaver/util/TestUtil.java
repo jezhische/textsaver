@@ -1,7 +1,7 @@
 package com.jezh.textsaver.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jezh.textsaver.entity.BookmarkDef;
+import com.jezh.textsaver.dto.BookmarkDef;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
 import org.junit.Test;
