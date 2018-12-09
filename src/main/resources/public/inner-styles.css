@@ -1,0 +1,75 @@
+textarea {
+    border: 0;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    /** to order all the textarea vertically */
+    display: list-item;
+    /** allows to set min height of textarea as 1 row, not as 2 rows as its default value */
+!important;height: 0;
+    /** remove resize handle (a little triangle in the bottom right of textarea) */
+    resize: none;
+}
+/*.buttons{*/
+    /*margin-left:10px;*/
+    /*padding: 10px;*/
+    /*margin-bottom: 10px;*/
+    /*border: 2px;*/
+    /*border-color: #e38d13;*/
+    /*color: #e38d13*/
+/*}*/
+
+
+ul#menu li{
+    display: inline-block;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+#menu {
+    text-align: center;
+    background: springgreen;
+}
+
+#menu a {
+    display: block;
+    padding: 5px 45px;
+    color: #fff;
+    font-size:150%;
+    text-decoration: none;
+}
+
+/*:hover selector is used to select elements when the mouse hovers over them*/
+#menu a:hover {
+    background: #8AB8CC;
+}
+
+/*образец создания кнопки----------------------------------------------------------------------------*/
+a.knopka {
+    color: #fff; /* цвет текста */
+    text-decoration: none; /* убирать подчёркивание у ссылок */
+    user-select: none; /* убирать выделение текста */
+    background: rgb(212,75,56); /* фон кнопки */
+    padding: .7em 1.5em; /* отступ от текста */
+    outline: none; /* убирать контур в Mozilla */
+}
+a.knopka:hover { background: rgb(232,95,76); } /* при наведении курсора мышки */
+a.knopka:active { background: rgb(152,15,0); } /* при нажатии
+------------------------------------------------------------------------------------------------------*/
+
+/*#create-doc-btn button {*/
+    /*font-weight: 700;*/
+    /*color: white;*/
+    /*text-decoration: none;*/
+    /*padding: .8em 1em calc(.8em + 3px);*/
+    /*border-radius: 8px;*/
+    /*background: rgb(64,199,129);*/
+    /*box-shadow: 0 -3px rgb(53,167,110) inset;*/
+    /*transition: 0.1s;*/
+/*}*/
+/*#create-doc-btn button:hover { background: rgb(53, 167, 110); }*/
+/*#create-doc-btn button:active {*/
+    /*background: rgb(33,147,90);*/
+    /*box-shadow: 0 3px rgb(33,147,90) inset;*/
+/*}*/
+
