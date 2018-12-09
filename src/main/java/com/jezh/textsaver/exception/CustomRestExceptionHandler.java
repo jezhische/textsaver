@@ -211,8 +211,10 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleNullPointerException(NullPointerException ex, WebRequest request) {
         ApiExceptionDetails details = ApiExceptionDetails.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .message(ex.getLocalizedMessage() + ": " + request.getDescription(false))
-                .error("The document could be not opened yet. Please try first to open the document.")
+                .message("The item was not found. " +
+                        "<br>It can occur if the document is not opened yet or desired page does not exist. " +
+                        "<br>Please try first to open the document or insert the right page number.")
+                .error(ex.getLocalizedMessage() + ": " + request.getDescription(false))
                 .build();
         return ResponseEntity.status(details.getStatus()).headers(new HttpHeaders()).body(details);
     }

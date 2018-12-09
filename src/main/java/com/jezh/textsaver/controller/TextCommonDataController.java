@@ -1,33 +1,58 @@
 package com.jezh.textsaver.controller;
 
 import com.jezh.textsaver.businessLayer.TextCommonDataLinkAssembler;
-import com.jezh.textsaver.businessLayer.DocDataManager;
-import com.jezh.textsaver.dto.TextCommonDataControllerTransientDataRepo;
-import com.jezh.textsaver.dto.TextCommonDataLinkedRepresentation;
+import com.jezh.textsaver.businessLayer.DataManager;
+import com.jezh.textsaver.businessLayer.TextPartResourceAssembler;
+import com.jezh.textsaver.dto.TextPartResource;
+import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.entity.TextCommonData;
+import com.jezh.textsaver.entity.TextPart;
+import com.jezh.textsaver.service.BookmarkService;
 import com.jezh.textsaver.service.TextCommonDataService;
+import com.jezh.textsaver.service.TextPartService;
+import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @Controller
 //@RequestMapping("/text-common-data")
+@RequestMapping("/doc-data")
 public class TextCommonDataController {
 
     @Autowired
     private TextCommonDataService textCommonDataService;
 
     @Autowired
-    private TextCommonDataLinkAssembler assembler;
-
-//    @Autowired
-//    private TextCommonDataControllerTransientDataRepo repository;
+    private TextPartService textPartService;
 
     @Autowired
-    DocDataManager docDataManager;
+    private BookmarkService bookmarkService;
+
+    @Autowired
+    private TextCommonDataLinkAssembler dataAssembler;
+
+    @Autowired
+    private TextPartResourceAssembler pageModelAssembler;
+
+    @ResponseBody
+    @PostMapping("")
+    public ResponseEntity<?> create(@RequestBody String name) throws NoHandlerFoundException {
+        TextCommonData textCommonData = textCommonDataService.create(name);
+        long id = textCommonData.getId();
+        Page<TextPart> page = textPartService.findPageByDocDataIdAndPageNumber(id, 1);
+        Bookmarks bookmarks = bookmarkService.findById(id).orElseThrow(() -> new NoHandlerFoundException("GET",
+                "/doc-data", new HttpHeaders()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(pageModelAssembler.getResource(page, bookmarks));
+    }
 
 
 
@@ -43,14 +68,14 @@ public class TextCommonDataController {
     // каждой из них будет выглядеть как "http://localhost/documents/TextCommonDataRepositoryPostgresTest-created-date-..."
     // Значит, при нажатии на ссылку нужно обслужить запрос "documents/{doc-name}" и получить страницу с rel
     // "self=http://localhost/documents/TextCommonDataRepositoryPostgresTest-created-date-.../pages?page=..."
-    @ResponseBody
-    @GetMapping(path = "/documents")
-    public List<TextCommonDataLinkedRepresentation> getLinkedTextCommonDataList() {
-        List<TextCommonData> docsData = textCommonDataService.findAll();
-        List<TextCommonDataLinkedRepresentation> linkedDocsData =
-                docDataManager.setTextCommonDataControllerTransientDataRepo(docsData);
-        return linkedDocsData;
-        }
+//    @ResponseBody
+//    @GetMapping(path = "/documents")
+//    public List<TextCommonDataResource> getLinkedTextCommonDataList() {
+//        List<TextCommonData> docsData = textCommonDataService.findAll();
+//        List<TextCommonDataResource> linkedDocsData =
+//                dataManager.setTextCommonDataControllerTransientDataRepo(docsData);
+//        return linkedDocsData;
+//        }
 
 
 //    /** find by name in conjunction with created date */
@@ -59,18 +84,18 @@ public class TextCommonDataController {
 // открывавшейся страницы и сделать forward
 // на "http://localhost/documents/TextCommonDataRepositoryPostgresTest-created-date-.../pages?page=..."
 //    @ResponseBody
-    @GetMapping(value = "documents/{doc-name}")
-    public String findByLinkedDocName(
-            @PathVariable(value = "doc-name") String name) {
-
-        // FIXME: проверка на null и бросить исключение (get возвращает null, если не нашел по ключу)
-        Long docId = docDataManager.getDocIds().get(name);
-
-// todo: тут он заполняет репозиторий контроллера страниц, получает закладки, получает последнюю открытую страницу, открывает ее вместе со всеми ссылками
-// Закладки нужно получать каждый раз при открытии страницы, так что просто включить вызов BookmarkService в метод TextPartController
-
-        return "forward:/text-common-data/" + docId + "/text-parts";
-    }
+//    @GetMapping(value = "documents/{doc-name}")
+//    public String findByLinkedDocName(
+//            @PathVariable(value = "doc-name") String name) {
+//
+//        // FIXME: проверка на null и бросить исключение (get возвращает null, если не нашел по ключу)
+//        Long docId = dataManager.getDocIds().get(name);
+//
+//// todo: тут он заполняет репозиторий контроллера страниц, получает закладки, получает последнюю открытую страницу, открывает ее вместе со всеми ссылками
+//// Закладки нужно получать каждый раз при открытии страницы, так что просто включить вызов BookmarkService в метод TextPartController
+//
+//        return "forward:/text-common-data/" + docId + "/text-parts";
+//    }
 
 
     /** find the textCommonData by id */

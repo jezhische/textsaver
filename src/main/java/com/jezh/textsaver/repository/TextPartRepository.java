@@ -79,7 +79,7 @@ public interface TextPartRepository extends JpaRepository<TextPart, Long> {
 @Query(value = "SELECT * FROM public.get_all_texparts_ordered_set(?1)",
         countQuery = "SELECT count(*) FROM public.get_all_texparts_ordered_set(?1)",
         nativeQuery = true)
-Page<TextPart> findSortedPageByTextCommonDataId(Long textCommonDataId, Pageable pageable);
+Page<TextPart> findPageByDocDataId(Long textCommonDataId, Pageable pageable);
 
 // NB: id BIGSERIAL PRIMARY KEY will be cast to BigInteger and cannot be cast to Long automatically
 @Query(value = "SELECT * FROM public.get_all_texparts_id_ordered_set(?1)", nativeQuery = true)

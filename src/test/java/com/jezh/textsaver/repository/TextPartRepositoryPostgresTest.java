@@ -153,7 +153,7 @@ public class TextPartRepositoryPostgresTest extends BasePostgresConnectingTest {
                 ((TextPart) TestUtil.getRandomElementFromArray(textPartRepository.findAll().toArray()))
                         .getTextCommonData().getId();
 //                36L;
-        Page<TextPart> page = textPartRepository.findSortedPageByTextCommonDataId(textCommonDataForeignKeyId,
+        Page<TextPart> page = textPartRepository.findPageByDocDataId(textCommonDataForeignKeyId,
                 PageRequest.of(0, 13));
         page.forEach(textPart1 -> System.out.printf("id: %d, nextItem: %d;\n", textPart1.getId(), textPart1.getNextItem()));
         List<TextPart> sortedList = page.getContent();

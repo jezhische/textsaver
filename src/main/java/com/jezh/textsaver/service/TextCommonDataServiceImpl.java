@@ -1,7 +1,7 @@
 package com.jezh.textsaver.service;
 
-import com.jezh.textsaver.entity.Bookmark;
-import com.jezh.textsaver.entity.BookmarkDef;
+import com.jezh.textsaver.businessLayer.DataManager;
+import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
 import com.jezh.textsaver.repository.BookmarkRepository;
@@ -40,29 +40,29 @@ public class TextCommonDataServiceImpl implements TextCommonDataService {
     @Override
     public TextCommonData create(String name) {
         // create textCommonData
+        Date createdDate = new Date();
+        String uniqueName = DataManager.getUniqueName(name, createdDate);
         TextCommonData textCommonData = TextCommonData.builder()
                 .name(name)
-                .createdDate(new Date())
-                .updatedDate(new Date())
+                .createdDate(createdDate)
+                .updatedDate(createdDate)
                 .build();
         textCommonDataRepository.saveAndFlush(textCommonData);
 
         // create textPart
-        TextPart textPart = TextPart.builder().lastUpdate(new Date()).build();
+        TextPart textPart = TextPart.builder().lastUpdate(createdDate).build();
         textPart.setTextCommonData(textCommonData);
         textPartRepository.saveAndFlush(textPart);
 
         // create bookmarks
-//        BookmarkDef[] lastOpens = new BookmarkDef[bookmarksCount];
         String[] lastOpens = new String[bookmarksCount];
-        BookmarkDef bookmarkDef = BookmarkDef.builder().page_number(1).build();
-        lastOpens[0] = bookmarkDef.toString();
-        Bookmark bookmark = Bookmark.builder().lastOpenArray(lastOpens).build();
-        bookmark.setTextCommonData(textCommonData);
-        bookmarkRepository.saveAndFlush(bookmark);
+        lastOpens[0] = DataManager.getLastOpenedArrayItem(1, false);
+        Bookmarks bookmarks = Bookmarks.builder().lastOpenArray(lastOpens).build();
+        bookmarks.setTextCommonData(textCommonData);
+        bookmarkRepository.saveAndFlush(bookmarks);
 
         // update textCommonData
-        textCommonData.setBookmark(bookmark);
+        textCommonData.setBookmarks(bookmarks);
         textCommonData.setFirstItem(textPart.getId());
         return textCommonData;
     }

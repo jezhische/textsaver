@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 //@RequestMapping(value = "/page-ref")
-public class PageReferencesController {
+public class BookmarksController {
 
 //    @GetMapping
 //    public ResponseEntity<?> getBookmarks(

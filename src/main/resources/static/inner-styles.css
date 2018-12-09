@@ -1,3 +1,23 @@
+textarea {
+    border: 0;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    /** to order all the textarea vertically */
+    display: list-item;
+    /** allows to set min height of textarea as 1 row, not as 2 rows as its default value */
+!important;height: 0;
+    /** remove resize handle (a little triangle in the bottom right of textarea) */
+    resize: none;
+}
+.buttons{
+    margin-left:10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 2px;
+    border-color: #e38d13;
+    color: #e38d13
+}
 ul#menu li{
     display: inline-block;
     text-align: center;
@@ -19,4 +39,20 @@ ul#menu li{
 
 #menu a:hover {
     background: #8AB8CC;
+}
+
+button.create-btn {
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    padding: .8em 1em calc(.8em + 3px);
+    border-radius: 8px;
+    background: rgb(64,199,129);
+    box-shadow: 0 -1px rgb(53,167,110) inset;
+    transition: 0.1s;
+}
+button.create-btn:hover { background: rgb(53, 167, 110); }
+button.create-btn:active {
+    background: rgb(33,147,90);
+    box-shadow: 0 3px rgb(33,147,90) inset;
 }

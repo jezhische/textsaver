@@ -1,6 +1,6 @@
 package com.jezh.textsaver.service;
 
-import com.jezh.textsaver.entity.Bookmark;
+import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.repository.BookmarkRepository;
 import com.jezh.textsaver.repository.TextCommonDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +25,17 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public Bookmark create(Bookmark newOne) {
+    public Bookmarks create(Bookmarks newOne) {
         return bookmarkRepository.saveAndFlush(newOne);
     }
 
     @Override
-    public Optional<Bookmark> findById(Long id) {
+    public Optional<Bookmarks> findById(Long id) {
         return bookmarkRepository.findById(id);
     }
 
     //    @Override
-//    public Bookmark delete(Bookmark bookmark) {
+//    public Bookmarks delete(Bookmarks bookmarks) {
 //        bookmarkRepository
 //        return null;
 //    }

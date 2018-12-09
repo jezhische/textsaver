@@ -65,7 +65,7 @@ public class TextCommonData extends AbstractIdentifier {
     @OneToOne(mappedBy = "textCommonData", cascade = CascadeType.ALL,
             fetch = FetchType.LAZY, orphanRemoval = true, optional = false) // optional = false means not null, and
     // hibernate doesn't need additional request to check for nullable
-    private Bookmark bookmark;
+    private Bookmarks bookmarks;
 
     @Override
     public boolean equals(Object o) {

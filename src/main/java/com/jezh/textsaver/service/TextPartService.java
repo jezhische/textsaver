@@ -30,7 +30,6 @@ public interface TextPartService {
 //    void deleteById(Long id);
 
 // ====================================================================
-    Page<TextPart> findSortedPagesByTextCommonDataId(Long textCommonDataId, Pageable pageable);
 
     Optional<TextPart> findTextPartById(Long id);
 
@@ -40,6 +39,11 @@ public interface TextPartService {
 
 //    Optional<TextPart> update(Long textPartId);
     Optional<TextPart> update(TextPart textPart);
+
+// ===================================================================================================
+
+    Page<TextPart> findPageByDocDataIdAndPageNumber(Long textCommonDataId, int pageNumber);
+
 
 
 }

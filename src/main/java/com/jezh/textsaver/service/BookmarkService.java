@@ -1,17 +1,16 @@
 package com.jezh.textsaver.service;
 
-import com.jezh.textsaver.entity.Bookmark;
+import com.jezh.textsaver.entity.Bookmarks;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface BookmarkService {
 
-//    List<Bookmark> findAll();
+//    List<Bookmarks> findAll();
 
-    Bookmark create(Bookmark newOne);
+    Bookmarks create(Bookmarks newOne);
 
-    Optional<Bookmark> findById(Long id);
+    Optional<Bookmarks> findById(Long id);
 
-//    Bookmark delete(Bookmark bookmark);
+//    Bookmarks delete(Bookmarks bookmarks);
 }

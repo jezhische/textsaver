@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.jezh.textsaver.controller.TextPartController;
-import com.jezh.textsaver.dto.TextPartPagedLinkedRepresentation;
+import com.jezh.textsaver.dto.TextPartResource;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
 import com.jezh.textsaver.util.TestUtil;
@@ -25,14 +25,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -57,7 +55,7 @@ public class ApplicationTest {
     private TextPart textPartTwo, textPartThree, textPartFour;
     private TextCommonData textCommonData;
     private Long existingTextCommonDataId;
-    private TextPartPagedLinkedRepresentation textPartPagedLinkedRepresentation;
+    private TextPartResource textPartResource;
     private ObjectMapper objectMapper;
 
     @Before
@@ -82,8 +80,8 @@ public class ApplicationTest {
                 .build();
         textCommonData.setId(existingTextCommonDataId);
 
-        textPartPagedLinkedRepresentation = TextPartPagedLinkedRepresentation.builder()
-                .body("textPartPagedLinkedRepresentation application test")
+        textPartResource = TextPartResource.builder()
+                .body("textPartResource application test")
                 .lastUpdate(new Date())
 //                .nextItem(new Random().nextLong())
 //                .textCommonData(textCommonData)
@@ -98,7 +96,7 @@ public class ApplicationTest {
         textPartThree = null;
         textPartFour = null;
         textCommonData = null;
-        textPartPagedLinkedRepresentation = null;
+        textPartResource = null;
     }
 
 // =============================================================================================== textCommonData tests
@@ -209,8 +207,8 @@ public class ApplicationTest {
 
 //        objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
 //        ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
-//        String json = objectWriter.writeValueAsString(textPartPagedLinkedRepresentation);
-        String json = TestUtil.convertObjectToJSONString(textPartPagedLinkedRepresentation);
+//        String json = objectWriter.writeValueAsString(textPartResource);
+        String json = TestUtil.convertObjectToJSONString(textPartResource);
         MvcResult result = mockMvc
                 .perform(MockMvcRequestBuilders
                         .post("/text-common-data/" + existingTextCommonDataId + "/text-parts")
@@ -231,7 +229,7 @@ public class ApplicationTest {
     public void test_unique_next_item_for_null_whenCreateTextPart() throws Exception {
         objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
-        String json = objectWriter.writeValueAsString(TextPartPagedLinkedRepresentation.builder()
+        String json = objectWriter.writeValueAsString(TextPartResource.builder()
                 .body("test_unique_next_item_for_null_whenCreateTextPart")
                 .lastUpdate(new Date())
 //                .nextItem(null)

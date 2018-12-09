@@ -14,7 +14,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TextCommonDataLinkedRepresentation extends ResourceSupport {
+public class TextCommonDataResource extends ResourceSupport {
 
     private String name;
     private Date createdDate;

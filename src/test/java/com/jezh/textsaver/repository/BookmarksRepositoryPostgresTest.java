@@ -1,7 +1,7 @@
 package com.jezh.textsaver.repository;
 
 import com.jezh.textsaver.configuration.BasePostgresConnectingTest;
-import com.jezh.textsaver.entity.Bookmark;
+import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.util.TestUtil;
 import org.junit.After;
@@ -9,9 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class BookmarkRepositoryPostgresTest extends BasePostgresConnectingTest {
+public class BookmarksRepositoryPostgresTest extends BasePostgresConnectingTest {
 
-    private Bookmark bookmark;
+    private Bookmarks bookmarks;
 
     private TextCommonData textCommonData;
 
@@ -25,7 +25,7 @@ public class BookmarkRepositoryPostgresTest extends BasePostgresConnectingTest {
     public void setUp() throws Exception {
 //        textCommonData = textCommonDataRepository.findById(1L).get();
         textCommonData = textCommonDataRepository.findById(13L).get();
-        bookmark = Bookmark.builder()
+        bookmarks = Bookmarks.builder()
                 .textCommonData(textCommonData)
                 .lastOpenArray(TestUtil.createRandom10BookmarkDefsArray())
                 .build();
@@ -34,7 +34,7 @@ public class BookmarkRepositoryPostgresTest extends BasePostgresConnectingTest {
     @After
     public void tearDown() throws Exception {
         textCommonData = null;
-        bookmark = null;
+        bookmarks = null;
     }
 
 //    @Ignore
@@ -42,10 +42,10 @@ public class BookmarkRepositoryPostgresTest extends BasePostgresConnectingTest {
     // org.springframework.dao.DataIntegrityViolationException: A different object with the same identifier value was
     // already associated with the session
     public void create() {
-//        int[] created = bookmark.getLastOpenArray();
-        bookmarkRepository.saveAndFlush(bookmark);
-//        assertNotNull(bookmarkRepository.findById(bookmark.getId()));
-//        int[] saved = bookmarkRepository.findById(bookmark.getId()).get().getLastOpenArray();
+//        int[] created = bookmarks.getLastOpenArray();
+        bookmarkRepository.saveAndFlush(bookmarks);
+//        assertNotNull(bookmarkRepository.findById(bookmarks.getId()));
+//        int[] saved = bookmarkRepository.findById(bookmarks.getId()).get().getLastOpenArray();
 //        assertEquals(created, saved);
 //        System.out.println("********************************************** created: ");
 //        for (int i : created) {

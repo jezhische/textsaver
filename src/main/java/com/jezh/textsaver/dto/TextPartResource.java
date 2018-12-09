@@ -5,6 +5,7 @@ import org.springframework.hateoas.ResourceSupport;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /** the DTO for transfer the proper data of TextPart instance plus links transfer, that supported by
  * ResourceSupport, the base class for DTOs to collect links */
@@ -13,12 +14,12 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TextPartPagedLinkedRepresentation extends ResourceSupport {
+public class TextPartResource extends ResourceSupport {
 
     private String body;
 //    private Long nextItem;
     private Date lastUpdate;
     private int pageNumber;
     private int totalPages;
-    private List<BookmarkLinkedRepresentation> bookmarksLinks;
+    private List<BookmarkResource> bookmarkResources;
 }

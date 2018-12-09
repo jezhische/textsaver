@@ -1,8 +1,7 @@
 package com.jezh.textsaver.service;
 
 import com.jezh.textsaver.configuration.BasePostgresConnectingTest;
-import com.jezh.textsaver.entity.Bookmark;
-import com.jezh.textsaver.entity.TextCommonData;
+import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.repository.BookmarkRepository;
 import com.jezh.textsaver.repository.TextCommonDataRepository;
 import org.junit.After;
@@ -10,11 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
 import static org.junit.Assert.*;
 
-public class BookmarkServiceTest extends BasePostgresConnectingTest {
+public class BookmarksServiceTest extends BasePostgresConnectingTest {
 
     @Autowired
     private BookmarkRepository bookmarkRepository;
@@ -25,21 +22,22 @@ public class BookmarkServiceTest extends BasePostgresConnectingTest {
     @Autowired
     private BookmarkService bookmarkService;
 
-    private Bookmark bookmark;
+    private Bookmarks bookmarks;
 
     @Before
     public void setUp() throws Exception {
-        bookmark = Bookmark.builder().textCommonData(textCommonDataRepository.getOne(1L)).build();
+        bookmarks = Bookmarks.builder().textCommonData(textCommonDataRepository.getOne(1L)).build();
     }
 
     @After
     public void tearDown() throws Exception {
-        bookmark = null;
+        bookmarks = null;
     }
 
     @Test
     public void testFindById() {
-        Bookmark bookmark = bookmarkRepository.findById(15L).get();
-        System.out.println("******************************************************* " + bookmark);
+        Bookmarks bookmarks = bookmarkRepository.findById(14L).get();
+        System.out.println("******************************************************* " + bookmarks);
+        assertTrue(bookmarks.getLastOpenArray()[1] == null);
     }
 }
