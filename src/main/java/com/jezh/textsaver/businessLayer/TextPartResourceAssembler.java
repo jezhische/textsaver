@@ -17,16 +17,16 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @Component
 public class TextPartResourceAssembler {
 
-    private final static String adjasentPageReferencesColor = "ffffff";
+    private final static String adjasentPageReferencesColor = "ffffff"; // white
 
-    private final static String currentPageReferenceColor = "fee901";
+    private final static String currentPageReferenceColor = "fee901"; // yellow
 
     /**
      * supply TextPartResources with links to current, adjacent, first and last pages and last opened/edited pages
      * */
     public TextPartResource getResource(Page<TextPart> currentPage, Bookmarks bookmarks)
             throws NullPointerException, NoHandlerFoundException {
-        List<BookmarkResource> bookmarkResources = addElsePagesLinks(getBookmarkResourceList(bookmarks),
+        List<BookmarkResource> bookmarkResources = addElsePagesLinks(convertBookmarksToBookmarkResourceList(bookmarks),
                 currentPage, bookmarks.getId());
         return convertPageToMarkedResource(currentPage, bookmarkResources);
     }
@@ -58,7 +58,7 @@ public class TextPartResourceAssembler {
     /**
      * Returns list of BookmarkResource as they coded in the appropriate Bookmarks item (with the Bookmarks references only)
      * */
-     List<BookmarkResource> getBookmarkResourceList(Bookmarks bookmarks)
+     List<BookmarkResource> convertBookmarksToBookmarkResourceList(Bookmarks bookmarks)
             throws NoHandlerFoundException {
         String[] lastOpenArray = bookmarks.getLastOpenArray();
         EditedColorStore[] editedColorStores = EditedColorStore.values();
@@ -75,7 +75,7 @@ public class TextPartResourceAssembler {
                         editedColorStores[i].name().substring(1) :
                         openedColorStores[i].name().substring(1);
                 String link = DataManager.createPageLink(docDataId, pageNumber);
-                resources.add(BookmarkResource.builder()
+             resources.add(BookmarkResource.builder()
                         .pageNumber(pageNumber)
                         .color(color)
                         .link(link)

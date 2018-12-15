@@ -41,12 +41,6 @@ public interface TextPartRepository extends JpaRepository<TextPart, Long> {
     Optional<TextPart> findPreviousByCurrentInSequence(TextPart current);
 
     /**
-     * find next textPart by current one
-     */
-    @Query ("select next from TextPart as next where next.id = (select current.nextItem from TextPart as current where current = ?1)")
-    Optional<TextPart> findNextByCurrentInSequence(TextPart current);
-
-    /**
      * find all the textPart with the given textCommonData id in an order,
      * where currentTextPart.nextItem = nextTextPart.id
      */
@@ -75,11 +69,18 @@ public interface TextPartRepository extends JpaRepository<TextPart, Long> {
     List<TextPart> findAllByTextCommonDataId(Long id);
 
 // ====================================================================================
-// https://docs.spring.io/spring-data/jpa/docs/current-SNAPSHOT/reference/html/#jpa.query-methods.sorting
-@Query(value = "SELECT * FROM public.get_all_texparts_ordered_set(?1)",
-        countQuery = "SELECT count(*) FROM public.get_all_texparts_ordered_set(?1)",
-        nativeQuery = true)
-Page<TextPart> findPageByDocDataId(Long textCommonDataId, Pageable pageable);
+
+    /**
+     * find next textPart by current one
+     */
+    @Query ("select next from TextPart as next where next.id = (select current.nextItem from TextPart as current where current = ?1)")
+    Optional<TextPart> findNextByCurrentInSequence(TextPart current);
+
+    // https://docs.spring.io/spring-data/jpa/docs/current-SNAPSHOT/reference/html/#jpa.query-methods.sorting
+    @Query(value = "SELECT * FROM public.get_all_texparts_ordered_set(?1)",
+            countQuery = "SELECT count(*) FROM public.get_all_texparts_ordered_set(?1)",
+            nativeQuery = true)
+    Page<TextPart> findPageByDocDataId(Long textCommonDataId, Pageable pageable);
 
 // NB: id BIGSERIAL PRIMARY KEY will be cast to BigInteger and cannot be cast to Long automatically
 @Query(value = "SELECT * FROM public.get_all_texparts_id_ordered_set(?1)", nativeQuery = true)

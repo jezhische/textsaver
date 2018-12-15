@@ -3,7 +3,9 @@ package com.jezh.textsaver.controller;
 import com.jezh.textsaver.businessLayer.TextPartResourceAssembler;
 import com.jezh.textsaver.dto.TextPartControllerTransientDataRepo;
 import com.jezh.textsaver.dto.TextPartResource;
+import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.entity.TextPart;
+import com.jezh.textsaver.service.BookmarkService;
 import com.jezh.textsaver.service.TextCommonDataService;
 import com.jezh.textsaver.service.TextPartService;
 import com.jezh.textsaver.util.ControllerUtils;
@@ -26,7 +28,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RestController
 @EnableHypermediaSupport(type = { EnableHypermediaSupport.HypermediaType.HAL })
-@RequestMapping("/text-common-data/{commonDataId}")
+@RequestMapping("/doc-data/{commonDataId}")
 public class TextPartController {
 
     @Autowired
@@ -36,10 +38,13 @@ public class TextPartController {
     private TextCommonDataService textCommonDataService;
 
     @Autowired
-    private TextPartControllerTransientDataRepo repository;
+    private BookmarkService bookmarkService;
 
     @Autowired
-    TextPartResourceAssembler assembler;
+    private TextPartResourceAssembler pageModelAssembler;
+
+    @Autowired
+    private TextPartControllerTransientDataRepo repository;
 
     @Autowired
     private Environment env;
@@ -49,18 +54,50 @@ public class TextPartController {
     private int port;
 
 
-
+// ================================================================================================================ GET:
     /** find textPart by id */
-    @GetMapping (path = "/text-parts/{textPartId}")
-    public ResponseEntity<TextPart> findTextPartById(@PathVariable Long textPartId, /*@PathVariable Long commonDataId,*/ HttpServletRequest request)
+    @GetMapping(value = "/pages", params = {"page"})
+    public ResponseEntity<TextPartResource> findTextPartById(@PathVariable(value = "commonDataId") long id,
+                                                             @RequestParam(value = "page") int pageNumber)
             throws NoHandlerFoundException {
-        TextPart textPart = textPartService.findTextPartById(textPartId)
-                .orElseThrow(() ->
-//                        new NoHandlerFoundException("GET", "/text-common-data/"+ commonDataId + "/text-parts/"
-//                        + textPartId, new HttpHeaders()));
-//                        new NoHandlerFoundException(request.getMethodValue(), request.getURI().getPath(), new HttpHeaders()));
-                        new NoHandlerFoundException(request.getMethod(), request.getRequestURI(), new HttpHeaders()));
-        return ResponseEntity.ok().body(textPart);
+        Page<TextPart> page = textPartService.findPageByDocDataIdAndPageNumber(id, pageNumber);
+        Bookmarks bookmarks = bookmarkService.findById(id).orElseThrow(() -> new NoHandlerFoundException("GET",
+                "/doc-data", new HttpHeaders()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(pageModelAssembler.getResource(page, bookmarks));
+    }
+
+// ================================================================================================================ POST:
+
+    /**
+     * insert new page after current one
+     * */
+    @PostMapping(value = "/pages", params = {"page"})
+    public HttpEntity<TextPartResource> insertPage(@PathVariable(value = "commonDataId") long docDataId,
+                                                   @RequestParam(value = "page") int currentPage) throws NoHandlerFoundException {
+////        Page<TextPart> page = textPartService.findPageByDocDataIdAndPageNumber(docDataId, 1);
+//        Page<TextPart> createdPage =
+//        Bookmarks bookmarks = bookmarkService.findById(docDataId).orElseThrow(() -> new NoHandlerFoundException("GET",
+//                "/doc-data", new HttpHeaders()));
+//        return ResponseEntity.status(HttpStatus.CREATED).body(pageModelAssembler.getResource(createdPage, bookmarks));
+        return null;
+    }
+
+
+// ================================================================================================================ PUT:
+
+    @PutMapping(value = "/text-parts/pages", params = {"page"})
+    public HttpEntity<Date> updatePage(
+            @RequestBody TextPartResource linkedPage,
+            @RequestParam(value = "page") int pageNumber,
+            HttpServletRequest request
+    ) throws NoHandlerFoundException, ParseException {
+        String body = linkedPage.getBody();
+        Date current = textPartService.updateById( // FIXME: 17.11.2018 format date to UTC+2.00
+                repository.getListOfSortedTextPartId().get(pageNumber - 1),
+                body,
+                new Date())
+                .orElseThrow(() -> new NoHandlerFoundException(request.getMethod(), request.getRequestURL().toString(), new HttpHeaders()));
+        return new ResponseEntity<>(current, new HttpHeaders(), HttpStatus.OK);
     }
 
 //    @GetMapping (path = "/text-parts/{id}")
@@ -143,23 +180,6 @@ public class TextPartController {
         return new ResponseEntity<>(linkedPage, HttpStatus.OK);
     }
 
-
-// ================================================================================================================ PUT:
-
-    @PutMapping(value = "/text-parts/pages", params = {"page"})
-    public HttpEntity<Date> updatePage(
-            @RequestBody TextPartResource linkedPage,
-            @RequestParam(value = "page") int pageNumber,
-            HttpServletRequest request
-    ) throws NoHandlerFoundException, ParseException {
-        String body = linkedPage.getBody();
-        Date current = textPartService.updateById( // FIXME: 17.11.2018 format date to UTC+2.00
-                repository.getListOfSortedTextPartId().get(pageNumber - 1),
-                body,
-                new Date())
-                .orElseThrow(() -> new NoHandlerFoundException(request.getMethod(), request.getRequestURL().toString(), new HttpHeaders()));
-        return new ResponseEntity<>(current, new HttpHeaders(), HttpStatus.OK);
-    }
 
 
 //================================================================================================================ POST:

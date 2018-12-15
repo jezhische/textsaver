@@ -1,5 +1,6 @@
 package com.jezh.textsaver.service;
 
+import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
 import com.jezh.textsaver.repository.TextPartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,5 +129,26 @@ public class TextPartServiceImpl implements TextPartService {
     @Override
     public Page<TextPart> findPageByDocDataIdAndPageNumber(Long textCommonDataId, int pageNumber) {
         return repository.findPageByDocDataId(textCommonDataId, PageRequest.of(pageNumber - 1, 1));
+    }
+
+    @Override
+    public Page<TextPart> createPage(int currentPageNumber, /*int nextPageNumber, */Long textCommonDataId)
+            throws IndexOutOfBoundsException {
+
+        TextPart current = findPageByDocDataIdAndPageNumber(textCommonDataId, currentPageNumber).getContent().get(0);
+//        Long nextId = current.getNextItem();
+        TextPart next = /*nextPageNumber == 0 ? null :
+                findPageByDocDataIdAndPageNumber(textCommonDataId, nextPageNumber).getContent().get(0);*/ // можно и так
+                repository.findNextByCurrentInSequence(current).orElse(null);
+        TextCommonData textCommonData = current.getTextCommonData();
+        TextPart newOne = TextPart.builder()
+                .lastUpdate(new Date())
+                .textCommonData(textCommonData)
+//                .nextItem(next == null ? null : next.getId())
+                .build();
+        repository.saveAndFlush(newOne);
+        current.setNextItem(newOne.getId());
+        newOne.setNextItem(next == null ? null : next.getId());
+        return findPageByDocDataIdAndPageNumber(textCommonDataId, currentPageNumber + 1);
     }
 }

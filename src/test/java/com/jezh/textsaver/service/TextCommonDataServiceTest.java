@@ -48,7 +48,6 @@ public class TextCommonDataServiceTest extends BasePostgresConnectingTest {
         dataList.forEach(System.out::println);
     }
 
-    @Test
     public void testCreate() {
         TextCommonData textCommonData = textCommonDataService.create("TextCommonDataServiceTest");
         Long id = textCommonData.getId();

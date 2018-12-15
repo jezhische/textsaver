@@ -2,18 +2,11 @@ package com.jezh.textsaver.businessLayer;
 
 import com.jezh.textsaver.controller.TextCommonDataController;
 import com.jezh.textsaver.controller.TextPartController;
-import com.jezh.textsaver.dto.TextCommonDataControllerTransientDataRepo;
-import com.jezh.textsaver.dto.TextCommonDataResource;
-import com.jezh.textsaver.entity.TextCommonData;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;

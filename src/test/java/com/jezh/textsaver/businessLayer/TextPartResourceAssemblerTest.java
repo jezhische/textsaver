@@ -41,18 +41,18 @@ public class TextPartResourceAssemblerTest extends BasePostgresConnectingTest {
 
     @Test
     public void getBookmarkResourceList() throws NoHandlerFoundException {
-        List<BookmarkResource> bookmarkResourceList = assembler.getBookmarkResourceList(bookmarkService.findById(31L).get());
+        List<BookmarkResource> bookmarkResourceList = assembler.convertBookmarksToBookmarkResourceList(bookmarkService.findById(31L).get());
         bookmarkResourceList.forEach(System.out::println);
         assertEquals("1b5412", bookmarkResourceList.get(0).getColor());
 
-        bookmarkResourceList = assembler.getBookmarkResourceList(bookmarkService.findById(33L).get());
+        bookmarkResourceList = assembler.convertBookmarksToBookmarkResourceList(bookmarkService.findById(33L).get());
         bookmarkResourceList.forEach(System.out::println);
         assertEquals("ff3300", bookmarkResourceList.get(0).getColor());
     }
 
     @Test
     public void addElsePagesLinks() throws NoHandlerFoundException {
-        List<BookmarkResource> bookmarkResourceList = assembler.getBookmarkResourceList(bookmarkService.findById(31L).get());
+        List<BookmarkResource> bookmarkResourceList = assembler.convertBookmarksToBookmarkResourceList(bookmarkService.findById(31L).get());
         System.out.println("**************************************************************************************");
         bookmarkResourceList.forEach(System.out::println);
         bookmarkResourceList = assembler.addElsePagesLinks(bookmarkResourceList,

@@ -99,7 +99,6 @@ public class TextPartServicePostgresTest {
     @Test
     public void testUpdate() {
     }
-
     @Test
     public void testFindAll() {
         service.findAll().forEach(System.out::println);
@@ -115,5 +114,14 @@ public class TextPartServicePostgresTest {
     public void testFindTextPartById() {
         service.create(textPart);
         Assert.assertEquals(textPart, service.findTextPartById(textPart.getId()).get());
+    }
+
+// ====================================================================================================== page tests
+
+
+    @Test
+    public void createPage() {
+        service.createPage(1, /*2, */133L);
+
     }
 }

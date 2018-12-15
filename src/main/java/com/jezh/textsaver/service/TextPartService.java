@@ -44,6 +44,5 @@ public interface TextPartService {
 
     Page<TextPart> findPageByDocDataIdAndPageNumber(Long textCommonDataId, int pageNumber);
 
-
-
+    Page<TextPart> createPage(int currentPageNumber, /*int nextPageNumber, */Long textCommonDataId);
 }

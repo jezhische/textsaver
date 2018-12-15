@@ -65,7 +65,6 @@ public class TextCommonDataRepositoryPostgresTest extends BasePostgresConnecting
     }
 
     @Test
-    @Transactional
     public void testRetrieve() {
         System.out.println("***********************************************" + textCommonDataRepository.findAll().get(0));
     }

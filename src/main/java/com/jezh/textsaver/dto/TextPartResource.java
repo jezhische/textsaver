@@ -17,7 +17,13 @@ import java.util.Map;
 public class TextPartResource extends ResourceSupport {
 
     private String body;
-//    private Long nextItem;
+    private String name;
+//    private long textPartId;
+
+//    private boolean isEdited;
+
+//    private boolean isBlank;
+
     private Date lastUpdate;
     private int pageNumber;
     private int totalPages;

@@ -2,27 +2,29 @@
 
 /** when first call of given function with such textCommonDataId, create page form element
  * into the tag <div id="text"></div> on the index.html */
-function createPageTextFormElement(textCommonDataId) {
+function createPageTextFormElement(textCommonDataId, textareaId, upperRefButtons, lowerRefButtons) {
     // condition check to avoid duplication
     if($("#" + textCommonDataId).html() === undefined) { // TODO: don't forget to let down the flag when close document. The flag will be raised in the end of this method
-        console.log('*******$("#" + textCommonDataId).html() = ' + $("#" + textCommonDataId).html() + ', creating form with id = ' + textCommonDataId);
+                                                    console.log('*******$("#" + textCommonDataId).html() = ' + $("#" +
+                                                        textCommonDataId).html() + ', creating form with id = ' + textCommonDataId);
         let closeButton = '<br/><br/><input id="close-btn" type="submit" value="close" onclick="closeDoc()">';
-        let bookmarkButtonsArea = '<br/><p id="bukmark-buttons"></p>';
+        let upperRefButtonsArea = '<br/><p id="'+ upperRefButtons + '"></p>';
+        let lowerRefButtonsArea = '<br/><p id="'+ lowerRefButtons + '"></p>';
         // soft wrap means word wrap (перенос по словам)
-        let pageTextarea = '<textarea id="page-tarea" wrap="soft" cols="100"' +
+        let pageTextarea = '<textarea id="' + textareaId + '" wrap="soft" cols="100"' +
         /** HTML oninput event attribute here allows to set the height of this textarea dynamically
          * in accordance with the number of entered lines, when an element gets user input.
          * Scroll bar won't be appeared */
         // "this" references current element, i.e. this textarea, "px" means "pixels"
-        ' oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\'></textarea>'
+        ' oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\'></textarea>';
 
         // <div id="text"></div> is located on the index.html. The method must be .html(), not .append(),
         // to replace existing document page form element by the new one when page number is changed
         $('#text').html('<form id="' + textCommonDataId + '" style="margin-left: 60px">' +
             closeButton +
-            bookmarkButtonsArea +
+            upperRefButtonsArea +
             pageTextarea +
-            bookmarkButtonsArea +
+            lowerRefButtonsArea +
             '</form>');
     }
 }
@@ -31,7 +33,8 @@ function createPageTextFormElement(textCommonDataId) {
 function closeDoc() {
     // TODO: here must be function to save all the changes
     $('#text').html('');
-    isDocOpen = false;
+                                                            console.log('CLOSED');
+    isDocOpen = false; // ??? fixme
 }
 
 // ----------------------------------------------------------------------------------------------------------------
@@ -81,6 +84,7 @@ function createTextareaElement(formId, textareaId) {
 /** fill textarea element with content and auto grow its height according loaded content */
 function fillTextareaWithContent(textarea, data) {
     // let thisTextArea = $('#' + thisTextareaId);
+    // TODO: fix it - define right val() instead of test one
     textarea.val('page: ' + data.pageNumber + ', ' +
         ', body: '+ data.body + '/ ');
     /** to auto grow the created textarea height according loaded content */
@@ -106,9 +110,9 @@ function createTextareaContentEventHandlers(textarea) {
 // // и вот сюда функцию для проверки содержимого и определения, не пора ли перезаписать в бд эту сущность,
 // // а затем promise(?), который ищет id из следующего элемента в
             let newLength = textarea.val().length;
-            console.log(newLength);
+                                                            console.log(newLength);
             if (Math.abs(newLength - savedLength) > 5) {
-                console.log('updating required');
+                                                            console.log('updating required');
                 savedLength = newLength;
             }
             timerId = setTimeout(check, 1000);
@@ -119,7 +123,7 @@ function createTextareaContentEventHandlers(textarea) {
 // in each iteration of timer
     textarea.blur(function () {
         let length = textarea.val().length;
-        console.log('focus lost: ' + length);
+                                                            console.log('focus lost: ' + length);
         clearTimeout(timerId);
     });
 }

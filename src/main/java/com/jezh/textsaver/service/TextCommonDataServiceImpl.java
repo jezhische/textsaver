@@ -41,7 +41,6 @@ public class TextCommonDataServiceImpl implements TextCommonDataService {
     public TextCommonData create(String name) {
         // create textCommonData
         Date createdDate = new Date();
-        String uniqueName = DataManager.getUniqueName(name, createdDate);
         TextCommonData textCommonData = TextCommonData.builder()
                 .name(name)
                 .createdDate(createdDate)
@@ -57,8 +56,10 @@ public class TextCommonDataServiceImpl implements TextCommonDataService {
         // create bookmarks
         String[] lastOpens = new String[bookmarksCount];
         lastOpens[0] = DataManager.getLastOpenedArrayItem(1, false);
-        Bookmarks bookmarks = Bookmarks.builder().lastOpenArray(lastOpens).build();
-        bookmarks.setTextCommonData(textCommonData);
+        Bookmarks bookmarks = Bookmarks.builder()
+                .lastOpenArray(lastOpens)
+                .textCommonData(textCommonData)
+                .build();
         bookmarkRepository.saveAndFlush(bookmarks);
 
         // update textCommonData
