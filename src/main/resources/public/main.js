@@ -48,7 +48,7 @@ $(function () {
             success: function (obtainedData, status, jqXHR) {
                                                         console.log('POST - create doc: SUCCESS');
 // fixme: insert right name instead of TEXT
-                createTextareaContentEventHandlers(TEXT);
+                createTextareaContentEventHandlers($('#pageTextarea'));
 
                 // DOC_LINKS.prepend('<a href="' + obtainedData + '">' + docName + '</a>');
 

@@ -50,7 +50,8 @@ function createTextarea() {
                  * in accordance with the number of entered lines, when an element gets user input.
                  * Scroll bar won't be appeared */
                 // "this" references current element, i.e. this textarea, "px" means "pixels"
-                ' oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\'></textarea>');
+                ' oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\' ' +
+                'placeholder="please input text here"></textarea>');
         }
                                         console.log('createTextarea: success');
 }

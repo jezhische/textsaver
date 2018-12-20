@@ -47,7 +47,7 @@ public class TextCommonDataController {
     private TextPartResourceAssembler pageModelAssembler;
 
     /** return the simple link to created doc*/
-    @ResponseBody
+//    @ResponseBody
     @PostMapping("")
     public String create(@RequestBody String name)
             throws NoHandlerFoundException, UnknownHostException {
@@ -55,7 +55,8 @@ public class TextCommonDataController {
         Long id = textCommonData.getId();
 //        String port = environment.getRequiredProperty("local.server.port"); // for unknown reason property
         // "server.port" in spring boot 2 returns "-1", so this is a crutch
-        return dataManager.createPageLink(id, 1);
+//        return dataManager.createPageLink(id, 1);
+        return "redirect:/doc-data/" + id + "/pages?page=1";
     }
 
 
