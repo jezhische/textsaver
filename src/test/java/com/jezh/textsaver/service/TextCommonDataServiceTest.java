@@ -62,6 +62,11 @@ public class TextCommonDataServiceTest extends BasePostgresConnectingTest {
         System.out.println("*****************************************************************" + textCommonData);
     }
 
+    @Test
+    public void deleteAll() {
+
+    }
+
     // ======================================================================================= TEST UTIL
 
     public Long getExistingTextCommonDataId() {

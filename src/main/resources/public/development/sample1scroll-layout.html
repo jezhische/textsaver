@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body {
+            margin: 0;
+        }
+        body,
+        html,
+        .container {
+            height: 100%;
+        }
+        .container,
+        .content {
+            display: flex;
+        }
+        .container {
+            flex-direction: column;
+        }
+        .content,
+        .content div {
+            flex: 1;
+        }
+        .content div {
+            overflow: scroll;
+        }
+        .top {position: center}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="top">Fixed Top</div>
+    <div class="content">
+        <div>Column 1</div>
+        <div>Column 2</div>
+    </div>
+</div>
+</body>
+</html>

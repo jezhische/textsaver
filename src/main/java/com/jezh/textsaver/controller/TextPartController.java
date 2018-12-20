@@ -21,6 +21,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -59,7 +60,7 @@ public class TextPartController {
     @GetMapping(value = "/pages", params = {"page"})
     public ResponseEntity<TextPartResource> findTextPartById(@PathVariable(value = "commonDataId") long id,
                                                              @RequestParam(value = "page") int pageNumber)
-            throws NoHandlerFoundException {
+            throws NoHandlerFoundException, UnknownHostException {
         Page<TextPart> page = textPartService.findPageByDocDataIdAndPageNumber(id, pageNumber);
         Bookmarks bookmarks = bookmarkService.findById(id).orElseThrow(() -> new NoHandlerFoundException("GET",
                 "/doc-data", new HttpHeaders()));

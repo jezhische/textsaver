@@ -1,0 +1,12 @@
+   UriComponentsBuilder builder   create URI
+-----------------------------------------------------------------------------------------
+        Long id = textCommonData.getId();
+        String port = environment.getRequiredProperty("local.server.port");
+        String tcdId = String.valueOf(textCommonData.getId());
+        String contextPath = environment.getRequiredProperty("server.servlet.context-path");
+        String hostAddress = InetAddress.getLocalHost().getHostAddress();
+        return builder.scheme("http").host(hostAddress).port(port).path(contextPath).path("/doc-data/{commonDataId}/pages")
+                .query("page={pageNumber}").buildAndExpand(tcdId, "1").toString();
+
+===============================================================================================================================
+

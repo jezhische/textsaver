@@ -1,24 +1,24 @@
 package com.jezh.textsaver.controller;
 
+import com.jezh.textsaver.businessLayer.DataManager;
 import com.jezh.textsaver.businessLayer.TextCommonDataLinkAssembler;
 import com.jezh.textsaver.businessLayer.TextPartResourceAssembler;
-import com.jezh.textsaver.dto.TextPartResource;
-import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.entity.TextCommonData;
-import com.jezh.textsaver.entity.TextPart;
 import com.jezh.textsaver.service.BookmarkService;
 import com.jezh.textsaver.service.TextCommonDataService;
 import com.jezh.textsaver.service.TextPartService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 @Controller
 //@RequestMapping("/text-common-data")
@@ -27,6 +27,12 @@ public class TextCommonDataController {
 
     @Autowired
     private TextCommonDataService textCommonDataService;
+
+    @Autowired
+    private DataManager dataManager;
+
+    @Autowired
+    private Environment environment;
 
     @Autowired
     private TextPartService textPartService;
@@ -40,16 +46,16 @@ public class TextCommonDataController {
     @Autowired
     private TextPartResourceAssembler pageModelAssembler;
 
-//    @ResponseBody
+    /** return the simple link to created doc*/
+    @ResponseBody
     @PostMapping("")
-    public /*ResponseEntity<TextPartResource>*/ String create(@RequestBody String name) /*throws NoHandlerFoundException*/ {
+    public String create(@RequestBody String name)
+            throws NoHandlerFoundException, UnknownHostException {
         TextCommonData textCommonData = textCommonDataService.create(name);
-        long id = textCommonData.getId();
-        return "redirect:/doc-data/" + id + "/pages?page=1";
-//        Page<TextPart> page = textPartService.findPageByDocDataIdAndPageNumber(id, 1);
-//        Bookmarks bookmarks = bookmarkService.findById(id).orElseThrow(() -> new NoHandlerFoundException("GET",
-//                "/doc-data", new HttpHeaders()));
-//        return ResponseEntity.status(HttpStatus.CREATED).body(pageModelAssembler.getResource(page, bookmarks));
+        Long id = textCommonData.getId();
+//        String port = environment.getRequiredProperty("local.server.port"); // for unknown reason property
+        // "server.port" in spring boot 2 returns "-1", so this is a crutch
+        return dataManager.createPageLink(id, 1);
     }
 
 

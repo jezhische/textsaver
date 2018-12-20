@@ -8,27 +8,58 @@ let textpartsQualifier = [];
 
 /** id of current page textarea */
 const TEXTAREA_ID = 'page-tarea';
-const UPPER_REF_BUTTONS = 'upper-page-reference-buttons-row';
-const LOWER_REF_BUTTONS = 'lower-page-reference-buttons-row';
+const UPPER_REF_BUTTONS = 'upper-page-reference-buttons-row'; // TODO: to remove
+const LOWER_REF_BUTTONS = 'lower-page-reference-buttons-row'; // TODO: to remove
+// const UPPER_DOC_BAR = 'upper-doc-bar';
+// const LOWER_DOC_BAR = 'lower-doc-bar';
+const TEXT = $('#text');
+const DOC_LINKS = $('#docLinks');
 
 $(function () {
-
-// ========================================================== TODO: to remove
-    $('#helper1').click(function (e) {
-        // // .html( function ), where Function( Integer index, htmlString oldhtml ) => htmlString... Within the
-        // // function, "this" refers to the current element in the set. (in this case, that is object HTMLButtonElement)
-        // $('#hel1txt').html('<h1>ui<div style="display:none;">ou</div>hou</h1>');
-        // $('#hel1txt').html((index, oldhtml) => {return oldhtml + '<p>' + $('#ta26').html() + '</p>'});
-        // $('#hel1txt').html((index, oldhtml) => {return oldhtml + '<p id="rrr">tot\r\r\rou</p>'});
-        // $('#hel1txt').html((index, oldhtml) => {return oldhtml + $('p#hel1txt p#rrr').html()});
-        // $('#ta26').append($('p#hel1txt p#rrr').html());
-        // let soMany = 10;
-        // console.log(`This is ${soMany} times easier!   tot\r\r\rou`);
-    });
-// ===========================================================
-
-
 // ================================================================================ MAIN BUSINESS LOGIC
+
+    // --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------- (POST) create page and RENDER it on the created document form
+// --------------------------------------------------------------------------------------------------------------------
+
+    function createNewDoc() {
+        let input = $('#create-doc-text-input');
+        let docName = input.val();
+        // $('#create-doc-btn').prop('disabled', true);
+        // reset input value
+        input.val("");
+
+        clearMainDocMenu(['create-doc-block', 'search-doc']);
+        addMainDocButtons('search-doc');
+        createNameBar(docName, 'upper-doc-name-bar');
+        createInitialButtonsRow('upper-page-buttons-row');
+        createTextarea();
+        createDocLink(docName);
+
+        // jQuery.ajax( [settings ] )
+        $.ajax({
+            type: 'POST',
+            // NB: this property must be defined
+            contentType: "application/json",
+            url: 'doc-data',
+            data: JSON.stringify(docName),
+            dataType: 'json',
+            /** obtainedData is the string with link to created doc */
+            success: function (obtainedData, status, jqXHR) {
+                                                        console.log('POST - create doc: SUCCESS');
+// fixme: insert right name instead of TEXT
+                createTextareaContentEventHandlers(TEXT);
+
+                // DOC_LINKS.prepend('<a href="' + obtainedData + '">' + docName + '</a>');
+
+            },
+            error: function () {
+                console.log('error: this.url = ' + this.url);
+                // TODO: make error handling
+                alert('error');
+            }
+        });
+    }
 
 // --------------------------------------------------------------------------------------------------------------------
 // ----------------------------------------------- GET and RENDER references for all the documents that persisted in db
@@ -54,49 +85,6 @@ $(function () {
         extractPage(pageLink);
     }
 
-// --------------------------------------------------------------------------------------------------------------------
-// --------------------------------------------- (POST) create page and RENDER it on the created document form
-// --------------------------------------------------------------------------------------------------------------------
-
-    function createNewDoc() {
-        let name = $('#create-doc-text-input').val();
-        $('#create-doc-btn').prop('disabled', true);
-                                                            console.log("$('#create-doc-btn').submit(function () {...");
-        // jQuery.ajax( [settings ] )
-            $.ajax({
-                type: 'POST',
-                // NB: this property must be defined
-                contentType: "application/json",
-                url: 'doc-data',
-                data: JSON.stringify(name),
-                dataType: 'json',
-                success: function (obtainedData, status, jqXHR) {
-                                                            console.log('POST - create doc: SUCCESS');
-                                                            alert('success: ' + status);
-
-            // TODO: MAYBE NEED TO MAKE WITH TEXTCOMMONDATAID, DON'T KNOW... BE CAREFUL WITH NEXT METHODS
-                    docFormId = 'formId'; // FIXME
-
-                    createPageTextFormElement(docFormId, TEXTAREA_ID, UPPER_REF_BUTTONS, LOWER_REF_BUTTONS);
-            // todo: засунуть этот метод в utility, лучше даже объединить с createPageTextFormElement
-                    createPageButtonRow(obtainedData, UPPER_REF_BUTTONS);
-
-                    let textarea = createTextareaElement(docFormId, TEXTAREA_ID);
-                                                            console.log('let textarea = ' + textarea[0].toString());
-
-                    fillTextareaWithContent(textarea, obtainedData);
-
-                    createTextareaContentEventHandlers(textarea);
-
-                    $('#create-doc-btn').prop('disabled', false);
-                },
-                error: function () {
-                    console.log(this.url);
-                                                            alert('error');
-                    $('#create-doc-btn').prop('disabled', false);
-                }
-            });
-    }
 // --------------------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------- GET page and RENDER it on the created document form
 // --------------------------------------------------------------------------------------------------------------------
@@ -198,13 +186,6 @@ $(function () {
 
 // =========================================================================================== PERFORMING
 
-    $('#helper2').click(function (e) {
-        e.preventDefault();
-        extractDocToHtml(36);
-        // docFormId = 36;
-        // extractPage('http://localhost:8074/textsaver/text-common-data/36/text-parts/pages?page=2');
-
-    });
 
     $('#create-doc-btn').click(function (event) {
         event.preventDefault();

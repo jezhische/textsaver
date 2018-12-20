@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.net.UnknownHostException;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -40,7 +41,7 @@ public class TextPartResourceAssemblerTest extends BasePostgresConnectingTest {
 
 
     @Test
-    public void getBookmarkResourceList() throws NoHandlerFoundException {
+    public void getBookmarkResourceList() throws NoHandlerFoundException, UnknownHostException {
         List<BookmarkResource> bookmarkResourceList = assembler.convertBookmarksToBookmarkResourceList(bookmarkService.findById(31L).get());
         bookmarkResourceList.forEach(System.out::println);
         assertEquals("1b5412", bookmarkResourceList.get(0).getColor());
@@ -51,7 +52,7 @@ public class TextPartResourceAssemblerTest extends BasePostgresConnectingTest {
     }
 
     @Test
-    public void addElsePagesLinks() throws NoHandlerFoundException {
+    public void addElsePagesLinks() throws NoHandlerFoundException, UnknownHostException {
         List<BookmarkResource> bookmarkResourceList = assembler.convertBookmarksToBookmarkResourceList(bookmarkService.findById(31L).get());
         System.out.println("**************************************************************************************");
         bookmarkResourceList.forEach(System.out::println);

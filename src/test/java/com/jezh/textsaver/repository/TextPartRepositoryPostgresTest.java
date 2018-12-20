@@ -178,6 +178,11 @@ public class TextPartRepositoryPostgresTest extends BasePostgresConnectingTest {
         }
     }
 
+    @Test
+    public void deleteAll() {
+        textPartRepository.deleteAll();
+    }
+
     //    @Test(expected = DataIntegrityViolationException.class)
 //    public void testPreviousItemUniqueConstraint() {
 //        TextPart lastSavedTextPart = textPartRepository.findAll().get((int) textPartRepository.count() - 1);

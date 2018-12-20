@@ -6,10 +6,13 @@ import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.entity.TextPart;
 import com.jezh.textsaver.entity.entityProperties.EditedColorStore;
 import com.jezh.textsaver.entity.entityProperties.OpenedColorStore;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.net.UnknownHostException;
 import java.util.*;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -17,15 +20,29 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @Component
 public class TextPartResourceAssembler {
 
+//    private final String port;
+
+    private DataManager dataManager;
+
     private final static String adjasentPageReferencesColor = "ffffff"; // white
 
     private final static String currentPageReferenceColor = "fee901"; // yellow
+
+//    @Autowired
+//    public TextPartResourceAssembler(Environment environment) {
+//        port = environment.getRequiredProperty("local.server.port");
+//    }
+
+    @Autowired
+    public TextPartResourceAssembler(DataManager dataManager) {
+        this.dataManager = dataManager;
+    }
 
     /**
      * supply TextPartResources with links to current, adjacent, first and last pages and last opened/edited pages
      * */
     public TextPartResource getResource(Page<TextPart> currentPage, Bookmarks bookmarks)
-            throws NullPointerException, NoHandlerFoundException {
+            throws NullPointerException, NoHandlerFoundException, UnknownHostException {
         List<BookmarkResource> bookmarkResources = addElsePagesLinks(convertBookmarksToBookmarkResourceList(bookmarks),
                 currentPage, bookmarks.getId());
         return convertPageToMarkedResource(currentPage, bookmarkResources);
@@ -59,7 +76,7 @@ public class TextPartResourceAssembler {
      * Returns list of BookmarkResource as they coded in the appropriate Bookmarks item (with the Bookmarks references only)
      * */
      List<BookmarkResource> convertBookmarksToBookmarkResourceList(Bookmarks bookmarks)
-            throws NoHandlerFoundException {
+             throws NoHandlerFoundException, UnknownHostException {
         String[] lastOpenArray = bookmarks.getLastOpenArray();
         EditedColorStore[] editedColorStores = EditedColorStore.values();
         OpenedColorStore[] openedColorStores = OpenedColorStore.values();
@@ -74,7 +91,7 @@ public class TextPartResourceAssembler {
                 String color = current.endsWith("1") ?
                         editedColorStores[i].name().substring(1) :
                         openedColorStores[i].name().substring(1);
-                String link = DataManager.createPageLink(docDataId, pageNumber);
+                String link = dataManager.createPageLink(docDataId, pageNumber);
              resources.add(BookmarkResource.builder()
                         .pageNumber(pageNumber)
                         .color(color)
@@ -90,7 +107,7 @@ public class TextPartResourceAssembler {
      * add the new references to first, previous, current and adjacent pages to list with the Bookmarks references
      * */
     List<BookmarkResource> addElsePagesLinks(List<BookmarkResource> rawList, Page<TextPart> currentPage, long docDataId)
-            throws NoHandlerFoundException {
+            throws NoHandlerFoundException, UnknownHostException {
          int totalPages = currentPage.getTotalPages();
 // TODO NB: when current page number is 1, currentPage.getNumber() returns 0!!!!!!!!!!!!!!!!!!!!!!!!!!!!
          int pageNumber = currentPage.getNumber() + 1;
@@ -101,7 +118,7 @@ public class TextPartResourceAssembler {
         List<Integer> adjacentPages = new LinkedList<>();
         for (int i = pageNumber - 5; i < pageNumber + 5; i++) {
             if (i >= 1 && i <= totalPages && i != pageNumber && !rawMap.containsKey(i)) {
-                String link = DataManager.createPageLink(docDataId, i);
+                String link = dataManager.createPageLink(docDataId, i);
                 rawMap.put(i, BookmarkResource.builder()
                         .pageNumber(i)
                         .color(adjasentPageReferencesColor)
@@ -113,21 +130,21 @@ public class TextPartResourceAssembler {
         rawMap.put(pageNumber, BookmarkResource.builder()
                 .pageNumber(pageNumber)
                 .color(currentPageReferenceColor)
-                .link(DataManager.createPageLink(docDataId, pageNumber))
+                .link(dataManager.createPageLink(docDataId, pageNumber))
                 .build());
         // add the last page reference, if not exists
         if (totalPages > 6 && !rawMap.containsKey(totalPages))
             rawMap.put(totalPages, BookmarkResource.builder()
                     .pageNumber(totalPages)
                     .color(adjasentPageReferencesColor)
-                    .link(DataManager.createPageLink(docDataId, totalPages))
+                    .link(dataManager.createPageLink(docDataId, totalPages))
                     .build());
         // add the first page reference, if not exists
         if (!rawMap.containsKey(1))
             rawMap.put(1, BookmarkResource.builder()
                     .pageNumber(1)
                     .color(adjasentPageReferencesColor)
-                    .link(DataManager.createPageLink(docDataId, 1))
+                    .link(dataManager.createPageLink(docDataId, 1))
                     .build());
 
         return new LinkedList<>(rawMap.values());

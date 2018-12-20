@@ -79,7 +79,12 @@ public class TextCommonDataRepositoryPostgresTest extends BasePostgresConnecting
         textCommonDataRepository.saveAndFlush(textCommonData);
     }
 
-//    @Test
+    @Test
+    public void deleteAll() {
+        textCommonDataRepository.deleteAll();
+    }
+
+    //    @Test
 //    public void testSetTextParts_thenTextPartForeignKeysBeUpdated() {
 //        textCommonData = textCommonDataRepository.findAll().get(0);
 //        List<TextPart> textPartList = textPartRepository.findAll();

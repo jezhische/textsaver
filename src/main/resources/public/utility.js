@@ -1,5 +1,72 @@
 // ===================================================================================== AUXILIARY FUNCTIONS
 
+/** clear the forms with "create doc" and "search doc" buttons and inputs */
+function clearMainDocMenu(elemIds) {
+    elemIds.forEach((elemId) => $('#' + elemId).html(''));
+                                        console.log('clearMainDocMenu: success');
+}
+// ----------------------------------------------------------------------------------------------------------------
+
+function addMainDocButtons(elemId) {
+    let element = $('#' + elemId);
+    element.html('<button id="delete-doc" class="create-btn" style="color: rgba(192,0,0,0.55)">delete document</button>' +
+        '<button id="close-doc" class="create-btn">close document</button>' +
+        '<button id="search-page" type="submit" class="create-btn" disabled>search page</button>\n' +
+        '<input type="text" id="search-page-input" class="create-input" style="width: 100px" placeholder="Page number" disabled>' +
+        '<button id="save-doc" class="create-btn" disabled>save and update</button>');
+                                        console.log('addMainDocButtons: success');
+}
+// ----------------------------------------------------------------------------------------------------------------
+
+function createNameBar(docName, elemId) {
+    let bar = $('#' + elemId);
+    bar.addClass("doc-name-bar");
+    bar.html(docName);
+                                        console.log('createNameBar: success');
+}
+// ----------------------------------------------------------------------------------------------------------------
+
+function createInitialButtonsRow(elemId) {
+    let row = $('#' + elemId);
+    row.html('<div class="page-btn-bar" style="child-align: middle">' +
+        '<button id="delete-page" style="width: 20%" disabled>delete page</button>' +
+        '<button id="-" style="width: 10%" disabled>-</button>' +
+        '<button id="1" style="width: 10%" disabled>1</button>' +
+        '<button id="+" style="width: 10%" disabled>+</button>' +
+        '<button id="insert-page" style="width: 20%">insert page</button>' +
+        '</div>');
+                                        console.log('createInitialButtonsRow: ' + $('#upper-page-buttons-row')
+                                            .find('.page-btn-bar').find('#delete_page').html());
+}
+// ----------------------------------------------------------------------------------------------------------------
+
+function createTextarea() {
+// TODO: create it previously, and then in ajax only fill with content
+        let text = $('#text');
+    console.log('createTextarea: text.html = ' + text.html());
+    if (text.html() === '') {
+            text.html('<textarea id="pageTextarea" wrap="soft" cols="200"' +
+                /** HTML oninput event attribute here allows to set the height of this textarea dynamically
+                 * in accordance with the number of entered lines, when an element gets user input.
+                 * Scroll bar won't be appeared */
+                // "this" references current element, i.e. this textarea, "px" means "pixels"
+                ' oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\'></textarea>');
+        }
+                                        console.log('createTextarea: success');
+}
+// ----------------------------------------------------------------------------------------------------------------
+
+function createDocLink(docName) {
+    // let docLinks = $('#docLinks');
+    $('#docLinks').prepend('<a href="">' + docName + '</a>');
+                                        console.log('createDocLink: success');
+}
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
+
 /** when first call of given function with such textCommonDataId, create page form element
  * into the tag <div id="text"></div> on the index.html */
 function createPageTextFormElement(textCommonDataId, textareaId, upperRefButtons, lowerRefButtons) {
@@ -11,7 +78,7 @@ function createPageTextFormElement(textCommonDataId, textareaId, upperRefButtons
         let upperRefButtonsArea = '<br/><p id="'+ upperRefButtons + '"></p>';
         let lowerRefButtonsArea = '<br/><p id="'+ lowerRefButtons + '"></p>';
         // soft wrap means word wrap (перенос по словам)
-        let pageTextarea = '<textarea id="' + textareaId + '" wrap="soft" cols="100"' +
+        let pageTextarea = '<textarea id="' + textareaId + '" wrap="soft" cols="200"' +
         /** HTML oninput event attribute here allows to set the height of this textarea dynamically
          * in accordance with the number of entered lines, when an element gets user input.
          * Scroll bar won't be appeared */
@@ -68,7 +135,7 @@ function createTextareaElement(formId, textareaId) {
         $('#' + formId).append(  // FIXME html()? append()?
             //todo: set convenient textarea width by cols number setting
             // soft wrap means word wrap (перенос по словам)
-            '        <textarea wrap="soft" cols="100" id="' + textareaId + '"' +
+            '        <textarea wrap="soft" cols="200" rows="20" id="' + textareaId + '"' +
             /** HTML oninput Event Attribute here allows to set the height of this textarea dynamically
              * in accordance with the number of entered lines, when an element gets user input.
              * Scroll bar won't be appeared */
@@ -103,6 +170,7 @@ function createTextareaContentEventHandlers(textarea) {
     /* handle textarea when it gains focus, i.e. either mouse clicks on the textarea or it's selected
      * with Tab key from the keyboard */
     let timerId;
+    let auxTimerId;
     textarea.focus(function () {
         let savedLength = textarea.val().length;
         /* create recursive setTimeout to check textarea content changes every 1 second */
@@ -117,6 +185,23 @@ function createTextareaContentEventHandlers(textarea) {
             }
             timerId = setTimeout(check, 1000);
         }, 1000);
+
+        /* create recursive setTimeout with checking textarea content changes every 5 second
+        to create lower name bar and buttons row */
+        auxTimerId = setTimeout(function check() {
+            let taHeight = textarea.css('height');
+            if (taHeight.substring(0, taHeight.length - 2) > 170) {
+                                                            console.log('HURUKU! ' + taHeight);
+                let docName = $('#lower-doc-name-bar').html();
+                if (docName === '') {
+                    docName = $('#upper-doc-name-bar').html();
+                    createInitialButtonsRow('lower-page-buttons-row');
+                    createNameBar(docName, 'lower-doc-name-bar');
+                }
+                clearTimeout(auxTimerId);
+            }
+            else auxTimerId = setTimeout(check, 5000);
+        }, 5000);
     });
     /* handle event of loosing focus  */
 // NB: this handler must not to be created into the timer because of creating the new blur handler

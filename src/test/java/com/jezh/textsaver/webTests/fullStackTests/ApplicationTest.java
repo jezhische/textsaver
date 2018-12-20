@@ -3,6 +3,7 @@ package com.jezh.textsaver.webTests.fullStackTests;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.jezh.textsaver.businessLayer.DataManager;
 import com.jezh.textsaver.controller.TextPartController;
 import com.jezh.textsaver.dto.TextPartResource;
 import com.jezh.textsaver.entity.TextCommonData;
@@ -28,10 +29,17 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Date;
 
+import static org.junit.Assert.*;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
@@ -51,6 +59,9 @@ public class ApplicationTest {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private DataManager dataManager;
 
     private TextPart textPartTwo, textPartThree, textPartFour;
     private TextCommonData textCommonData;
@@ -100,6 +111,41 @@ public class ApplicationTest {
     }
 
 // =============================================================================================== textCommonData tests
+
+
+    @Test
+    public void testInetAddress() throws UnknownHostException {
+        String port = env.getProperty("server.port");
+        String lPort = env.getProperty("local.server.port");
+        String hostName = InetAddress.getLocalHost().getHostName();
+        String hostAddress = InetAddress.getLocalHost().getHostAddress();
+        System.out.println("*****************" + port + " " + hostName + " " + hostAddress);
+        System.out.println("**********************************" + lPort);
+    }
+
+    @Test
+    public void testCreate_UriComponentBuilder_build() throws UnknownHostException, NoHandlerFoundException {
+        String id = "25";
+        String port = env.getRequiredProperty("local.server.port"); // with unknown reason property "server.port" in
+        // spring boot 2 returns "-1", so this is a crutch
+        String contextPath = env.getRequiredProperty("server.servlet.context-path");
+        String hostAddress = InetAddress.getLocalHost().getHostAddress();
+        String uri = UriComponentsBuilder.newInstance().scheme("http")
+                .host(hostAddress).port(port).path(contextPath).path("/doc-data/{commonDataId}/pages")
+                .query("page={pageNumber}").buildAndExpand(id, "1").toString();
+        assertEquals("http://192.168.1.5:8074/textsaver/doc-data/25/pages?page=1", uri);
+
+        String pageLink = dataManager.createPageLink( 25L, 1);
+        assertEquals("http://192.168.1.5:8074/textsaver/doc-data/25/pages?page=1", pageLink);
+
+        System.out.println("********************************" + uri);
+        System.out.println("*******************************************" + pageLink);
+        System.out.println("*****" + linkTo(methodOn(TextPartController.class)
+                .findTextPartById(55L, 4))
+                .toUriComponentsBuilder().port(port).toUriString());
+
+    }
+
     /** find all the textCommonData */
     @Test
     public void testGetTextCommonDataList() throws Exception {
