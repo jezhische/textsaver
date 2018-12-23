@@ -1,24 +1,23 @@
 package com.jezh.textsaver.controller;
 
 import com.jezh.textsaver.businessLayer.DataManager;
-import com.jezh.textsaver.businessLayer.TextCommonDataLinkAssembler;
+import com.jezh.textsaver.businessLayer.TextCommonDataResourceAssembler;
 import com.jezh.textsaver.businessLayer.TextPartResourceAssembler;
+import com.jezh.textsaver.dto.TextCommonDataResource;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.service.BookmarkService;
 import com.jezh.textsaver.service.TextCommonDataService;
 import com.jezh.textsaver.service.TextPartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
 @Controller
 //@RequestMapping("/text-common-data")
@@ -41,22 +40,33 @@ public class TextCommonDataController {
     private BookmarkService bookmarkService;
 
     @Autowired
-    private TextCommonDataLinkAssembler dataAssembler;
+    private TextCommonDataResourceAssembler dataAssembler;
 
     @Autowired
     private TextPartResourceAssembler pageModelAssembler;
 
     /** return the simple link to created doc*/
 //    @ResponseBody
+//    @PostMapping("")
+//    public String create(@RequestBody String name)
+//            throws NoHandlerFoundException, UnknownHostException {
+//        TextCommonData textCommonData = textCommonDataService.create(name);
+//        Long id = textCommonData.getId();
+//        return dataManager.createPageLink(id, 1);
+//    }
+
+    @ResponseBody
     @PostMapping("")
-    public String create(@RequestBody String name)
+    public HttpEntity<TextCommonDataResource> create(@RequestBody String name)
             throws NoHandlerFoundException, UnknownHostException {
         TextCommonData textCommonData = textCommonDataService.create(name);
-        Long id = textCommonData.getId();
-//        String port = environment.getRequiredProperty("local.server.port"); // for unknown reason property
-        // "server.port" in spring boot 2 returns "-1", so this is a crutch
-//        return dataManager.createPageLink(id, 1);
-        return "redirect:/doc-data/" + id + "/pages?page=1";
+        return ResponseEntity.ok(dataAssembler.convertToLinkedRepresentation(textCommonData));
+    }
+
+    @ResponseBody
+    @GetMapping("")
+    public HttpEntity<List<TextCommonDataResource>> getDocs() {
+        return ResponseEntity.ok(dataAssembler.getLinkedDocsData(textCommonDataService.findAllByOrderByNameCreatedDateAsc()));
     }
 
 

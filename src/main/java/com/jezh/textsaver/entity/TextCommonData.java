@@ -22,7 +22,7 @@ import java.util.*;
 @Getter
 @Setter
 // I can to create toString() automatically since I have no more any collection of TextPart
-@ToString(callSuper = true)
+@ToString(callSuper = true, exclude = "bookmarks")
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
@@ -30,10 +30,10 @@ import java.util.*;
 //  "Spring Boot uses Jackson for Serializing and Deserializing Java objects to and from JSON.
 //This annotation is used because we don’t want the clients of the rest api to supply the createdDate and updatedDate values.
 // If they supply these values then we’ll simply ignore them. However, we’ll include these values in the JSON response."
-@JsonIgnoreProperties(value = {"createdDate", "updatedDate"},
-        /*to support defining "read-only" properties*/ allowGetters = true)
-// for Date fields proper assigning; need @EnableJpaAuditing to activate auditing in the classes marked this annotation
-@EntityListeners(AuditingEntityListener.class)
+//@JsonIgnoreProperties(value = {"createdDate", "updatedDate"},
+//        /*to support defining "read-only" properties*/ allowGetters = true)
+//// for Date fields proper assigning; need @EnableJpaAuditing to activate auditing in the classes marked this annotation
+//@EntityListeners(AuditingEntityListener.class)
 public class TextCommonData extends AbstractIdentifier {
 
     // the name of the text
@@ -46,7 +46,7 @@ public class TextCommonData extends AbstractIdentifier {
     @Column
     private Long firstItem;
 
-    // creating date
+    // created date
     @Column(name = "creating_date")
 // only with Date and Calendar: it converts the date and time values from Java Object to compatible database type
 // and vice versa.

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -12,4 +13,7 @@ public interface TextCommonDataRepository extends JpaRepository<TextCommonData, 
 
     @Query(value = "SELECT * FROM public.find_textcommondata_by_id(?1)", nativeQuery = true)
     Optional<TextCommonData> findTextCommonDataById(Long id);
+
+    List<TextCommonData> findAllByOrderByNameAsc();
+
 }

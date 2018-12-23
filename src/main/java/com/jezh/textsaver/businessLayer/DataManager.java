@@ -23,7 +23,7 @@ public class DataManager {
 
 //    private TextCommonDataControllerTransientDataRepo repository;
 //
-//    private TextCommonDataLinkAssembler assembler;
+//    private TextCommonDataResourceAssembler assembler;
 
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT;
 
@@ -36,6 +36,7 @@ public class DataManager {
         this.env = env;
     }
 
+    // TODO: to remove?
     public static String getUniqueName(String docDataName, Date createdDate) {
         if (createdDate != null)
             return new StringBuilder()
@@ -53,7 +54,7 @@ public class DataManager {
     /**
      *
      * */
-    public String createPageLink(long docDataId, int pageNumber) throws NoHandlerFoundException, UnknownHostException {
+    public String createPageLink(long docDataId, int pageNumber) throws /*NoHandlerFoundException, */UnknownHostException {
         String port = env.getRequiredProperty("local.server.port"); // with unknown reason property "server.port" in
         // spring boot 2 returns "-1", so this is a crutch
         String contextPath = env.getRequiredProperty("server.servlet.context-path");
@@ -68,6 +69,10 @@ public class DataManager {
 //                .findTextPartById(docDataId, pageNumber))
 //                .toUriComponentsBuilder().port(port).toUriString();
           return uri; // http://localhost:port/textsaver/doc-data/docDataId/pages?page=pageNumber
+    }
+
+    public static String trimQuotes(String obtainedName) {
+        return obtainedName.substring(1, obtainedName.length() - 1);
     }
 
     // FIXME: 18.12.2018 IllegalArgumentException: Cannot subclass final class java.lang.String

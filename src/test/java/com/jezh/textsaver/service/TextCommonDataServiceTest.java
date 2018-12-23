@@ -41,6 +41,11 @@ public class TextCommonDataServiceTest extends BasePostgresConnectingTest {
     }
 
     @Test
+    public void getOne() {
+        System.out.println("*********************************** " + textCommonDataService.getOne(809L));
+    }
+
+    @Test
 //    @Rollback(value = false)
     public void testFindAll() {
         List<TextCommonData> dataList = textCommonDataService.findAll();
@@ -48,9 +53,10 @@ public class TextCommonDataServiceTest extends BasePostgresConnectingTest {
         dataList.forEach(System.out::println);
     }
 
-    public void testCreate() {
+    @Test
+    public void create() {
         TextCommonData textCommonData = textCommonDataService.create("TextCommonDataServiceTest");
-        Long id = textCommonData.getId();
+                Long id = textCommonData.getId();
         System.out.println("*****************************************************************" + bookmarkService.findById(id).get());
         System.out.println("******************************textPartService.findSortedTextPartIdByTextCommonDataId(id) = "
                 + textPartService.findSortedTextPartIdByTextCommonDataId(id));
@@ -65,6 +71,12 @@ public class TextCommonDataServiceTest extends BasePostgresConnectingTest {
     @Test
     public void deleteAll() {
 
+    }
+
+
+    @Test
+    public void findAllByOrderByNameCreatedDateAsc() {
+        textCommonDataService.findAllByOrderByNameCreatedDateAsc().forEach(System.out::println);
     }
 
     // ======================================================================================= TEST UTIL

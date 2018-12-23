@@ -1,5 +1,15 @@
 // ===================================================================================== AUXILIARY FUNCTIONS
 
+function getDocLinksSortedByNameAndCreatedDate(textCommonDataResourceArray) {
+    textCommonDataResourceArray.forEach(res => {
+        // let name = res.name;
+        $('#docLinks').append('<a href="' + res.links[0].href + '"><b>' + res.name + '</b></a><br>');
+        // console.log(res.links[0].href);
+    });
+}
+
+// ----------------------------------------------------------------------------------------------------------------
+
 /** clear the forms with "create doc" and "search doc" buttons and inputs */
 function clearMainDocMenu(elemIds) {
     elemIds.forEach((elemId) => $('#' + elemId).html(''));
@@ -20,7 +30,7 @@ function addMainDocButtons(elemId) {
 
 function createNameBar(docName, elemId) {
     let bar = $('#' + elemId);
-    bar.addClass("doc-name-bar");
+    // bar.addClass("doc-name-bar");
     bar.html(docName);
                                         console.log('createNameBar: success');
 }
@@ -41,28 +51,35 @@ function createInitialButtonsRow(elemId) {
 // ----------------------------------------------------------------------------------------------------------------
 
 function createTextarea() {
-// TODO: create it previously, and then in ajax only fill with content
-        let text = $('#text');
-    console.log('createTextarea: text.html = ' + text.html());
-    if (text.html() === '') {
-            text.html('<textarea id="pageTextarea" wrap="soft" cols="200"' +
-                /** HTML oninput event attribute here allows to set the height of this textarea dynamically
-                 * in accordance with the number of entered lines, when an element gets user input.
-                 * Scroll bar won't be appeared */
-                // "this" references current element, i.e. this textarea, "px" means "pixels"
-                ' oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\' ' +
-                'placeholder="please input text here"></textarea>');
-        }
+    TEXT.attr({'wrap':'soft', 'cols':'200', 'placeholder':'please input text here',
+    'oninput':'this.style.height = ""; this.style.height = this.scrollHeight + "px"'});
+    TEXT.css('visibility', 'visible');
+
+    //     let text = $('#text');
+    // if (text.html() === '') {
+    //         text.html('<textarea id="pageTextarea" wrap="soft" cols="200"' +
+    //             /** HTML oninput event attribute here allows to set the height of this textarea dynamically
+    //              * in accordance with the number of entered lines, when an element gets user input.
+    //              * Scroll bar won't be appeared */
+    //             // "this" references current element, i.e. this textarea, "px" means "pixels"
+    //             ' oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\' ' +
+    //             'placeholder="please input text here"></textarea>');
+    //     }
                                         console.log('createTextarea: success');
 }
 // ----------------------------------------------------------------------------------------------------------------
 
 function createDocLink(docName) {
     // let docLinks = $('#docLinks');
-    $('#docLinks').prepend('<a href="">' + docName + '</a>');
+    $('#docLinks').prepend('<a href=""><b style="color: #ce8483">' + docName + '</b></a><br>');
                                         console.log('createDocLink: success');
 }
 // ----------------------------------------------------------------------------------------------------------------
+
+function addHref(docHref) {
+                                        console.log('$(\'#docLinks\').children().eq(0).html() = ' + $('#docLinks').children().eq(0).html());
+    $('#docLinks').children().eq(0).prop('href', docHref);
+}
 // ----------------------------------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------------------------------
@@ -70,32 +87,32 @@ function createDocLink(docName) {
 
 /** when first call of given function with such textCommonDataId, create page form element
  * into the tag <div id="text"></div> on the index.html */
-function createPageTextFormElement(textCommonDataId, textareaId, upperRefButtons, lowerRefButtons) {
-    // condition check to avoid duplication
-    if($("#" + textCommonDataId).html() === undefined) { // TODO: don't forget to let down the flag when close document. The flag will be raised in the end of this method
-                                                    console.log('*******$("#" + textCommonDataId).html() = ' + $("#" +
-                                                        textCommonDataId).html() + ', creating form with id = ' + textCommonDataId);
-        let closeButton = '<br/><br/><input id="close-btn" type="submit" value="close" onclick="closeDoc()">';
-        let upperRefButtonsArea = '<br/><p id="'+ upperRefButtons + '"></p>';
-        let lowerRefButtonsArea = '<br/><p id="'+ lowerRefButtons + '"></p>';
-        // soft wrap means word wrap (перенос по словам)
-        let pageTextarea = '<textarea id="' + textareaId + '" wrap="soft" cols="200"' +
-        /** HTML oninput event attribute here allows to set the height of this textarea dynamically
-         * in accordance with the number of entered lines, when an element gets user input.
-         * Scroll bar won't be appeared */
-        // "this" references current element, i.e. this textarea, "px" means "pixels"
-        ' oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\'></textarea>';
-
-        // <div id="text"></div> is located on the index.html. The method must be .html(), not .append(),
-        // to replace existing document page form element by the new one when page number is changed
-        $('#text').html('<form id="' + textCommonDataId + '" style="margin-left: 60px">' +
-            closeButton +
-            upperRefButtonsArea +
-            pageTextarea +
-            lowerRefButtonsArea +
-            '</form>');
-    }
-}
+// function createPageTextFormElement(textCommonDataId, textareaId, upperRefButtons, lowerRefButtons) {
+//     // condition check to avoid duplication
+//     if($("#" + textCommonDataId).html() === undefined) { // TODO: don't forget to let down the flag when close document. The flag will be raised in the end of this method
+//                                                     console.log('*******$("#" + textCommonDataId).html() = ' + $("#" +
+//                                                         textCommonDataId).html() + ', creating form with id = ' + textCommonDataId);
+//         let closeButton = '<br/><br/><input id="close-btn" type="submit" value="close" onclick="closeDoc()">';
+//         let upperRefButtonsArea = '<br/><p id="'+ upperRefButtons + '"></p>';
+//         let lowerRefButtonsArea = '<br/><p id="'+ lowerRefButtons + '"></p>';
+//         // soft wrap means word wrap (перенос по словам)
+//         let pageTextarea = '<textarea id="' + textareaId + '" wrap="soft" cols="200"' +
+//         /** HTML oninput event attribute here allows to set the height of this textarea dynamically
+//          * in accordance with the number of entered lines, when an element gets user input.
+//          * Scroll bar won't be appeared */
+//         // "this" references current element, i.e. this textarea, "px" means "pixels"
+//         ' oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\'></textarea>';
+//
+//         // <div id="text"></div> is located on the index.html. The method must be .html(), not .append(),
+//         // to replace existing document page form element by the new one when page number is changed
+//         $('#text').html('<form id="' + textCommonDataId + '" style="margin-left: 60px">' +
+//             closeButton +
+//             upperRefButtonsArea +
+//             pageTextarea +
+//             lowerRefButtonsArea +
+//             '</form>');
+//     }
+// }
 // ----------------------------------------------------------------------------------------------------------------
 /** close current document by 'close' button */
 function closeDoc() {
@@ -128,37 +145,37 @@ function closeDoc() {
 // ----------------------------------------------------------------------------------------------------------------
 
 /** create and append textarea child element to existing form element: */
-function createTextareaElement(formId, textareaId) {
-    let textarea = $('#' + textareaId);
-    // condition check to avoid duplication
-    if (textarea.html() === undefined) {
-        // append to parent element
-        $('#' + formId).append(  // FIXME html()? append()?
-            //todo: set convenient textarea width by cols number setting
-            // soft wrap means word wrap (перенос по словам)
-            '        <textarea wrap="soft" cols="200" rows="20" id="' + textareaId + '"' +
-            /** HTML oninput Event Attribute here allows to set the height of this textarea dynamically
-             * in accordance with the number of entered lines, when an element gets user input.
-             * Scroll bar won't be appeared */
-            // "this" references current element, i.e. this textarea, "px" means "pixels"
-            ' oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\'></textarea>'
-        );
-        textarea = $('#' + textareaId);
-    }
-    return textarea;
-}
+// function createTextareaElement(formId, textareaId) {
+//     let textarea = $('#' + textareaId);
+//     // condition check to avoid duplication
+//     if (textarea.html() === undefined) {
+//         // append to parent element
+//         $('#' + formId).append(  // FIXME html()? append()?
+//             //todo: set convenient textarea width by cols number setting
+//             // soft wrap means word wrap (перенос по словам)
+//             '        <textarea wrap="soft" cols="200" rows="20" id="' + textareaId + '"' +
+//             /** HTML oninput Event Attribute here allows to set the height of this textarea dynamically
+//              * in accordance with the number of entered lines, when an element gets user input.
+//              * Scroll bar won't be appeared */
+//             // "this" references current element, i.e. this textarea, "px" means "pixels"
+//             ' oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\'></textarea>'
+//         );
+//         textarea = $('#' + textareaId);
+//     }
+//     return textarea;
+// }
 // ---------------------------------------------------------------------------------------------------------------
 
 /** fill textarea element with content and auto grow its height according loaded content */
-function fillTextareaWithContent(textarea, data) {
-    // let thisTextArea = $('#' + thisTextareaId);
-    // TODO: fix it - define right val() instead of test one
-    textarea.val('page: ' + data.pageNumber + ', ' +
-        ', body: '+ data.body + '/ ');
-    /** to auto grow the created textarea height according loaded content */
-    textarea.height(textarea[0].scrollHeight);
-    textarea[0].maxHeight = 50; // fixme: don't know is it working right
-}
+// function fillTextareaWithContent(textarea, data) {
+//     // let thisTextArea = $('#' + thisTextareaId);
+//     // TODO: fix it - define right val() instead of test one
+//     textarea.val('page: ' + data.pageNumber + ', ' +
+//         ', body: '+ data.body + '/ ');
+//     /** to auto grow the created textarea height according loaded content */
+//     textarea.height(textarea[0].scrollHeight);
+//     textarea[0].maxHeight = 50; // fixme: don't know is it working right
+// }
 // ===================================--------------------------------------------------------- TEXTAREA EVENT HANDLERS
 
 /** create a handler for given textarea to watch changes in the content, when the focus is obtained.
@@ -190,18 +207,20 @@ function createTextareaContentEventHandlers(textarea) {
         /* create recursive setTimeout with checking textarea content changes every 5 second
         to create lower name bar and buttons row */
         auxTimerId = setTimeout(function check() {
-            let taHeight = textarea.css('height');
-            if (taHeight.substring(0, taHeight.length - 2) > 170) {
-                                                            console.log('HURUKU! ' + taHeight);
-                let docName = $('#lower-doc-name-bar').html();
-                if (docName === '') {
-                    docName = $('#upper-doc-name-bar').html();
-                    createInitialButtonsRow('lower-page-buttons-row');
-                    createNameBar(docName, 'lower-doc-name-bar');
+            let docName = $('#lower-doc-name-bar').html();
+            // let taHeight = textarea.css('height');
+            if (docName === '') {
+                                                                console.log('docName === undefined');
+                // let docName = $('#lower-doc-name-bar').html();
+                let taHeight = textarea.css('height');
+                if (taHeight.substring(0, taHeight.length - 2) > 170) {
+                                                                console.log('TEXT height ' + taHeight + ', need lower button row');
+                    $('#lower-page-buttons-row').html($('#upper-page-buttons-row').html());
+                    $('#lower-doc-name-bar').html($('#upper-doc-name-bar').html());
+                    clearTimeout(auxTimerId);
                 }
-                clearTimeout(auxTimerId);
+                else auxTimerId = setTimeout(check, 5000);
             }
-            else auxTimerId = setTimeout(check, 5000);
         }, 5000);
     });
     /* handle event of loosing focus  */

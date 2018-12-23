@@ -58,11 +58,13 @@ public class TextPartResourceAssembler {
         TextPart textPart = currentPage.getContent().stream().findFirst()
                 .orElseThrow(NullPointerException::new);
         String body = textPart.getBody();
+        String name = textPart.getTextCommonData().getName();
         Date lastUpdate = textPart.getLastUpdate();
         int pageNumber = currentPage.getNumber() + 1;
         int totalPages = currentPage.getTotalPages();
         return TextPartResource.builder()
                 .body(body)
+                .name(name)
                 .lastUpdate(lastUpdate)
                 .pageNumber(pageNumber)
                 .totalPages(totalPages)
@@ -114,7 +116,7 @@ public class TextPartResourceAssembler {
          // simple way to sort page references in the natural order
         Map<Integer, BookmarkResource> rawMap = new TreeMap<>();
         rawList.forEach(bookmarkResource -> rawMap.put(bookmarkResource.getPageNumber(), bookmarkResource));
-        // add adjacent page references to sorted map
+        // add adjacent page references to sorted map (by 5 references right and left)
         List<Integer> adjacentPages = new LinkedList<>();
         for (int i = pageNumber - 5; i < pageNumber + 5; i++) {
             if (i >= 1 && i <= totalPages && i != pageNumber && !rawMap.containsKey(i)) {

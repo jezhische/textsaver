@@ -10,6 +10,7 @@ import java.util.Map;
 /** the DTO for transfer the proper data of TextPart instance plus links transfer, that supported by
  * ResourceSupport, the base class for DTOs to collect links */
 @Data
+//@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
@@ -28,4 +29,17 @@ public class TextPartResource extends ResourceSupport {
     private int pageNumber;
     private int totalPages;
     private List<BookmarkResource> bookmarkResources;
+
+    @Override
+    public String toString() {
+        return "TextPartResource{" +
+                "body='" + body + '\'' +
+                ", name='" + name + '\'' +
+                ", lastUpdate=" + lastUpdate +
+                ", pageNumber=" + pageNumber +
+                ", totalPages=" + totalPages +
+                ", bookmarkResources=" + bookmarkResources +
+                ", links=" + getLinks() +
+                '}';
+    }
 }

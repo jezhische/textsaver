@@ -25,7 +25,7 @@ public class TextCommonDataServiceImpl implements TextCommonDataService {
 
     private TextPartRepository textPartRepository;
 
-    private static final int bookmarksCount = 10;
+    private static final int BOOKMARKS_COUNT = 10;
 
     @Autowired
     public TextCommonDataServiceImpl(TextCommonDataRepository textCommonDataRepository,
@@ -38,11 +38,16 @@ public class TextCommonDataServiceImpl implements TextCommonDataService {
 
 
     @Override
+    public List<TextCommonData> findAllByOrderByNameCreatedDateAsc() {
+        return textCommonDataRepository.findAllByOrderByNameAsc();
+    }
+
+    @Override
     public TextCommonData create(String name) {
         // create textCommonData
         Date createdDate = new Date();
         TextCommonData textCommonData = TextCommonData.builder()
-                .name(name)
+                .name(DataManager.trimQuotes(name))
                 .createdDate(createdDate)
                 .updatedDate(createdDate)
                 .build();
@@ -54,7 +59,7 @@ public class TextCommonDataServiceImpl implements TextCommonDataService {
         textPartRepository.saveAndFlush(textPart);
 
         // create bookmarks
-        String[] lastOpens = new String[bookmarksCount];
+        String[] lastOpens = new String[BOOKMARKS_COUNT];
         lastOpens[0] = DataManager.getLastOpenedArrayItem(1, false);
         Bookmarks bookmarks = Bookmarks.builder()
                 .lastOpenArray(lastOpens)
