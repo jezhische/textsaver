@@ -43,11 +43,11 @@
             <artifactId>spring-boot-starter-hateoas</artifactId>
         </dependency>
 		<!-- https://mvnrepository.com/artifact/de.escalon.hypermedia/spring-hateoas-ext -->
-		<dependency>
-			<groupId>de.escalon.hypermedia</groupId>
-			<artifactId>spring-hateoas-ext</artifactId>
-			<version>0.4.1</version>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>de.escalon.hypermedia</groupId>-->
+			<!--<artifactId>spring-hateoas-ext</artifactId>-->
+			<!--<version>0.4.1</version>-->
+		<!--</dependency>-->
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-aop -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

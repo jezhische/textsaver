@@ -70,18 +70,18 @@ $(function () {
             contentType: "application/json",
             url: 'doc-data',
             data: JSON.stringify(docName),
-           dataType: 'json',
-            // dataType: 'text',
+           // dataType: 'json',
+            dataType: 'text',
             success: function (obtainedData, status, jqXHR) {
-                                                        console.log('POST - create doc: SUCCESS, returned value: ' + obtainedData);
-
-                // DOC_LINKS.prepend('<a href="' + obtainedData + '">' + docName + '</a>');
-                $('#upper-doc-name-bar').append(', created date: ' + obtainedData.createdDate);
-                                                            console.log('****** obtainedData._links.self.href = ' + obtainedData._links.self.href);
-                addHref(obtainedData._links.self.href);
+                //                                         console.log('POST - create doc: SUCCESS, returned value: ' + obtainedData);
+                // $('#upper-doc-name-bar').append(', created date: ' + obtainedData.createdDate);
+                //                                         console.log('****** obtainedData._links.self.href = ' + obtainedData._links.self.href);
+                // addHref(obtainedData._links.self.href);
+                /* redirect to the created page of the created document */
+                window.location.href = obtainedData;
             },
             error: function () {
-                console.log('error: this.url = ' + this.url);
+                console.log('error message: this.url = ' + this.url);
                 // TODO: make error handling
                 alert('error');
             }
@@ -89,9 +89,11 @@ $(function () {
     }
 
 // --------------------------------------------------------------------------------------------------------------------
-// ----------------------------------------------- GET and RENDER references for all the documents that persisted in db
+// ---------------------------------------------------------------------------------------- GET and RENDER current page
 // --------------------------------------------------------------------------------------------------------------------
+function getPage(link) {
 
+}
 
 // --------------------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------- GET and RENDER all the TEXT PART with given textCommonDataId
@@ -217,6 +219,7 @@ $(function () {
     getSavedDocLinks();
     $('#create-doc-btn').click(function (event) {
         event.preventDefault();
+        // здесь jQuery redirect, то есть createNewDoc() просто должен обрабатывать другой запрос - должен просто редиректиться с POST на GET ...pages?page=1
         createNewDoc();
     });
 });

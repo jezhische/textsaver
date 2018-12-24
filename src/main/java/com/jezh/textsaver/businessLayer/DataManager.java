@@ -2,15 +2,14 @@ package com.jezh.textsaver.businessLayer;
 
 import com.jezh.textsaver.controller.TextCommonDataController;
 import com.jezh.textsaver.controller.TextPartController;
-import de.escalon.hypermedia.spring.AffordanceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -54,20 +53,20 @@ public class DataManager {
     /**
      *
      * */
-    public String createPageLink(long docDataId, int pageNumber) throws /*NoHandlerFoundException, */UnknownHostException {
-        String port = env.getRequiredProperty("local.server.port"); // with unknown reason property "server.port" in
+    public String createPageLink(long docDataId, int pageNumber) throws NoHandlerFoundException, UnknownHostException {
+        String port = env.getRequiredProperty("local.server.port"); // by unknown reason property "server.port" in
         // spring boot 2 returns "-1", so this is a crutch
-        String contextPath = env.getRequiredProperty("server.servlet.context-path");
         String hostAddress = InetAddress.getLocalHost().getHostAddress();
+        URI resourcePath = linkTo(methodOn(TextPartController.class)
+                .findTextPartById(docDataId, pageNumber)).toUri();
         String uri = UriComponentsBuilder.newInstance().scheme("http")
-                .host(hostAddress).port(port).path(contextPath).path("/doc-data/{commonDataId}/pages")
-                .query("page={pageNumber}").buildAndExpand(docDataId, "1").toString();
-        // https://github.com/dschulten/hydra-java/blob/master/README.asciidoc#affordancebuilder-for-rich-hyperlinks
-//        return AffordanceBuilder.linkTo(methodOn(TextPartController.class)
-//                .findTextPartById(docDataId, pageNumber)).rel("self").build().toString();
-//        return linkTo(methodOn(TextPartController.class)
-//                .findTextPartById(docDataId, pageNumber))
-//                .toUriComponentsBuilder().port(port).toUriString();
+                .host(hostAddress).port(port)
+//                .path(env.getRequiredProperty("server.servlet.context-path")) // by unknown reason, from test the
+//                context-path isn't created, and this line is necessary for test, but from controller this line
+//                causes duplication of context-path, so I need to remove it for application run
+                .path(resourcePath.getPath())
+                .query(resourcePath.getQuery())
+                .toUriString();
           return uri; // http://localhost:port/textsaver/doc-data/docDataId/pages?page=pageNumber
     }
 

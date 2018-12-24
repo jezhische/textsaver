@@ -20,7 +20,6 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 @Controller
-//@RequestMapping("/text-common-data")
 @RequestMapping("/doc-data")
 public class TextCommonDataController {
 
@@ -45,22 +44,20 @@ public class TextCommonDataController {
     @Autowired
     private TextPartResourceAssembler pageModelAssembler;
 
-    /** return the simple link to created doc*/
 //    @ResponseBody
 //    @PostMapping("")
-//    public String create(@RequestBody String name)
+//    public HttpEntity<TextCommonDataResource> create(@RequestBody String name)
 //            throws NoHandlerFoundException, UnknownHostException {
 //        TextCommonData textCommonData = textCommonDataService.create(name);
-//        Long id = textCommonData.getId();
-//        return dataManager.createPageLink(id, 1);
+//        return ResponseEntity.ok(dataAssembler.convertToLinkedRepresentation(textCommonData));
 //    }
 
     @ResponseBody
     @PostMapping("")
-    public HttpEntity<TextCommonDataResource> create(@RequestBody String name)
+    public String create(@RequestBody String name)
             throws NoHandlerFoundException, UnknownHostException {
         TextCommonData textCommonData = textCommonDataService.create(name);
-        return ResponseEntity.ok(dataAssembler.convertToLinkedRepresentation(textCommonData));
+        return dataManager.createPageLink(textCommonData.getId(), 1);
     }
 
     @ResponseBody

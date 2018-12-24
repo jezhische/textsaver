@@ -31,7 +31,7 @@ public class TextCommonDataResourceAssembler {
             TextCommonDataResource linkedDocData = null;
             try {
                 linkedDocData = convertToLinkedRepresentation(docData);
-            } catch (UnknownHostException e) {
+            } catch (UnknownHostException | NoHandlerFoundException e) {
                 e.printStackTrace();
             }
             try {
@@ -45,14 +45,14 @@ public class TextCommonDataResourceAssembler {
     //                            .slash(linkedDocData.getName())
     //                            .withSelfRel()
                 );
-            } catch (UnknownHostException e) {
+            } catch (UnknownHostException | NoHandlerFoundException e) {
                 e.printStackTrace();
             }
             return linkedDocData;
         }).collect(Collectors.toList());
     }
 
-    public TextCommonDataResource convertToLinkedRepresentation(TextCommonData docData) throws UnknownHostException {
+    public TextCommonDataResource convertToLinkedRepresentation(TextCommonData docData) throws UnknownHostException, NoHandlerFoundException {
         Date createdDate = docData.getCreatedDate();
         TextCommonDataResource resource = TextCommonDataResource.builder()
                 .name(docData.getName())/*(DataManager.getUniqueName(textCommonData.getName(), createdDate))*/ //todo: perhaps to remove

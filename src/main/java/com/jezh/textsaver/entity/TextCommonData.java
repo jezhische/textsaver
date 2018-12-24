@@ -22,7 +22,7 @@ import java.util.*;
 @Getter
 @Setter
 // I can to create toString() automatically since I have no more any collection of TextPart
-@ToString(callSuper = true, exclude = "bookmarks")
+@ToString(callSuper = true)
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
@@ -61,11 +61,12 @@ public class TextCommonData extends AbstractIdentifier {
     @LastModifiedDate
     private Date updatedDate;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "textCommonData", cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY, orphanRemoval = true, optional = false) // optional = false means not null, and
-    // hibernate doesn't need additional request to check for nullable
-    private Bookmarks bookmarks;
+    /** if this field exists, hibernate makes request to bookmarks each time when there is request to text_common_data */
+//    @JsonIgnore
+//    @OneToOne(mappedBy = "textCommonData", cascade = CascadeType.ALL,
+//            fetch = FetchType.LAZY, orphanRemoval = true, optional = false) // optional = false means not null, and
+//    // hibernate doesn't need additional request to check for nullable
+//    private Bookmarks bookmarks;
 
     @Override
     public boolean equals(Object o) {

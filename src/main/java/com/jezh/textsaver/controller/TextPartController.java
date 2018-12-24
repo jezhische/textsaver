@@ -1,7 +1,6 @@
 package com.jezh.textsaver.controller;
 
 import com.jezh.textsaver.businessLayer.TextPartResourceAssembler;
-import com.jezh.textsaver.dto.TextPartControllerTransientDataRepo;
 import com.jezh.textsaver.dto.TextPartResource;
 import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.entity.TextPart;
@@ -14,7 +13,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -22,10 +24,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.UnknownHostException;
-import java.text.ParseException;
-import java.util.Date;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RestController
 @EnableHypermediaSupport(type = { EnableHypermediaSupport.HypermediaType.HAL })
@@ -43,9 +41,6 @@ public class TextPartController {
 
     @Autowired
     private TextPartResourceAssembler pageModelAssembler;
-
-    @Autowired
-    private TextPartControllerTransientDataRepo repository;
 
     @Autowired
     private Environment env;
@@ -85,21 +80,21 @@ public class TextPartController {
 
 
 // ================================================================================================================ PUT:
-
-    @PutMapping(value = "/text-parts/pages", params = {"page"})
-    public HttpEntity<Date> updatePage(
-            @RequestBody TextPartResource linkedPage,
-            @RequestParam(value = "page") int pageNumber,
-            HttpServletRequest request
-    ) throws NoHandlerFoundException, ParseException {
-        String body = linkedPage.getBody();
-        Date current = textPartService.updateById( // FIXME: 17.11.2018 format date to UTC+2.00
-                repository.getListOfSortedTextPartId().get(pageNumber - 1),
-                body,
-                new Date())
-                .orElseThrow(() -> new NoHandlerFoundException(request.getMethod(), request.getRequestURL().toString(), new HttpHeaders()));
-        return new ResponseEntity<>(current, new HttpHeaders(), HttpStatus.OK);
-    }
+//
+//    @PutMapping(value = "/text-parts/pages", params = {"page"})
+//    public HttpEntity<Date> updatePage(
+//            @RequestBody TextPartResource linkedPage,
+//            @RequestParam(value = "page") int pageNumber,
+//            HttpServletRequest request
+//    ) throws NoHandlerFoundException, ParseException {
+//        String body = linkedPage.getBody();
+//        Date current = textPartService.updateById( // FIXME: 17.11.2018 format date to UTC+2.00
+//                repository.getListOfSortedTextPartId().get(pageNumber - 1),
+//                body,
+//                new Date())
+//                .orElseThrow(() -> new NoHandlerFoundException(request.getMethod(), request.getRequestURL().toString(), new HttpHeaders()));
+//        return new ResponseEntity<>(current, new HttpHeaders(), HttpStatus.OK);
+//    }
 
 //    @GetMapping (path = "/text-parts/{id}")
 //    public ResponseEntity<TextPart> getTextPartById() {
