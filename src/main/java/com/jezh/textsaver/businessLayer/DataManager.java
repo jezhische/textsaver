@@ -60,7 +60,7 @@ public class DataManager {
         URI resourcePath = linkTo(methodOn(TextPartController.class)
                 .findTextPartById(docDataId, pageNumber)).toUri();
         String uri = UriComponentsBuilder.newInstance().scheme("http")
-                .host(hostAddress).port(port)
+                .host(/*hostAddress*/"localhost").port(port)
 //                .path(env.getRequiredProperty("server.servlet.context-path")) // by unknown reason, from test the
 //                context-path isn't created, and this line is necessary for test, but from controller this line
 //                causes duplication of context-path, so I need to remove it for application run

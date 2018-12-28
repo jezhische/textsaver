@@ -1,10 +1,51 @@
 // ===================================================================================== AUXILIARY FUNCTIONS
 
+// FIXME: не работает
+function setIframeHeightByContent() {
+    // $('iframe').css('visibility', 'visible');
+    // let iframe = $('iframe');
+    // // iframe.height = "";
+    // // iframe.height = iFrameID.contentWindow.document.body.scrollHeight + "px";
+    // // iframe.height =
+    //     // iframe.document.body.scrollHeight + "px";
+    // // console.log('***************** iframe.height = ' + iframe.height);
+    // // console.log('***************** iframe.attr(\'height\') = ' + iframe.attr('height'));
+    //     console.log('*****************' + iframe.prop('max-height') + ' ' + iframe.prop('scrollHeight') + ' '
+    //         +  iframe.attr('scrollHeight') + ' ');
+}
+
+// ----------------------------------------------------------------------------------------------------------------
+
+function setIframeVisible() {
+    $('iframe').css('visibility', 'visible');
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------- create iframe html markup
+// --------------------------------------------------------------------------------------------------------------------
+
+function setIframeMarkup(docName) {
+    setIframeContainer();
+
+    let iframe = $('iframe').contents();
+    let text = iframe.find('#text');
+    let upperNameBar = iframe.find('#upper-doc-name-bar');
+    let upperPageButtons = iframe.find('#upper-page-buttons-row');
+
+    clearMainDocMenu(['create-doc-block', 'search-doc']);
+    addMainDocButtons('create-doc-block');
+    setIframeVisible();
+    createInitialButtonsRow(upperPageButtons);
+    createNameBar(docName, upperNameBar);
+    createTextarea();
+    createTextareaContentEventHandlers(text);
+}
+// ----------------------------------------------------------------------------------------------------------------
+
 function getDocLinksSortedByNameAndCreatedDate(textCommonDataResourceArray) {
     textCommonDataResourceArray.forEach(res => {
-        // let name = res.name;
-        $('#docLinks').append('<a href="' + res.links[0].href + '"><b>' + res.name + '</b></a><br>');
-        // console.log(res.links[0].href);
+        let link = res.links[0].href;
+        $('#docLinks').append('<a href="' + link + '" target="ifr" class="d_link"><b>' + res.name + '</b></a><br>');
     });
 }
 
@@ -13,73 +54,76 @@ function getDocLinksSortedByNameAndCreatedDate(textCommonDataResourceArray) {
 /** clear the forms with "create doc" and "search doc" buttons and inputs */
 function clearMainDocMenu(elemIds) {
     elemIds.forEach((elemId) => $('#' + elemId).html(''));
-                                        console.log('clearMainDocMenu: success');
+                                        // console.log('clearMainDocMenu: success');
 }
 // ----------------------------------------------------------------------------------------------------------------
 
 function addMainDocButtons(elemId) {
     let element = $('#' + elemId);
-    element.html('<button id="delete-doc" class="create-btn" style="color: rgba(192,0,0,0.55)">delete document</button>' +
-        '<button id="close-doc" class="create-btn">close document</button>' +
-        '<button id="search-page" type="submit" class="create-btn" disabled>search page</button>\n' +
-        '<input type="text" id="search-page-input" class="create-input" style="width: 100px" placeholder="Page number" disabled>' +
-        '<button id="save-doc" class="create-btn" disabled>save and update</button>');
-                                        console.log('addMainDocButtons: success');
+    element.html('<button id="delete-doc" class="create-btn" style="margin-left: 20px; margin-right: 20px; ' +
+        'color: rgba(192,0,0,0.55)">delete document</button>' +
+        '<button id="close-doc" class="create-btn" style="margin-left: 20px; margin-right: 20px">close document</button>' +
+        '<button id="search-page" type="submit" class="create-btn" style="margin-left: 20px; margin-right: 5px" disabled>' +
+        'search page</button>\n' +
+        '<input type="text" id="search-page-input" class="create-input" style="margin-right: 20px; width: 120px" ' +
+        'placeholder="page number" disabled>' +
+        '<button id="save-doc" class="create-btn" style="margin-left: 20px; margin-right: 20px" disabled>' +
+        'save and update</button>');
 }
 // ----------------------------------------------------------------------------------------------------------------
 
-function createNameBar(docName, elemId) {
-    let bar = $('#' + elemId);
-    // bar.addClass("doc-name-bar");
-    bar.html(docName);
-                                        console.log('createNameBar: success');
+function createNameBar(docName, elem) {
+    elem.html(docName);
 }
 // ----------------------------------------------------------------------------------------------------------------
 
-function createInitialButtonsRow(elemId) {
-    let row = $('#' + elemId);
-    row.html('<div class="page-btn-bar" style="child-align: middle">' +
+function createInitialButtonsRow(elem) {
+    // let row = $('#' + elemId);
+    elem.html('<div class="page-btn-bar" style="child-align: middle">' +
         '<button id="delete-page" style="width: 20%" disabled>delete page</button>' +
         '<button id="-" style="width: 10%" disabled>-</button>' +
-        '<button id="1" style="width: 10%" disabled>1</button>' +
+        '<button id="1" class="page-number-button" style="width: 10%" disabled>1</button>' +
         '<button id="+" style="width: 10%" disabled>+</button>' +
         '<button id="insert-page" style="width: 20%">insert page</button>' +
         '</div>');
-                                        console.log('createInitialButtonsRow: ' + $('#upper-page-buttons-row')
-                                            .find('.page-btn-bar').find('#delete_page').html());
 }
 // ----------------------------------------------------------------------------------------------------------------
 
 function createTextarea() {
-    TEXT.attr({'wrap':'soft', 'cols':'200', 'placeholder':'please input text here',
+    let text = $('iframe').contents().find('#text');
+    text.attr({'wrap':'soft', 'cols':'200', 'placeholder':'please input text here',
     'oninput':'this.style.height = ""; this.style.height = this.scrollHeight + "px"'});
-    TEXT.css('visibility', 'visible');
-
-    //     let text = $('#text');
-    // if (text.html() === '') {
-    //         text.html('<textarea id="pageTextarea" wrap="soft" cols="200"' +
-    //             /** HTML oninput event attribute here allows to set the height of this textarea dynamically
-    //              * in accordance with the number of entered lines, when an element gets user input.
-    //              * Scroll bar won't be appeared */
-    //             // "this" references current element, i.e. this textarea, "px" means "pixels"
-    //             ' oninput=\'this.style.height = ""; this.style.height = this.scrollHeight + "px"\' ' +
-    //             'placeholder="please input text here"></textarea>');
-    //     }
+    text.css('visibility', 'visible');
                                         console.log('createTextarea: success');
 }
 // ----------------------------------------------------------------------------------------------------------------
 
 function createDocLink(docName) {
-    // let docLinks = $('#docLinks');
-    $('#docLinks').prepend('<a href=""><b style="color: #ce8483">' + docName + '</b></a><br>');
-                                        console.log('createDocLink: success');
+    /* add link */
+    $('#docLinks').prepend('<a href="" target="ifr"><b style="color: #ce8483">' + docName + '</b></a><br>');
+                                        // console.log('createDocLink: success');
 }
 // ----------------------------------------------------------------------------------------------------------------
 
-function addHref(docHref) {
-                                        console.log('$(\'#docLinks\').children().eq(0).html() = ' + $('#docLinks').children().eq(0).html());
-    $('#docLinks').children().eq(0).prop('href', docHref);
+function setIframeContainer() {
+    // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@' + $('iframe').contents().find('body').html());
+    let container = $('iframe').contents().find('#container');
+    container.html('');
+    container.html(
+        '<div id="upper-doc-bar">\n' +
+        '        <div id="upper-doc-name-bar" class="doc-name-bar"></div>\n' +
+        '        <div id="upper-page-buttons-row"></div>\n' +
+        '    </div>\n' +
+        '    <textarea id="text"></textarea>\n' +
+        '    <div id="lower-doc-bar">\n' +
+        '        <div id="lower-page-buttons-row"></div>\n' +
+        '        <div id="lower-doc-name-bar" class="doc-name-bar"></div>\n' +
+        '    </div>'
+    );
+    // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@' + $('iframe').contents().find('body').html());
+
 }
+
 // ----------------------------------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------------------------------
@@ -206,17 +250,21 @@ function createTextareaContentEventHandlers(textarea) {
 
         /* create recursive setTimeout with checking textarea content changes every 5 second
         to create lower name bar and buttons row */
+        let iframe = $('iframe').contents();
+        let upperNameBar = iframe.find('#upper-doc-name-bar');
+        let lowerNameBar = iframe.find('#lower-doc-name-bar');
+        let upperPageButtons = iframe.find('#upper-page-buttons-row');
+        let lowerPageButtons = iframe.find('#lower-page-buttons-row');
         auxTimerId = setTimeout(function check() {
-            let docName = $('#lower-doc-name-bar').html();
-            // let taHeight = textarea.css('height');
+            let docName = lowerNameBar.html();
             if (docName === '') {
                                                                 console.log('docName === undefined');
                 // let docName = $('#lower-doc-name-bar').html();
                 let taHeight = textarea.css('height');
                 if (taHeight.substring(0, taHeight.length - 2) > 170) {
                                                                 console.log('TEXT height ' + taHeight + ', need lower button row');
-                    $('#lower-page-buttons-row').html($('#upper-page-buttons-row').html());
-                    $('#lower-doc-name-bar').html($('#upper-doc-name-bar').html());
+                    lowerPageButtons.html(upperPageButtons.html());
+                   lowerNameBar.html(upperNameBar.html());
                     clearTimeout(auxTimerId);
                 }
                 else auxTimerId = setTimeout(check, 5000);
@@ -230,5 +278,6 @@ function createTextareaContentEventHandlers(textarea) {
         let length = textarea.val().length;
                                                             console.log('focus lost: ' + length);
         clearTimeout(timerId);
+        clearTimeout(auxTimerId);
     });
 }

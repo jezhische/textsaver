@@ -32,24 +32,28 @@
         <form id="create-doc-block" style="display: inline-block; margin-left: 100px">
             <button id="create-doc-btn" type="submit" class="create-btn">create new doc</button>
             <input type="text" id="create-doc-text-input" class="create-input" placeholder="Please input the document name">
+            <br>
+            <br>
         </form>
-        <br>
-        <br>
         <form id="search-doc" style="display: inline-block; margin-left: 100px">
             <button id="search-doc-btn" type="submit" class="create-btn">search on site</button>
             <input type="text" id="search-doc-text-input" class="create-input" placeholder="Please input the document name">
+            <br>
+            <br>
         </form>
-        <br>
-        <br>
-        <div id="upper-doc-bar">
-            <div id="upper-doc-name-bar" class="doc-name-bar"></div>
-            <div id="upper-page-buttons-row"></div>
-        </div>
-        <textarea id="text"></textarea>
-        <div id="lower-doc-bar">
-            <div id="lower-page-buttons-row"></div>
-            <div id="lower-doc-name-bar" class="doc-name-bar"></div>
-        </div>
+
+<!--FIXME: setIframeHeightByContent() doesn't work-->
+        <iframe src="current_doc.html" name="ifr" frameborder="no" onload='this.style.height = ""; this.style.height = this.scrollHeight + "px"'></iframe>
+
+        <!--<div id="upper-doc-bar">-->
+            <!--<div id="upper-doc-name-bar" class="doc-name-bar"></div>-->
+            <!--<div id="upper-page-buttons-row"></div>-->
+        <!--</div>-->
+        <!--<textarea id="text"></textarea>-->
+        <!--<div id="lower-doc-bar">-->
+            <!--<div id="lower-page-buttons-row"></div>-->
+            <!--<div id="lower-doc-name-bar" class="doc-name-bar"></div>-->
+        <!--</div>-->
     </div>
 </div>
 

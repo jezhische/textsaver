@@ -79,7 +79,7 @@ public class TextPartResourceAssembler {
      * */
      List<BookmarkResource> convertBookmarksToBookmarkResourceList(Bookmarks bookmarks)
              throws NoHandlerFoundException, UnknownHostException {
-        String[] lastOpenArray = bookmarks.getLastOpenArray();
+        String[] lastOpenArray = bookmarks.getLastOpenArray(); // Strings "page numbers + 1 or 0" (edited or opened)
         EditedColorStore[] editedColorStores = EditedColorStore.values();
         OpenedColorStore[] openedColorStores = OpenedColorStore.values();
         long docDataId = bookmarks.getId();
@@ -91,7 +91,7 @@ public class TextPartResourceAssembler {
                 int pageNumber = Integer.parseInt(current.substring(0, current.length() - 1));
                 // set the color according to page index in lastOpenArray and isEdited value
                 String color = current.endsWith("1") ?
-                        editedColorStores[i].name().substring(1) :
+                        editedColorStores[i].name().substring(1) : // need to trim first letter
                         openedColorStores[i].name().substring(1);
                 String link = dataManager.createPageLink(docDataId, pageNumber);
              resources.add(BookmarkResource.builder()

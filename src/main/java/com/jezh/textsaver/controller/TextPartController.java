@@ -1,6 +1,9 @@
 package com.jezh.textsaver.controller;
 
+import com.jezh.textsaver.businessLayer.DataManager;
+import com.jezh.textsaver.businessLayer.PageResourceAssembler;
 import com.jezh.textsaver.businessLayer.TextPartResourceAssembler;
+import com.jezh.textsaver.dto.PageResource;
 import com.jezh.textsaver.dto.TextPartResource;
 import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.entity.TextPart;
@@ -30,20 +33,17 @@ import java.net.UnknownHostException;
 @RequestMapping("/doc-data/{commonDataId}")
 public class TextPartController {
 
-    @Autowired
-    private TextPartService textPartService;
+    @Autowired private TextPartService textPartService;
 
-    @Autowired
-    private TextCommonDataService textCommonDataService;
+    @Autowired private TextCommonDataService textCommonDataService;
 
-    @Autowired
-    private BookmarkService bookmarkService;
+    @Autowired private BookmarkService bookmarkService;
 
-    @Autowired
-    private TextPartResourceAssembler pageModelAssembler;
+    @Autowired private PageResourceAssembler pageModelAssembler;
 
-    @Autowired
-    private Environment env;
+    @Autowired private Environment env;
+
+    @Autowired private DataManager dataManager;
 
     // the same as @Value("${local.server.port}")
     @LocalServerPort
@@ -51,15 +51,13 @@ public class TextPartController {
 
 
 // ================================================================================================================ GET:
-    /** find textPart by id */
+    /** find page model by textCommonData id and page number */
     @GetMapping(value = "/pages", params = {"page"})
-    public ResponseEntity<TextPartResource> findTextPartById(@PathVariable(value = "commonDataId") long id,
-                                                             @RequestParam(value = "page") int pageNumber)
+    public ResponseEntity<PageResource> findTextPartById(@PathVariable(value = "commonDataId") long id,
+                                                         @RequestParam(value = "page") int pageNumber)
             throws NoHandlerFoundException, UnknownHostException {
         Page<TextPart> page = textPartService.findPageByDocDataIdAndPageNumber(id, pageNumber);
-        Bookmarks bookmarks = bookmarkService.findById(id).orElseThrow(() -> new NoHandlerFoundException("GET",
-                "/doc-data", new HttpHeaders()));
-        return ResponseEntity.status(HttpStatus.CREATED).body(pageModelAssembler.getResource(page, bookmarks));
+        return ResponseEntity.status(HttpStatus.CREATED).body(pageModelAssembler.getResource(page));
     }
 
 // ================================================================================================================ POST:
@@ -76,6 +74,26 @@ public class TextPartController {
 //                "/doc-data", new HttpHeaders()));
 //        return ResponseEntity.status(HttpStatus.CREATED).body(pageModelAssembler.getResource(createdPage, bookmarks));
         return null;
+    }
+
+// ================================================================================================================ PUT:
+
+    /**
+     * update current page
+     * */
+    @PutMapping(value = "/pages", params = {"page"})
+    public void updatePage(@PathVariable(value = "commonDataId") long docDataId,
+                                                   @RequestParam(value = "page") int currentPage,
+                                                   @RequestBody String pageBody)
+            throws NoHandlerFoundException, UnknownHostException {
+        String url = dataManager.createPageLink(docDataId, currentPage);
+        TextPart textPart = textPartService.findPageByDocDataIdAndPageNumber(docDataId, 1)
+                .getContent()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new NoHandlerFoundException("put", url, new HttpHeaders()));
+        textPart.setBody(pageBody);
+        textPartService.update(textPart);
     }
 
 

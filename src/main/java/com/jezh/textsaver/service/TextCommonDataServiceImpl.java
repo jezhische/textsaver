@@ -68,7 +68,7 @@ public class TextCommonDataServiceImpl implements TextCommonDataService {
         bookmarkRepository.saveAndFlush(bookmarks);
 
         // update textCommonData
-        textCommonData.setBookmarks(bookmarks);
+//        textCommonData.setBookmarks(bookmarks);
         textCommonData.setFirstItem(textPart.getId());
         return textCommonData;
     }

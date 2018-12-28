@@ -52,6 +52,8 @@ public class TextCommonDataController {
 //        return ResponseEntity.ok(dataAssembler.convertToLinkedRepresentation(textCommonData));
 //    }
 
+// ================================================================================================================ POST:
+
     @ResponseBody
     @PostMapping("")
     public String create(@RequestBody String name)
@@ -59,6 +61,8 @@ public class TextCommonDataController {
         TextCommonData textCommonData = textCommonDataService.create(name);
         return dataManager.createPageLink(textCommonData.getId(), 1);
     }
+
+// ================================================================================================================ GET:
 
     @ResponseBody
     @GetMapping("")

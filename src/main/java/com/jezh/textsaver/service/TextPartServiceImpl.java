@@ -132,20 +132,17 @@ public class TextPartServiceImpl implements TextPartService {
     }
 
     @Override
-    public Page<TextPart> createPage(int currentPageNumber, /*int nextPageNumber, */Long textCommonDataId)
+    public Page<TextPart> createPage(int currentPageNumber, Long textCommonDataId)
             throws IndexOutOfBoundsException {
 
-        TextPart current = findPageByDocDataIdAndPageNumber(textCommonDataId, currentPageNumber).getContent().get(0);
-//        Long nextId = current.getNextItem();
-        TextPart next = /*nextPageNumber == 0 ? null :
-                findPageByDocDataIdAndPageNumber(textCommonDataId, nextPageNumber).getContent().get(0);*/ // можно и так
-                repository.findNextByCurrentInSequence(current).orElse(null);
+        TextPart current = repository.findPageByDocDataId(textCommonDataId,
+                PageRequest.of(currentPageNumber - 1, 1)).getContent().get(0);
+        TextPart next = repository.findNextByCurrentInSequence(current).orElse(null);
         TextCommonData textCommonData = current.getTextCommonData();
         TextPart newOne = TextPart.builder()
                 .lastUpdate(new Date())
                 .textCommonData(textCommonData)
-//                .nextItem(next == null ? null : next.getId())
-                .build();
+                .build(); // in this moment without nextItem to avoid constraint "unique next_item" violation
         repository.saveAndFlush(newOne);
         current.setNextItem(newOne.getId());
         newOne.setNextItem(next == null ? null : next.getId());
