@@ -81,8 +81,8 @@ function extractPageContent(link) {
         success: function (data, status, jqXHR) {
             let text = $('iframe').contents().find('#text');
                                                     console.log('extractPageContent: success');
-
             text.val(data.body);
+            setInsertPageButtonBehavior(data.pageNumber);
         },
         error: function () {
             alert('error in extractPageContent')
@@ -182,6 +182,7 @@ function extractPageContent(link) {
         $('iframe').contents().find('#' + pageNm).click(function () {
                                                         console.log('page ' + pageNm + ' clicked');
             extractPageContent(pageHref);
+            setInsertPageButtonBehavior(pageNm);
             setBookmarks(pageHref);
         });
     }
@@ -195,6 +196,7 @@ function extractPageContent(link) {
         let totalPageNm = iframe.find('.page-btn-bar .page-number-button:last').html();
         let insertedPageNm = currentPageNm + 1;
                                                     // console.log('@@@@@@@@@@@@@@@@@@@@@@@' + totalPageNm);
+                                                    console.log('@@@@@@@@@@@@@@@@@@@@@@@' + currentPageNm);
         insertPageButton.click(function () {
             // insert element after "currentPageButton" element
             $('<button id="' + insertedPageNm + '" style="width: 10%" disabled>' + insertedPageNm + '</button>').insertAfter(currentPageButton);
@@ -202,7 +204,7 @@ function extractPageContent(link) {
 
             createNewPage(currentPageNm);
             // процесс установки поведения кнопки и т.д. перенести в метод createNewPage(), там можно добыть pageHref, чтобы привязать его к кнопке
-            setInsertPageButtonBehavior(insertedPageNm);
+            // setInsertPageButtonBehavior(insertedPageNm);
             // не забыть перейти на созданную страницу
             if (totalPageNm > currentPageNm.toString()) {
                 // прибавить 1 к номерам последующих страниц;
