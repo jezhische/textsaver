@@ -1,40 +1,27 @@
 // ===================================================================================== AUXILIARY FUNCTIONS
 
-// FIXME: не работает
-function setIframeHeightByContent() {
-    // $('iframe').css('visibility', 'visible');
-    // let iframe = $('iframe');
-    // // iframe.height = "";
-    // // iframe.height = iFrameID.contentWindow.document.body.scrollHeight + "px";
-    // // iframe.height =
-    //     // iframe.document.body.scrollHeight + "px";
-    // // console.log('***************** iframe.height = ' + iframe.height);
-    // // console.log('***************** iframe.attr(\'height\') = ' + iframe.attr('height'));
-    //     console.log('*****************' + iframe.prop('max-height') + ' ' + iframe.prop('scrollHeight') + ' '
-    //         +  iframe.attr('scrollHeight') + ' ');
-}
-
 // ----------------------------------------------------------------------------------------------------------------
 
-function setIframeVisible() {
-    $('iframe').css('visibility', 'visible');
-}
+// function setIframeVisible() {
+//     $('iframe').css('visibility', 'visible');
+// }
 
 // --------------------------------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------- create iframe html markup
+// --------------------------------------------------------------------------------------- create html container markup
 // --------------------------------------------------------------------------------------------------------------------
 
-function setIframeMarkup(docName) {
-    setIframeContainer();
+function setMarkup(docName) {
 
-    let iframe = $('iframe').contents();
-    let text = iframe.find('#text');
-    let upperNameBar = iframe.find('#upper-doc-name-bar');
-    let upperPageButtons = iframe.find('#upper-page-buttons-row');
+    setContainer();
+
+    let container = $('#container');
+    let text = container.find('#text');
+    let upperNameBar = container.find('#upper-doc-name-bar');
+    let upperPageButtons = container.find('#upper-page-buttons-row');
 
     clearMainDocMenu(['create-doc-block', 'search-doc']);
     addMainDocButtons('create-doc-block');
-    setIframeVisible();
+    // setIframeVisible();
     createInitialButtonsRow(upperPageButtons);
     createNameBar(docName, upperNameBar);
     createTextarea();
@@ -45,9 +32,15 @@ function setIframeMarkup(docName) {
 function getDocLinksSortedByNameAndCreatedDate(textCommonDataResourceArray) {
     textCommonDataResourceArray.forEach(res => {
         let link = res.links[0].href;
-        $('#docLinks').append('<a href="' + link + '" target="ifr" class="d_link"><b>' + res.name + '</b></a><br>');
+        $('#docLinks').append('<a href="' + link + '" class="d_link"><b>' + res.name + '</b></a><br>');
     });
 }
+
+// ----------------------------------------------------------------------------------------------------------------
+
+// function setPageNumberButtonAction(pageNm, link) {
+//     $('#' + pageNm).attr('formaction', link);
+// }
 
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -79,18 +72,19 @@ function createNameBar(docName, elem) {
 
 function createInitialButtonsRow(elem) {
     // let row = $('#' + elemId);
-    elem.html('<div class="page-btn-bar" style="child-align: middle">' +
+    elem.html('<form class="page-btn-bar" style="child-align: middle">' +
         '<button id="delete-page" style="width: 20%" disabled>delete page</button>' +
         '<button id="-" style="width: 10%" disabled>-</button>' +
-        '<button id="1" class="page-number-button" style="width: 10%" disabled>1</button>' +
+        '<button id="1" type="submit" formaction="" class="page-number-button" disabled>1</button>' +
         '<button id="+" style="width: 10%" disabled>+</button>' +
         '<button id="insert-page" style="width: 20%">insert page</button>' +
-        '</div>');
+        '</form>');
+    console.log('******************* ' + $('#1').html());
 }
 // ----------------------------------------------------------------------------------------------------------------
 
 function createTextarea() {
-    let text = $('iframe').contents().find('#text');
+    let text = $('#container').find('#text');
     text.attr({'wrap':'soft', 'cols':'200', 'placeholder':'please input text here',
     'oninput':'this.style.height = ""; this.style.height = this.scrollHeight + "px"'});
     text.css('visibility', 'visible');
@@ -100,14 +94,13 @@ function createTextarea() {
 
 function createDocLink(docName) {
     /* add link */
-    $('#docLinks').prepend('<a href="" target="ifr"><b style="color: #ce8483">' + docName + '</b></a><br>');
+    $('#docLinks').prepend('<a href=""><b style="color: #ce8483">' + docName + '</b></a><br>');
                                         // console.log('createDocLink: success');
 }
 // ----------------------------------------------------------------------------------------------------------------
 
-function setIframeContainer() {
-    // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@' + $('iframe').contents().find('body').html());
-    let container = $('iframe').contents().find('#container');
+function setContainer() {
+    let container = $('#container');
     container.html('');
     container.html(
         '<div id="upper-doc-bar">\n' +
@@ -120,11 +113,19 @@ function setIframeContainer() {
         '        <div id="lower-doc-name-bar" class="doc-name-bar"></div>\n' +
         '    </div>'
     );
-    // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@' + $('iframe').contents().find('body').html());
 
 }
 
 // ----------------------------------------------------------------------------------------------------------------
+
+function getNextPageLink(currentPageLink, currentPageNm) {
+    let regex = new RegExp('(' + currentPageNm + '$)');
+    let nextPageNumber = currentPageNm + 1;
+                                        console.log('nextPageNumber = ' + nextPageNumber);
+                                        console.log('regex: ' + currentPageLink.replace(regex, nextPageNumber));
+    return currentPageLink.replace(regex, nextPageNumber);
+}
+
 // ----------------------------------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------------------------------
@@ -250,16 +251,15 @@ function createTextareaContentEventHandlers(textarea) {
 
         /* create recursive setTimeout with checking textarea content changes every 5 second
         to create lower name bar and buttons row */
-        let iframe = $('iframe').contents();
-        let upperNameBar = iframe.find('#upper-doc-name-bar');
-        let lowerNameBar = iframe.find('#lower-doc-name-bar');
-        let upperPageButtons = iframe.find('#upper-page-buttons-row');
-        let lowerPageButtons = iframe.find('#lower-page-buttons-row');
+        let container = $('#container');
+        let upperNameBar = container.find('#upper-doc-name-bar');
+        let lowerNameBar = container.find('#lower-doc-name-bar');
+        let upperPageButtons = container.find('#upper-page-buttons-row');
+        let lowerPageButtons = container.find('#lower-page-buttons-row');
         auxTimerId = setTimeout(function check() {
             let docName = lowerNameBar.html();
             if (docName === '') {
                                                                 console.log('docName === undefined');
-                // let docName = $('#lower-doc-name-bar').html();
                 let taHeight = textarea.css('height');
                 if (taHeight.substring(0, taHeight.length - 2) > 170) {
                                                                 console.log('TEXT height ' + taHeight + ', need lower button row');

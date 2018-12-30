@@ -141,7 +141,7 @@ public class ApplicationTest {
         System.out.println("********************************" + uri);
         System.out.println("*******************************************" + pageLink);
         System.out.println("*****" + linkTo(methodOn(TextPartController.class)
-                .findTextPartById(55L, 4))
+                .findPage(55L, 4))
                 .toUriComponentsBuilder().port(port).toUriString());
 
     }

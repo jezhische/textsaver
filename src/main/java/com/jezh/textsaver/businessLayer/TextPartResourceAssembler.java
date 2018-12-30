@@ -41,11 +41,11 @@ public class TextPartResourceAssembler {
     /**
      * supply TextPartResources with links to current, adjacent, first and last pages and last opened/edited pages
      * */
-    public TextPartResource getResource(Page<TextPart> currentPage, Bookmarks bookmarks)
+    public TextPartResource getResource(Page<TextPart> currentPage/*, Bookmarks bookmarks*/)
             throws NullPointerException, NoHandlerFoundException, UnknownHostException {
-        List<BookmarkResource> bookmarkResources = addElsePagesLinks(convertBookmarksToBookmarkResourceList(bookmarks),
-                currentPage, bookmarks.getId());
-        return convertPageToMarkedResource(currentPage, bookmarkResources);
+//        List<BookmarkResource> bookmarkResources = addElsePagesLinks(convertBookmarksToBookmarkResourceList(bookmarks),
+//                currentPage, bookmarks.getId());
+        return convertPageToMarkedResource(currentPage/*, bookmarkResources*/);
     }
 
 
@@ -54,7 +54,7 @@ public class TextPartResourceAssembler {
 // ======================================================================================================= Util
 
 
-    private TextPartResource convertPageToMarkedResource(Page<TextPart> currentPage, List<BookmarkResource> bookmarkResources) {
+    private TextPartResource convertPageToMarkedResource(Page<TextPart> currentPage/*, List<BookmarkResource> bookmarkResources*/) {
         TextPart textPart = currentPage.getContent().stream().findFirst()
                 .orElseThrow(NullPointerException::new);
         String body = textPart.getBody();
@@ -68,7 +68,7 @@ public class TextPartResourceAssembler {
                 .lastUpdate(lastUpdate)
                 .pageNumber(pageNumber)
                 .totalPages(totalPages)
-                .bookmarkResources(bookmarkResources)
+//                .bookmarkResources(bookmarkResources)
                 .build();
     }
 

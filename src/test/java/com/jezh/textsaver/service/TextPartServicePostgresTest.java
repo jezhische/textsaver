@@ -121,7 +121,13 @@ public class TextPartServicePostgresTest {
 
     @Test
     public void createPage() {
-        service.createPage(1, /*2, */133L);
+        System.out.println("******************************************************************" +
+                service.createPage(2, 1469L).getContent().get(0));
+    }
 
+    @Test
+    public void findPageByDocDataIdAndPageNumber() {
+        System.out.println("******************************************************************" +
+                service.findPageByDocDataIdAndPageNumber(1456L, 1).getContent().get(0));
     }
 }

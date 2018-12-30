@@ -12,9 +12,9 @@
 }
 .col-2 {
     width: 79%;
-    min-height: 60vh;
-    max-height: 90vh;
-    overflow: unset;
+    /*min-height: 60vh;*/
+    height: 90vh;
+    overflow: auto;
     background-color: rgba(131, 180, 132, 0.31);
 }
 [class*="col-"] {
@@ -22,11 +22,12 @@
     padding: 15px;
     /*border: 1px solid red;*/
 }
-.row::after {
-    content: "";
-    clear: both;
-    display: table;
-}
+footer {width: 100%}
+/*.row::after {*/
+    /*content: "";*/
+    /*clear: both;*/
+    /*display: table;*/
+/*}*/
 ul#common-menu li{
     display: inline-block;
     text-align: center;
@@ -77,7 +78,6 @@ border-radius: 8px;
 background: rgb(253, 255, 235);
 }
 
-/*addClass() for "upper-doc-bar" and "lower-doc-bar", see utility.js createNameBar()*/
 .doc-name-bar {
     /*display: inline-block;*/
     text-align: center;
@@ -103,19 +103,23 @@ background: rgb(253, 255, 235);
 .page-btn-bar button:hover { background: #8AB8CC; }
 .page-btn-bar button:active { background: rgb(255, 231, 2); }
 
-iframe {
-    /*border: 10px;*/
-    outline: none;
-    /*padding: 0;*/
-    /*margin: 0;*/
-    width: 100%;
-    /*todo: to remove when to fix function setIframeHeightByContent() in utility.js*/
-    height: 100vh;
-    /* vh = viewport height */
-    max-height: 100vh;
-    overflow: auto;
-    visibility: hidden;
+.page-number-button {
+    width: 6%;
 }
+
+/*iframe {*/
+    /*!*border: 10px;*!*/
+    /*outline: none;*/
+    /*!*padding: 0;*!*/
+    /*!*margin: 0;*!*/
+    /*width: 100%;*/
+    /*!*todo: to remove when to fix function setIframeHeightByContent() in utility.js*!*/
+    /*height: 100vh;*/
+    /*!* vh = viewport height *!*/
+    /*max-height: 100vh;*/
+    /*overflow: auto;*/
+    /*visibility: hidden;*/
+/*}*/
 
 textarea {
     border: 1px;
@@ -125,7 +129,7 @@ textarea {
     max-width: 100%;
     font-size: 120%;
     /* vh = viewport height */
-    max-height: 60vh;
+    max-height: 65vh;
     overflow: auto;
     visibility: hidden;
     /** allows to set min height of textarea as 1 row, not as 2 rows as its default value */

@@ -1,7 +1,7 @@
 
 $(function () {
 // ================================================================================ MAIN BUSINESS LOGIC
-
+let currentPageNumber = 1;
 // --------------------------------------------------------------------------------------------------------------------
 // ----------------------------------------------- GET a list of saved doc links and render them in '#docLinks' block
 // --------------------------------------------------------------------------------------------------------------------
@@ -19,7 +19,7 @@ $(function () {
                                     obtainedData[1].name);
                 getDocLinksSortedByNameAndCreatedDate(obtainedData);
                 setLinkOnclickBehavior();
-                                console.log('***************** $(\'.d_link\')[0] = ' + $('.d_link')[0]);
+                console.log('***************** $(\'.d_link\')[0] = ' + $('.d_link')[0]);
             },
             error: function () {
                 // TODO: make error handling
@@ -40,7 +40,7 @@ $(function () {
         input.val("");
 
         createDocLink(docName);
-        setIframeMarkup(docName);
+        setMarkup(docName);
 
         // jQuery.ajax( [settings ] )
         $.ajax({
@@ -56,8 +56,7 @@ $(function () {
                 addHref(obtainedData, docName);
                 setPageNumberButtonBehavior(obtainedData, 1);
                 setInsertPageButtonBehavior(1);
-
-                /* redirect to iframe */
+                                        // alert(getNextPageLink($('#' + 1).attr('formaction')));
                 // window.frames[0].location = obtainedData;
             },
             error: function () {
@@ -79,10 +78,10 @@ function extractPageContent(link) {
         url: link,
         dataType: 'json', // returns PageResource instance
         success: function (data, status, jqXHR) {
-            let text = $('iframe').contents().find('#text');
+            let text = $('#container').find('#text');
                                                     console.log('extractPageContent: success');
             text.val(data.body);
-            setInsertPageButtonBehavior(data.pageNumber);
+            // setInsertPageButtonBehavior(data.pageNumber);
         },
         error: function () {
             alert('error in extractPageContent')
@@ -98,7 +97,7 @@ function extractPageContent(link) {
 
     }
 
-    // --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // -------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -107,27 +106,53 @@ function extractPageContent(link) {
     }
 
 // -------------------------------------------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------------- CREATE PAGE
+// -------------------------------------------------------------------------------------------- (POST) CREATE NEW PAGE
 // -------------------------------------------------------------------------------------------------------------------
 
-    function createNewPage(currentPageNumber) {
+    function insertPage(currentPageNm) {
+        let newPageLink = getNextPageLink($('#' + currentPageNm).attr('formaction'), currentPageNm);
+        let newPageNm = currentPageNm + 1;
+                                            console.log('function insertPage(' + currentPageNm + '): newPageLink = ' + newPageLink);
+            $.ajax({
+            type: 'POST', // http://localhost:8074/textsaver/doc-data815/pages?page=25
+            contentType: "application/json; charset=utf-8",
+            url: newPageLink,
+            // data: JSON.stringify(docName),
+            dataType: 'json',
+            success: function (obtainedData, status, jqXHR) {
+                                                                // alert(status);
+                                                                // alert('link = ' + obtainedData._links.href);
+                                            console.log('insertPage(' + currentPageNm + ') status is ' + status, 'newPageNm = ' + newPageNm);
+                setPageNumberButtonBehavior(newPageLink, newPageNm);
+                setInsertPageButtonBehavior(newPageNm);
+                $('#text').val('');
 
+                /* redirect to iframe */
+                // window.frames[0].location = obtainedData;
+            },
+            error: function () {
+                console.log('error message: this.url = ' + this.url);
+                // TODO: make error handling
+                alert('error in function insertPage(currentPageNm)');
+            }
+        });
     }
 
 // -------------------------------------------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------------- UPDATE PAGE
+// ------------------------------------------------------------------------------------------------- (PUT) UPDATE PAGE
 // -------------------------------------------------------------------------------------------------------------------
 
-    function updatePage(link, pageContent) {
+    function updatePage(link) {
+        let currentPageContent = $('#text').val();
         $.ajax({
             type: 'PUT', // http://localhost:8074/textsaver/doc-data/pages?page=25
             contentType: "application/json; charset=utf-8",
             url: link,
-            data: JSON.stringify(pageContent),
-            // dataType: 'json',
-            dataType: 'text', // pageContent
+            data: JSON.stringify(currentPageContent),
+            dataType: 'text', // currentPageContent
             success: function (obtainedData, status, jqXHR) {
-                                                        console.log('page ' + link + 'was updated successfully');
+                                        console.log('success updating page ' + link + ', ' +
+                                            'pageContent = ' + currentPageContent.toString().substring(0, 5) + "...");
             },
             error: function () {
                 alert('error updating page ' + link);
@@ -153,7 +178,7 @@ function extractPageContent(link) {
         $('a', '#docLinks').click(function (event) {
             event.preventDefault();
                                                 console.log('$(this).attr(\'href\')' + $(this).attr('href'));
-            setIframeMarkup($(this).html());
+            setMarkup($(this).html());
             let docHref = $(this).attr('href');
             extractPageContent(docHref);
             extractBookmarks(docHref);
@@ -170,7 +195,7 @@ function extractPageContent(link) {
         /* set link onclick behavior */
         alink.click(function (event) {
             event.preventDefault();
-            setIframeMarkup(docName);
+            setMarkup(docName);
             extractPageContent(docHref);
             extractBookmarks(docHref);
         });
@@ -179,8 +204,11 @@ function extractPageContent(link) {
 // ------------------------------------------------------------------------------------------------------------
 
     function setPageNumberButtonBehavior(pageHref, pageNm) {
-        $('iframe').contents().find('#' + pageNm).click(function () {
+        let pageNmButton = $('#' + pageNm);
+        pageNmButton.attr('formaction', pageHref);
+        pageNmButton.click(function (event) {
                                                         console.log('page ' + pageNm + ' clicked');
+            event.preventDefault();
             extractPageContent(pageHref);
             setInsertPageButtonBehavior(pageNm);
             setBookmarks(pageHref);
@@ -190,20 +218,27 @@ function extractPageContent(link) {
 // ------------------------------------------------------------------------------------------------------------
 
     function setInsertPageButtonBehavior(currentPageNm) {
-        let iframe = $('iframe').contents();
-        let currentPageButton = iframe.find('.page-btn-bar').find('#' + currentPageNm);
-        let insertPageButton = iframe.find('.page-btn-bar').find('#insert-page');
-        let totalPageNm = iframe.find('.page-btn-bar .page-number-button:last').html();
+                                        alert('setInsertPageButtonBehavior()  currentPageNm = ' + currentPageNm);
+        let form = $('#container').find('#upper-doc-bar').find('#upper-page-buttons-row').find('.page-btn-bar');
+        let currentPageButton = form.find('#' + currentPageNm);
+        let insertPageButton = form.find('#insert-page');
+        let totalPageNm = form.find('.page-number-button:last').html();
         let insertedPageNm = currentPageNm + 1;
+        let currentPageLink = currentPageButton.attr('formaction');
                                                     // console.log('@@@@@@@@@@@@@@@@@@@@@@@' + totalPageNm);
-                                                    console.log('@@@@@@@@@@@@@@@@@@@@@@@' + currentPageNm);
-        insertPageButton.click(function () {
-            // insert element after "currentPageButton" element
-            $('<button id="' + insertedPageNm + '" style="width: 10%" disabled>' + insertedPageNm + '</button>').insertAfter(currentPageButton);
+                                                    // console.log('@@@@@@@@@@@@@@@@@@@@@@@' + currentPageNm);
+        insertPageButton.click(function (event) {
+            event.preventDefault();
+            /*insert element after "currentPageButton" element */
+            $('<button id="' + insertedPageNm + '" formaction="" class="page-number-button" disabled>'
+                + insertedPageNm + '</button>').insertAfter(currentPageButton);
             currentPageButton.prop('disabled', false);
 
-            createNewPage(currentPageNm);
-            // процесс установки поведения кнопки и т.д. перенести в метод createNewPage(), там можно добыть pageHref, чтобы привязать его к кнопке
+            updatePage(currentPageLink);
+            insertPage(currentPageNm);
+            // setInsertPageButtonBehavior(insertedPageNm);
+            // extractPageContent(getNextPageLink(currentPageLink, currentPageNm));
+            // процесс установки поведения кнопки и т.д. перенести в метод insertPage(), там можно добыть pageHref, чтобы привязать его к кнопке
             // setInsertPageButtonBehavior(insertedPageNm);
             // не забыть перейти на созданную страницу
             if (totalPageNm > currentPageNm.toString()) {

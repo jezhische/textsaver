@@ -30,14 +30,14 @@ public class PageResourceAssembler {
     /**
      * supply TextPartResources with links to current, adjacent, first and last pages and last opened/edited pages
      * */
-    public PageResource getResource(Page<TextPart> currentPage)
+    public PageResource getResource(Page<TextPart> page)
             throws IndexOutOfBoundsException, NoHandlerFoundException, UnknownHostException {
-        TextPart textPart = currentPage.getContent().get(0);
-        int pageNumber = currentPage.getNumber() + 1;
+        TextPart textPart = page.getContent().get(0);
+        int pageNumber = page.getNumber() + 1; // NB: not "page.getNumber()", 'cause page number for client = "real" page number + 1
         PageResource resource = PageResource.builder()
                 .body(textPart.getBody())
                 .pageNumber(pageNumber)
-                .totalPages(currentPage.getTotalPages())
+                .totalPages(page.getTotalPages())
                 .build();
         resource.add(new Link(dataManager.createPageLink(textPart.getId(), pageNumber)));
         return resource;

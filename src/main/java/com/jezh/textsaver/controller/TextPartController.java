@@ -6,6 +6,7 @@ import com.jezh.textsaver.businessLayer.TextPartResourceAssembler;
 import com.jezh.textsaver.dto.PageResource;
 import com.jezh.textsaver.dto.TextPartResource;
 import com.jezh.textsaver.entity.Bookmarks;
+import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
 import com.jezh.textsaver.service.BookmarkService;
 import com.jezh.textsaver.service.TextCommonDataService;
@@ -27,6 +28,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.UnknownHostException;
+import java.util.Date;
 
 @RestController
 @EnableHypermediaSupport(type = { EnableHypermediaSupport.HypermediaType.HAL })
@@ -53,11 +55,11 @@ public class TextPartController {
 // ================================================================================================================ GET:
     /** find page model by textCommonData id and page number */
     @GetMapping(value = "/pages", params = {"page"})
-    public ResponseEntity<PageResource> findTextPartById(@PathVariable(value = "commonDataId") long id,
-                                                         @RequestParam(value = "page") int pageNumber)
+    public ResponseEntity<PageResource> findPage(@PathVariable(value = "commonDataId") long id,
+                                                 @RequestParam(value = "page") int pageNumber)
             throws NoHandlerFoundException, UnknownHostException {
         Page<TextPart> page = textPartService.findPageByDocDataIdAndPageNumber(id, pageNumber);
-        return ResponseEntity.status(HttpStatus.CREATED).body(pageModelAssembler.getResource(page));
+        return ResponseEntity.status(HttpStatus.OK).body(pageModelAssembler.getResource(page));
     }
 
 // ================================================================================================================ POST:
@@ -66,14 +68,11 @@ public class TextPartController {
      * insert new page after current one
      * */
     @PostMapping(value = "/pages", params = {"page"})
-    public HttpEntity<TextPartResource> insertPage(@PathVariable(value = "commonDataId") long docDataId,
-                                                   @RequestParam(value = "page") int currentPage) throws NoHandlerFoundException {
-////        Page<TextPart> page = textPartService.findPageByDocDataIdAndPageNumber(docDataId, 1);
-//        Page<TextPart> createdPage =
-//        Bookmarks bookmarks = bookmarkService.findById(docDataId).orElseThrow(() -> new NoHandlerFoundException("GET",
-//                "/doc-data", new HttpHeaders()));
-//        return ResponseEntity.status(HttpStatus.CREATED).body(pageModelAssembler.getResource(createdPage, bookmarks));
-        return null;
+    public HttpEntity<PageResource> insertPage(@PathVariable(value = "commonDataId") long docDataId,
+                                                   @RequestParam(value = "page") int newPageNumber)
+            throws NoHandlerFoundException, UnknownHostException {
+        Page<TextPart> newPage = textPartService.createPage(newPageNumber, docDataId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(pageModelAssembler.getResource(newPage));
     }
 
 // ================================================================================================================ PUT:
@@ -92,61 +91,18 @@ public class TextPartController {
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new NoHandlerFoundException("put", url, new HttpHeaders()));
-        textPart.setBody(pageBody);
-        textPartService.update(textPart);
+//        textPart.setBody(pageBody);
+//        textPartService.update(textPart);
+        Date updated = new Date();
+        TextCommonData textCommonData = textPart.getTextCommonData();
+        textCommonData.setUpdatedDate(updated);
+        long textPartId = textPart.getId();
+        textPartService.updateById(textPartId, DataManager.trimQuotes(pageBody), updated);
     }
 
 
 // ================================================================================================================ PUT:
 //
-//    @PutMapping(value = "/text-parts/pages", params = {"page"})
-//    public HttpEntity<Date> updatePage(
-//            @RequestBody TextPartResource linkedPage,
-//            @RequestParam(value = "page") int pageNumber,
-//            HttpServletRequest request
-//    ) throws NoHandlerFoundException, ParseException {
-//        String body = linkedPage.getBody();
-//        Date current = textPartService.updateById( // FIXME: 17.11.2018 format date to UTC+2.00
-//                repository.getListOfSortedTextPartId().get(pageNumber - 1),
-//                body,
-//                new Date())
-//                .orElseThrow(() -> new NoHandlerFoundException(request.getMethod(), request.getRequestURL().toString(), new HttpHeaders()));
-//        return new ResponseEntity<>(current, new HttpHeaders(), HttpStatus.OK);
-//    }
-
-//    @GetMapping (path = "/text-parts/{id}")
-//    public ResponseEntity<TextPart> getTextPartById() {
-//
-//    }
-
-//        @GetMapping(value = "/text-parts", params = {"page"})
-//        public ResponseEntity<TextPartResource> findPage(@RequestParam("page") int page) {
-////            Page<TextPartResource> resultPage =
-//        return null;
-//        }
-
-//    /**
-//     * find a bunch of textPart in the sorted order start from the given textPart id and with the given size.
-//     * If request parameter is not specified, find all the textPart with given textCommonDataId in this order
-//     */
-//    @GetMapping(path = "/text-parts") // FIXME: 24.10.2018 add (NullPointer) exceptions handling
-//    public ResponseEntity<List<TextPart>> findSortedTextPartBunchByStartId(
-//            @PathVariable("commonDataId") Long textCommonDataId,
-//            @RequestParam(value = "startId", required = false) Long startId,
-//            @RequestParam(value = "size", required = false) Integer size) { // not int or long, otherwise I get "IllegalStateException:
-//        // Optional int parameter 'size' is present but cannot be translated into a null value due to being declared as a primitive type."
-//        if (startId == null && size == null) {
-//        return ResponseEntity.ok().body(textPartService.findSortedSetByTextCommonDataId(textCommonDataId));
-//        } else if (startId != null && size == null) {
-//            return ResponseEntity.ok().body(textPartService.findRemainingSortedTextPartBunchByStartId(startId));
-//        } else if (startId == null && size != 0) {
-//// FIXME: 25.11.2018 нужно вернуть не firstTextPartId, а сущность Bookmarks, вынуть из нее закладки, определить, какая страница пойдет и т.д.
-//            Long firstTextPartId = textCommonDataService.findTextCommonDataById(textCommonDataId).get().getFirstItem();
-//            return ResponseEntity.ok().body(textPartService.findSortedTextPartBunchByStartId(firstTextPartId, size));
-//        } else {
-//            return ResponseEntity.ok().body(textPartService.findSortedTextPartBunchByStartId(startId, size));
-//        }
-//    }
 
 //================================================================================================================ GET:
 //                                          fixme: open document, find page by document id (textCommonData id) and page number

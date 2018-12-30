@@ -42,7 +42,7 @@ public interface TextPartService {
 
 // ===================================================================================================
 
-    Page<TextPart> findPageByDocDataIdAndPageNumber(Long textCommonDataId, int pageNumber);
+    Page<TextPart> findPageByDocDataIdAndPageNumber(Long textCommonDataId, int currentPageNumber);
 
-    Page<TextPart> createPage(int currentPageNumber, /*int nextPageNumber, */Long textCommonDataId);
+    Page<TextPart> createPage(int newPageNumber, /*int nextPageNumber, */Long textCommonDataId);
 }

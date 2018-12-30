@@ -56,9 +56,9 @@ public class DataManager {
     public String createPageLink(long docDataId, int pageNumber) throws NoHandlerFoundException, UnknownHostException {
         String port = env.getRequiredProperty("local.server.port"); // by unknown reason property "server.port" in
         // spring boot 2 returns "-1", so this is a crutch
-        String hostAddress = InetAddress.getLocalHost().getHostAddress();
+//        String hostAddress = InetAddress.getLocalHost().getHostAddress();
         URI resourcePath = linkTo(methodOn(TextPartController.class)
-                .findTextPartById(docDataId, pageNumber)).toUri();
+                .findPage(docDataId, pageNumber)).toUri();
         String uri = UriComponentsBuilder.newInstance().scheme("http")
                 .host(/*hostAddress*/"localhost").port(port)
 //                .path(env.getRequiredProperty("server.servlet.context-path")) // by unknown reason, from test the
