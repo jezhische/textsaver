@@ -89,7 +89,7 @@ background: rgb(253, 255, 235);
     text-decoration: none;
 }
 
-.page-btn-bar button {
+[class*="page-"] button {
     font-weight: 700;
     font-size: 80%;
     width: border-box;
@@ -100,10 +100,28 @@ background: rgb(253, 255, 235);
     background: rgb(246, 244, 246);
     transition: 0.1s;
 }
-.page-btn-bar button:hover { background: #8AB8CC; }
-.page-btn-bar button:active { background: rgb(255, 231, 2); }
+[class*="page-"] button:hover { background: #8AB8CC; }
+[class*="page-"] button:active { background: rgb(255, 231, 2); }
 
 .page-number-button {
+    width: 6%;
+    /*background: #f0f0f6;*/
+}
+[class*="active-"] button {
+    font-weight: 700;
+    font-size: 80%;
+    width: border-box;
+    color: #6b84d6;
+    text-decoration: none;
+    padding: .8em 1em calc(.8em + 3px);
+    border-radius: 8px;
+    background: #ffdf00;
+    transition: 0.1s;
+}
+[class*="active-"] button:hover { background: #8AB8CC; }
+[class*="active-"] button:active { background: rgb(255, 231, 2); }
+
+.active-page-number-button {
     width: 6%;
 }
 

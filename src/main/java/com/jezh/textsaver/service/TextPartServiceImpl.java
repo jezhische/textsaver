@@ -123,8 +123,8 @@ public class TextPartServiceImpl implements TextPartService {
 // ==================================================================================================================
 
     @Override
-    public Optional<Date> updateById(Long id, String body, Date updated) {
-        return repository.updateById(id, body, updated);
+    public Optional<Date> updateById(Long textPartId, String body, Date updated) {
+        return repository.updateById(textPartId, body, updated);
     }
 
     @Override

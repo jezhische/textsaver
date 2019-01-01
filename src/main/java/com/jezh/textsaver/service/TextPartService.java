@@ -35,7 +35,7 @@ public interface TextPartService {
 
     List<Long> findSortedTextPartIdByTextCommonDataId(Long textCommonDataId);
 
-    Optional<Date> updateById(Long id, String body, Date updated);
+    Optional<Date> updateById(Long textPartId, String body, Date updated);
 
 //    Optional<TextPart> update(Long textPartId);
     Optional<TextPart> update(TextPart textPart);

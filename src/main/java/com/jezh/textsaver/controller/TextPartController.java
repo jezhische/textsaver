@@ -83,21 +83,21 @@ public class TextPartController {
     @PutMapping(value = "/pages", params = {"page"})
     public void updatePage(@PathVariable(value = "commonDataId") long docDataId,
                                                    @RequestParam(value = "page") int currentPage,
-                                                   @RequestBody String pageBody)
+                                                   @RequestBody String pageContent)
             throws NoHandlerFoundException, UnknownHostException {
         String url = dataManager.createPageLink(docDataId, currentPage);
-        TextPart textPart = textPartService.findPageByDocDataIdAndPageNumber(docDataId, 1)
+        TextPart textPart = textPartService.findPageByDocDataIdAndPageNumber(docDataId, currentPage)
                 .getContent()
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new NoHandlerFoundException("put", url, new HttpHeaders()));
-//        textPart.setBody(pageBody);
+//        textPart.setBody(pageContent);
 //        textPartService.update(textPart);
         Date updated = new Date();
         TextCommonData textCommonData = textPart.getTextCommonData();
         textCommonData.setUpdatedDate(updated);
         long textPartId = textPart.getId();
-        textPartService.updateById(textPartId, DataManager.trimQuotes(pageBody), updated);
+        textPartService.updateById(textPartId, DataManager.trimQuotes(pageContent), updated);
     }
 
 

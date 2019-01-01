@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -118,6 +119,11 @@ public class TextPartServicePostgresTest {
 
 // ====================================================================================================== page tests
 
+
+    @Test
+    public void updateById() {
+        service.updateById(1736L, "updated from test", new Date());
+    }
 
     @Test
     public void createPage() {
