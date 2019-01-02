@@ -17,8 +17,8 @@ function getDocLinksSortedByNameAndCreatedDate(textCommonDataResourceArray) {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-// function setPageNumberButtonAction(pageNm, link) {
-//     $('#' + pageNm).attr('formaction', link);
+// function setPageNumberButtonAction(pageNm, pageLink) {
+//     $('#' + pageNm).attr('formaction', pageLink);
 // }
 
 // ----------------------------------------------------------------------------------------------------------------
@@ -51,13 +51,13 @@ function createNameBar(docName, elem) {
 
 function createInitialButtonsRow(elem) {
     // let row = $('#' + elemId);
-    elem.html('<form class="page-btn-bar">' +
-        '<button id="delete-page" style="width: 20%" disabled>delete page</button>' +
-        '<button id="minus" style="width: 10%" disabled>-</button>' +
-        '<button id="1" type="submit" formaction="" class="active-page-number-button" disabled>1</button>' +
-        '<button id="plus" style="width: 10%">+</button>' +
-        '<button id="insert-page" style="width: 20%">insert page</button>' +
-        '</form>');
+    elem.html('<div class="page-btn-bar">' +
+        '<button id="delete-page" style="width: 20%" disabled>delete current page</button>' +
+        '<button id="minus" style="width: 10%" disabled>back</button>' +
+        '<button id="1" type="submit" formaction="" class="page-number-button" disabled>1</button>' +
+        '<button id="plus" style="width: 10%">forward</button>' +
+        '<button id="insert-page" style="width: 20%">insert new page</button>' +
+        '</div>');
     console.log('******************* ' + $('#1').html());
 }
 // ----------------------------------------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ function createTextarea() {
 // ----------------------------------------------------------------------------------------------------------------
 
 function createDocLink(docName) {
-    /* add link */
+    /* add pageLink */
     $('#docLinks').prepend('<a href="" class="d_link"><b style="color: #ca8a00">' + docName + '</b></a><br>');
                                         // console.log('createDocLink: success');
 }

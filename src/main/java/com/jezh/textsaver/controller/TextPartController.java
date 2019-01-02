@@ -2,10 +2,8 @@ package com.jezh.textsaver.controller;
 
 import com.jezh.textsaver.businessLayer.DataManager;
 import com.jezh.textsaver.businessLayer.PageResourceAssembler;
-import com.jezh.textsaver.businessLayer.TextPartResourceAssembler;
 import com.jezh.textsaver.dto.PageResource;
 import com.jezh.textsaver.dto.TextPartResource;
-import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
 import com.jezh.textsaver.service.BookmarkService;

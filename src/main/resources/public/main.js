@@ -16,7 +16,7 @@ $(function () {
                                 console.log('getSavedDocLinks() begin ---------------------------');
         $.ajax({
             type: 'GET',
-            contentType: 'application/json',
+            // contentType: 'application/json',
             url: 'doc-data', // returns List<TextCommonDataResource>
             dataType: 'json',
             success: function (obtainedData, status, jqXHR) {
@@ -24,7 +24,7 @@ $(function () {
                                     obtainedData[1].name);
                                 console.log('obtainedData[0].firstPageLink = ' + obtainedData[1].firstPageLink + ', name: ' +
                                     obtainedData[1].name);
-                /* NB: the "href" attribute will be set by the following function for each link */
+                /* NB: the "href" attribute will be set by the following function for each pageLink */
                 getDocLinksSortedByNameAndCreatedDate(obtainedData);
                 /* set behavior of each elem 'a' in the '#docLinks' context */
                 setLinksOnclickBehavior($('a', '#docLinks'));
@@ -95,7 +95,7 @@ $(function () {
 
 function extractPageContent(link) {
                                                 console.log('extractPageContent() begin ---------------------------');
-                                                console.log('extractPageContent() link =  ' + link);
+                                                console.log('extractPageContent() pageLink =  ' + link);
     $.ajax({
         type: 'GET', // http://localhost:8074/textsaver/doc-data/837/pages?page=1
         url: link,
@@ -139,11 +139,33 @@ function extractPageContent(link) {
 // -------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------
 
-    function extractBookmarks(link) {
+    function extractBookmarks(currentPageLink) {
         console.log('extractBookmarks() begin ---------------------------');
+        $.ajax({
+            type: 'GET',
+            url: getBookmarksLink(currentPageLink),
+            dataType: 'json',
+            success: function (obtainedData, status, jqXHR) {
+
+                let bookmarksArray = obtainedData
+                resetPageNmBtns();
+            },
+            error: function () {
+                // TODO: make error handling
+                alert('error in extractBookmarks()');
+            }
+        });
+
+
         console.log('extractBookmarks() end ---');
 
 
+
+    }
+
+// --------------------------------------------------------------------------------------------------------------------
+
+    function resetPageNmBtns(bookmarksArray) {
 
     }
 
@@ -178,7 +200,7 @@ function extractPageContent(link) {
 
 
         let form = $('#container').find('#upper-doc-bar').find('#upper-page-buttons-row').find('.page-btn-bar');
-        let totalPageNm = form.find('.page-number-button:last').html(); // fixme: брать из тотальной переменной
+        // let totalPageNm = form.find('.page-number-button:last').html(); // fixme: брать из тотальной переменной
 
         let currentPageButton = form.find('#' + currentPageNumber);
         let insertedPageNm = currentPageNumber + 1;
@@ -190,16 +212,23 @@ function extractPageContent(link) {
         properties in the insertPage() method if success, or will be removed if error */
         $('<button id="' + insertedPageNm + '" formaction="' + insertedPageLink + '" class="page-number-button" disabled>'
             + insertedPageNm + '</button>').insertAfter(currentPageButton);
+        let insertedPageButton = form.find('#' + insertedPageNm);
 
         currentPageButton.prop('disabled', false);
+        setPageButtonCss(currentPageButton, insertedPageButton);
+        currentPageNumber = insertedPageNm;
+        currentPageLink = insertedPageLink;
 
-        if (totalPageNm > currentPageNumber.toString()) {
-            $('form .page-btn-bar').find('button').get();
-            console.log('$$$$$$$$$\n' + $('form .page-btn-bar').find('button').get());
-            // прибавить 1 к номерам последующих страниц;
-            // создать новую страницу;
-            // сохранить новую букмарк (притом с новыми цветами - но это на сервере через LRU)
-        }
+        // if (totalPages > currentPageNumber) {
+        //     let nextPagesArray = form.find('button').get().slice(currentPageNumber + 1, totalPages);
+        //                                                 console.log('insertPage(): totalPages = ' + totalPages +
+        //                                                     ', currentPageNumber = ' + currentPageNumber);
+        //
+        //     nextPagesArray.forEach(elem => {
+        //         let element = $(elem);
+        //     });
+        //     nextPagesArray.forEach(arr => console.log(arr));
+        // }
 
                                             console.log('insertPage(' + pageNm + ') insertedPageLink = ' + insertedPageLink);
             $.ajax({
@@ -303,8 +332,10 @@ function extractPageContent(link) {
                 setPageNumberButtonBehavior(currentPageLink, 1);
                 extractPageContent(currentPageLink);
                                         console.log('setLinksOnclickBehavior - after setting: currentPageLink = ' + currentPageLink);
-                extractBookmarks(currentPageLink);
+
+                // setPlusPageButtonBehavior(); // in setMarkup()
                 setInsertPageButtonBehavior();
+                extractBookmarks(currentPageLink);
             }
         });
                                         console.log('setLinksOnclickBehavior() end ---');
@@ -312,15 +343,15 @@ function extractPageContent(link) {
 
 // ------------------------------------------------------------------------------------------------------------
 
-    /* add href to link and set link onclick behavior */
+    /* add href to pageLink and set pageLink onclick behavior */
     function setNewDocLinkOnclickBehavior(docHref) {
                                     console.log('******************************************************');
                                     console.log('setNewDocLinkOnclickBehavior() begin ---------------------------');
 
         let docLink = $('#docLinks').children().eq(0);
-        /* add href to link */
+        /* add href to pageLink */
         docLink.prop('href', docHref);
-        /* set link onclick behavior */
+        /* set pageLink onclick behavior */
         docLink.click(function (event) {
             event.preventDefault();
                                         console.log('setNewDocLinkOnclickBehavior: currentPageLink = ' + currentPageLink);
@@ -350,6 +381,7 @@ function extractPageContent(link) {
     function setPageNumberButtonBehavior(pageLink, pageNm) {
                                     console.log('setPageNumberButtonBehavior() begin ---------------------------');
 
+        let currentPageNmBtn = $('#' + currentPageNumber);
         let pageNmButton = $('#' + pageNm);
 
         pageNmButton.click(function (event) {
@@ -357,6 +389,7 @@ function extractPageContent(link) {
                                                     console.log('page ' + pageNm + ' clicked');
                                                     console.log('setPageNumberButtonBehavior(): currentPageNumber = '
                                                         + currentPageNumber + ', currentPageLink = ' + currentPageLink);
+
             pageNmButton.attr('formaction', pageLink);
             $('#' + currentPageNumber).prop('disabled', false);
             pageNmButton.prop('disabled', true);
@@ -364,11 +397,10 @@ function extractPageContent(link) {
 
             currentPageNumber = pageNm;
             currentPageLink = pageLink;
-            //                             console.log('setPageNumberButtonBehavior() after click: currentPageNumber = '
-            //                                 + currentPageNumber + ', currentPageLink = ' + currentPageLink);
             extractPageContent(currentPageLink); // checkSum will be updated here
                                             console.log('setPageNumberButtonBehavior() after click: currentPageNumber = '
                                                 + currentPageNumber + ', currentPageLink = ' + currentPageLink);
+            setPageButtonCss(currentPageNmBtn, pageNmButton);
             setBookmarks(currentPageLink);
         });
                                             console.log('setPageNumberButtonBehavior() end ---');
@@ -393,7 +425,7 @@ function extractPageContent(link) {
             // the following actions was moved to insertPage() method:
             // currentPageNumber = insertedPageNm;
             // currentPageLink = insertedPageLink;
-            setBookmarks();
+            // setBookmarks();
         });
                                             console.log('setInsertPageButtonBehavior() end ---');
     }
@@ -410,6 +442,8 @@ function extractPageContent(link) {
             plusButton.click(function (event) {
                 event.preventDefault();
                                     console.log('setPlusPageButtonBehavior() totalPages = ' + totalPages);
+                                    console.log('bookmarks link = ' + getBookmarksLink(currentPageLink));
+
                 let currentPageButton = form.find('#' + currentPageNumber);
                 let insertedPageNm = currentPageNumber + 1;
                 let insertedPageLink = getNextPageLink(currentPageLink, currentPageNumber);
@@ -419,6 +453,7 @@ function extractPageContent(link) {
                     // currentPageLink = insertedPageLink;
                     let insertedPageButton = form.find('#' + insertedPageNm);
                     extractPageContent(insertedPageLink);
+                    /* if desired button doesn't exist, create it, else update textarea content, button css and disability */
                     if (insertedPageButton.html() === undefined) {
                         $('<button id="' + insertedPageNm + '" formaction="' + insertedPageLink + '" class="page-number-button" disabled>'
                             + insertedPageNm + '</button>').insertAfter(currentPageButton);
@@ -426,14 +461,14 @@ function extractPageContent(link) {
                         setPageNumberButtonBehavior(insertedPageLink, insertedPageNm); // I can use currentPageLink and currentPageNumber,
                         // 'cause these two variables must be changed to now with extractPageContent(), but as js is asynchronous,
                         // it has no guarantees
+                        // setPageButtonCss(currentPageButton, insertedPageButton);
+
                     } else {
                         currentPageButton.prop('disabled', false);
-                        currentPageButton.removeClass( 'active-page-number-button');
-                        currentPageButton.addClass('page-number-button');
-                        insertedPageButton.removeClass('page-number-button');
-                        insertedPageButton.addClass( 'active-page-number-button');
                         form.find('#' + insertedPageNm).prop('disabled', true);
+                        // setPageButtonCss(currentPageButton, insertedPageButton);
                     }
+                    setPageButtonCss(currentPageButton, insertedPageButton);
                     currentPageNumber = insertedPageNm;
                     currentPageLink = insertedPageLink;
                 }
@@ -457,6 +492,13 @@ function extractPageContent(link) {
 
 // ------------------------------------------------------------------------------------------------------------
 
+    function getBookmarksLink(currentPageLink) {
+        let regex = new RegExp('pages[\?]page=[\\d]*$');
+        return currentPageLink.replace(regex, 'bookmarks');
+    }
+
+// ------------------------------------------------------------------------------------------------------------
+
     // /** create a row of buttons with pages references */
     // function createPageButtonRow(obtainedData, elemId) {
     //     let bookmarkResources = obtainedData.bookmarkResources;
@@ -465,7 +507,7 @@ function extractPageContent(link) {
     //             '<button type="button" id="p'+ item.pageNumber + '" class="page-button" >' + item.pageNumber + '</button>');
     //         let pbutton = $('#p' + item.pageNumber);
     //         pbutton.click(function () {
-    //             extractPage(item.link);
+    //             extractPage(item.pageLink);
     //         });
     //         /** the button with current page reference must be disabled */
     //         if (item.pageNumber === obtainedData.pageNumber) pbutton.prop('disabled', true);
@@ -579,6 +621,19 @@ function extractPageContent(link) {
                                     console.log('createTextareaContentEventHandlers() end ---');
     }
 
+    // ----------------------------------------------------------------------------------------------------------------
+
+    function setPageButtonCss(currentPageButton, insertedPageButton) {
+        currentPageButton.css("background", "rgb(246, 244, 246)");
+        currentPageButton.mousedown(function () {$(this).css("background", "#efff00");});
+        currentPageButton.mouseup(function () {$(this).css("background", "#ffdf00");});
+        currentPageButton.hover(function () {$(this).css("background", "#8AB8CC");},
+            function () {$(this).css("background", "rgb(246, 244, 246)");});
+
+        insertedPageButton.css("background", "#ffdf00");
+    }
+
+// ----------------------------------------------------------------------------------------------------------------
 // =========================================================================================== PERFORMING
 
 
