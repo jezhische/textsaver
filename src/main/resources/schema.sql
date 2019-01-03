@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS public.bookmarks
 (
   text_common_data_id BIGINT NOT NULL,
   last_open_array text [],
+  special_bookmarks integer[],
 --   NB: PK and FK are the same
   CONSTRAINT bookmarks_pkey PRIMARY KEY (text_common_data_id),
   CONSTRAINT fk_bookmarks_textCommonData FOREIGN KEY (text_common_data_id)

@@ -45,7 +45,7 @@ public class TextPart extends AbstractIdentifier {
     private String body;
 
     /**
-     * link to the next text part. NB though unique = true, this constraint don't spread to null value
+     * pageLink to the next text part. NB though unique = true, this constraint don't spread to null value
      * */
     @JsonIgnore
     @Column(name = "next_item", nullable = true, unique = true)

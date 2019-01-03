@@ -36,7 +36,7 @@ public class BookmarksServiceTest extends BasePostgresConnectingTest {
 
     @Test
     public void testFindById() {
-        Bookmarks bookmarks = bookmarkRepository.findById(14L).get();
+        Bookmarks bookmarks = bookmarkRepository.findById(1795L).get();
         System.out.println("******************************************************* " + bookmarks);
         assertTrue(bookmarks.getLastOpenArray()[1] == null);
     }

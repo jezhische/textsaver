@@ -140,14 +140,23 @@ function extractPageContent(link) {
 // --------------------------------------------------------------------------------------------------------------------
 
     function extractBookmarks(currentPageLink) {
+        let parcell = {"pageNumber":currentPageNumber, "totalPages":totalPages};
+        // parcell["pageNumber"] = currentPageNumber;
+        // parcell["totalPages"] = totalPages;
+        console.log('FROM EXTRACTBOOKMARKS parcell.pageNumber = ' + parcell.pageNumber + ', parcell["totalPages"] = ' + parcell["totalPages"]);
         console.log('extractBookmarks() begin ---------------------------');
         $.ajax({
-            type: 'GET',
-            url: getBookmarksLink(currentPageLink),
+            type: 'POST',
+            url: getBookmarksLink(currentPageLink), // http://localhost:8074/textsaver/doc-data/1733/bookmarks
+            contentType: "application/hal+json; application/json; charset=utf-8",
+            data: JSON.stringify({"pageNumber":currentPageNumber, "totalPages":totalPages}),
             dataType: 'json',
             success: function (obtainedData, status, jqXHR) {
+                                            console.log('EXTRACTBOOKMARKS obtainedData.color = ' + obtainedData.color +
+                                            ', obtainedData.pageLink = ' + obtainedData.pageLink +
+                                            ', obtainedData.pageNumber = ' + obtainedData.pageNumber);
 
-                let bookmarksArray = obtainedData
+                // let bookmarksArray = obtainedData
                 resetPageNmBtns();
             },
             error: function () {

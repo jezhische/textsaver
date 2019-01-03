@@ -1,6 +1,7 @@
 package com.jezh.textsaver.entity;
 
 
+import com.jezh.textsaver.hybernateType.IntArrayType;
 import com.jezh.textsaver.hybernateType.StringArrayType;
 import lombok.*;
 import org.hibernate.annotations.Type;
@@ -21,11 +22,10 @@ import javax.persistence.*;
 @Table(name = "bookmarks")
 // https://stackoverflow.com/questions/1647583/mapping-a-postgresql-array-with-hibernate
 // https://vladmihalcea.com/how-to-map-java-and-sql-arrays-with-jpa-and-hibernate/
-@TypeDefs({@TypeDef(name = "string-array", typeClass = StringArrayType.class)})
+@TypeDefs({@TypeDef(name = "string-array", typeClass = StringArrayType.class), @TypeDef(name = "int-array", typeClass = IntArrayType.class)})
 public class Bookmarks {
 
     @Setter(value = AccessLevel.PRIVATE)
-//    @Getter(value = AccessLevel.PRIVATE)
     @Id
     private Long id;
 
@@ -33,6 +33,9 @@ public class Bookmarks {
     @Column(name = "last_open_array", columnDefinition = "text[]")
     private String[] lastOpenArray;
 
+    @Type(type = "int-array")
+    @Column(name = "special_bookmarks", columnDefinition = "integer[]")
+    private int[] specialBookmarks;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "text_common_data_id")

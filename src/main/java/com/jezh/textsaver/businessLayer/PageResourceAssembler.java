@@ -1,12 +1,7 @@
 package com.jezh.textsaver.businessLayer;
 
-import com.jezh.textsaver.dto.BookmarkResource;
 import com.jezh.textsaver.dto.PageResource;
-import com.jezh.textsaver.dto.TextPartResource;
-import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.entity.TextPart;
-import com.jezh.textsaver.entity.entityProperties.EditedColorStore;
-import com.jezh.textsaver.entity.entityProperties.OpenedColorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.Link;
@@ -14,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.net.UnknownHostException;
-import java.util.*;
 
 @Component
 public class PageResourceAssembler {

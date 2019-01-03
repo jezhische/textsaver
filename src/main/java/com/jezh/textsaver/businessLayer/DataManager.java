@@ -1,14 +1,15 @@
 package com.jezh.textsaver.businessLayer;
 
+import com.jezh.textsaver.controller.BookmarksController;
 import com.jezh.textsaver.controller.TextCommonDataController;
 import com.jezh.textsaver.controller.TextPartController;
+import com.jezh.textsaver.dto.BookmarksAux;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -26,13 +27,17 @@ public class DataManager {
 
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT;
 
-    private Environment env;
+//    private Environment env;
 
     static {SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");}
 
+    private final String port;
+
     @Autowired
     public DataManager(Environment env) {
-        this.env = env;
+//        this.env = env;
+        port = env.getRequiredProperty("local.server.port"); // by unknown reason property "server.port" in
+        // spring boot 2 returns "-1", so this is a crutch;
     }
 
     // TODO: to remove?
@@ -54,8 +59,6 @@ public class DataManager {
      *
      * */
     public String createPageLink(long docDataId, int pageNumber) throws NoHandlerFoundException, UnknownHostException {
-        String port = env.getRequiredProperty("local.server.port"); // by unknown reason property "server.port" in
-        // spring boot 2 returns "-1", so this is a crutch
 //        String hostAddress = InetAddress.getLocalHost().getHostAddress();
         URI resourcePath = linkTo(methodOn(TextPartController.class)
                 .findPage(docDataId, pageNumber)).toUri();
@@ -69,6 +72,16 @@ public class DataManager {
                 .toUriString();
           return uri; // http://localhost:port/textsaver/doc-data/docDataId/pages?page=pageNumber
     }
+
+
+    public String createBookmarksLink(long docDataId, BookmarksAux aux) throws NoHandlerFoundException, UnknownHostException {
+        URI resourcePath = linkTo(methodOn(BookmarksController.class).getBookmarks(docDataId, aux)).toUri();
+        return UriComponentsBuilder.newInstance().scheme("http")
+                .host("localhost").port(port)
+                .path(resourcePath.getPath())
+                .toUriString(); // http://localhost:port/textsaver/doc-data/bookmarks
+    }
+
 
     public static String trimQuotes(String obtainedName) {
         return obtainedName.substring(1, obtainedName.length() - 1);

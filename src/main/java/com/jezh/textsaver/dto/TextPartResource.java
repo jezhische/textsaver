@@ -5,7 +5,6 @@ import org.springframework.hateoas.ResourceSupport;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /** the DTO for transfer the proper data of TextPart instance plus links transfer, that supported by
  * ResourceSupport, the base class for DTOs to collect links */

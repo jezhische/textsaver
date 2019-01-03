@@ -2,7 +2,7 @@ package com.jezh.textsaver.controller;
 
 import com.jezh.textsaver.businessLayer.DataManager;
 import com.jezh.textsaver.businessLayer.TextCommonDataResourceAssembler;
-import com.jezh.textsaver.businessLayer.TextPartResourceAssembler;
+import com.jezh.textsaver.businessLayer.BookmarkResourceAssembler;
 import com.jezh.textsaver.dto.TextCommonDataResource;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.service.BookmarkService;
@@ -43,7 +43,7 @@ public class TextCommonDataController {
     private TextCommonDataResourceAssembler dataAssembler;
 
     @Autowired
-    private TextPartResourceAssembler pageModelAssembler;
+    private BookmarkResourceAssembler pageModelAssembler;
 
 //    @ResponseBody
 //    @PostMapping("")
