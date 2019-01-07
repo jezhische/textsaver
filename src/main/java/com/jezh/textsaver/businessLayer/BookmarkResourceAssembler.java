@@ -1,7 +1,7 @@
 package com.jezh.textsaver.businessLayer;
 
 import com.jezh.textsaver.dto.BookmarkResource;
-import com.jezh.textsaver.dto.BookmarksAux;
+import com.jezh.textsaver.dto.BookmarksData;
 import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.entity.entityProperties.EditedColorStore;
 import com.jezh.textsaver.entity.entityProperties.OpenedColorStore;
@@ -58,10 +58,10 @@ public class BookmarkResourceAssembler {
                 String color = current.endsWith("1") ?
                         editedColorStores[i].name().substring(1) : // need to trim first letter
                         openedColorStores[i].name().substring(1);
-                String currentPageLink = dataManager.createPageLink(docDataId, curPageNm);
-                String selfLink = dataManager.createBookmarksLink(docDataId, new BookmarksAux());
+                String currentPageLink = dataManager.createPageLink(docDataId, curPageNm + 1);
+                String selfLink = dataManager.createBookmarksLink(docDataId, new BookmarksData());
                 BookmarkResource bookmarkResource = BookmarkResource.builder()
-                        .pageNumber(curPageNm)
+                        .pageNumber(curPageNm + 1)
                         .color(color)
                         .pageLink(currentPageLink)
                         .build();
@@ -69,7 +69,7 @@ public class BookmarkResourceAssembler {
                 resources.add(bookmarkResource);
             }
         }
-        return addElsePagesLinks(resources, bookmarks, docDataId, pageNumber, totalPages);
+        return addElsePagesLinks(resources, bookmarks, docDataId, pageNumber + 1, totalPages);
     }
 
 
@@ -81,7 +81,7 @@ public class BookmarkResourceAssembler {
             throws NoHandlerFoundException, UnknownHostException {
 //         int totalPages = currentPage.getTotalPages();
 // TODO NB: when current page number is 1, currentPage.getNumber() returns 0!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//         int pageNumber = currentPage.getNumber() + 1;
+//         int currentPageNumber = currentPage.getNumber() + 1;
          // simple way to sort page references in the natural order
         Map<Integer, BookmarkResource> rawMap = new TreeMap<>();
 
@@ -116,13 +116,15 @@ public class BookmarkResourceAssembler {
 
         // add special bookmarks (specialBookmarks array is the numbers of bookmarked pages)
         int[] specialBookmarks = bookmarks.getSpecialBookmarks();
-        for (int bookmarkedPage : specialBookmarks) {
-            String link = dataManager.createPageLink(docDataId, bookmarkedPage);
-            rawMap.put(bookmarkedPage, BookmarkResource.builder()
-                    .pageNumber(bookmarkedPage)
-                    .color(SPECIAL_BOOKMARK_COLOR)
-                    .pageLink(link)
-                    .build());
+        if (specialBookmarks != null && specialBookmarks.length != 0) {
+            for (int bookmarkedPage : specialBookmarks) {
+                String link = dataManager.createPageLink(docDataId, bookmarkedPage);
+                rawMap.put(bookmarkedPage, BookmarkResource.builder()
+                        .pageNumber(bookmarkedPage)
+                        .color(SPECIAL_BOOKMARK_COLOR)
+                        .pageLink(link)
+                        .build());
+            }
         }
 
         // add the current page reference of yellow color

@@ -25,7 +25,7 @@ public class TextCommonDataServiceImpl implements TextCommonDataService {
 
     private TextPartRepository textPartRepository;
 
-    private static final int BOOKMARKS_COUNT = 10;
+//    private static final int BOOKMARKS_COUNT = 10;
 
     @Autowired
     public TextCommonDataServiceImpl(TextCommonDataRepository textCommonDataRepository,
@@ -59,10 +59,12 @@ public class TextCommonDataServiceImpl implements TextCommonDataService {
         textPartRepository.saveAndFlush(textPart);
 
         // create bookmarks
-        String[] lastOpens = new String[BOOKMARKS_COUNT];
+//        String[] lastOpens = new String[BOOKMARKS_COUNT];
+        String[] lastOpens = new String[1];
         lastOpens[0] = DataManager.getLastOpenedArrayItem(1, false);
         Bookmarks bookmarks = Bookmarks.builder()
                 .lastOpenArray(lastOpens)
+                .specialBookmarks(new int[0])
                 .textCommonData(textCommonData)
                 .build();
         bookmarkRepository.saveAndFlush(bookmarks);

@@ -66,7 +66,7 @@ function createTextarea() {
     let text = $('#container').find('#text');
     text.attr({'wrap':'soft', 'cols':'200', 'placeholder':'please input text here',
     'oninput':'this.style.height = ""; this.style.height = this.scrollHeight + "px"',
-    'onmousemove':'this.style.height = this.scrollHeight + "px"'});
+    'onmousemove':'this.style.height = ""; this.style.height = this.scrollHeight + "px"'});
     text.css('visibility', 'visible');
                                         console.log('createTextarea: success');
 }
@@ -89,7 +89,7 @@ function setContainer() {
         '    </div>\n' +
         '    <textarea id="text"></textarea>\n' +
         '    <div id="lower-doc-bar">\n' +
-        '        <div id="lower-page-buttons-row"></div>\n' +
+        // '        <div id="lower-page-buttons-row"></div>\n' +
         '        <div id="lower-doc-name-bar" class="doc-name-bar"></div>\n' +
         '    </div>'
     );

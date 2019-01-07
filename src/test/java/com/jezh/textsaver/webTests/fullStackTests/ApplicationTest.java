@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.jezh.textsaver.businessLayer.DataManager;
 import com.jezh.textsaver.controller.TextPartController;
+import com.jezh.textsaver.dto.BookmarksData;
 import com.jezh.textsaver.dto.TextPartResource;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
@@ -42,6 +43,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 // almost the full stack is used, but without the cost of starting the server. @SpringBootTest loads the full contexts,
 // so I can use service requests to data base.
@@ -132,7 +134,7 @@ public class ApplicationTest {
         String hostAddress = InetAddress.getLocalHost().getHostAddress();
         String uri = UriComponentsBuilder.newInstance().scheme("http")
                 .host(hostAddress).port(port).path(contextPath).path("/doc-data/{commonDataId}/pages")
-                .query("page={pageNumber}").buildAndExpand(id, "1").toString();
+                .query("page={currentPageNumber}").buildAndExpand(id, "1").toString();
         assertEquals("http://192.168.1.5:8074/textsaver/doc-data/25/pages?page=1", uri);
 
         String pageLink = dataManager.createPageLink( 25L, 1);
@@ -144,6 +146,16 @@ public class ApplicationTest {
                 .findPage(55L, 4))
                 .toUriComponentsBuilder().port(port).toUriString());
 
+    }
+
+    @Test
+    public void getBookmarks() throws Exception {
+        mockMvc
+                .perform(post("/doc-data/1803/bookmarks")
+                .contentType(MediaType.APPLICATION_JSON_UTF8).content(new ObjectMapper().writeValueAsString(
+                        BookmarksData.builder().currentPageNumber(5).totalPages(10).build())))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     /** find all the textCommonData */
@@ -180,7 +192,7 @@ public class ApplicationTest {
                         + "/text-parts"))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id",
                         Matchers.is((int)getFirstItemFromSomeTextCommonData(someTextCommonDataId))))
                 .andDo(mvcResult -> {
@@ -221,7 +233,7 @@ public class ApplicationTest {
                         + "&"
                         + "size=" + 10))
                 .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 /* assert equals of previous_result_element.previousItem and id of given TextCommonData */
 //                .andExpect(MockMvcResultMatchers.jsonPath("$[0].previousItem", Matchers.is((int)someTextCommonDataId)))
@@ -286,7 +298,7 @@ public class ApplicationTest {
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .content(json))
                 .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(status().isCreated())
                 .andReturn();
         System.out.println("******************************************" + result.getResponse().getContentAsString());
         System.out.println("****************************" + env.getRequiredProperty("local.server.port", Integer.class));
@@ -325,7 +337,7 @@ public class ApplicationTest {
                         // here String instead of Long
                         + "/ccc"))
                 .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("should be of type")))
                 .andReturn();
         Assert.assertEquals(TextPartController.class, ((HandlerMethod) result.getHandler()).getBeanType());

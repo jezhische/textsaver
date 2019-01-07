@@ -122,7 +122,7 @@ public class TextPartController {
     /**
      * <b>Open document by its id (textCommonData id). First rendered page is specified by textNumber parameter</b><p>
      * NB that in {@link com.jezh.textsaver.service.TextPartServiceImpl#findPageByDocDataIdAndPageNumber(Long, int)}, when obtaining
-     * a page, {@code Pageable} argument is created as {@code PageRequest.of(pageNumber - 1, 1)}
+     * a page, {@code Pageable} argument is created as {@code PageRequest.of(currentPageNumber - 1, 1)}
      */
     @GetMapping(value = "/text-parts/pages", params = {"page"})
     public HttpEntity<TextPartResource> findPageByTextCommonDataIdAndPageNumber(
@@ -141,7 +141,7 @@ public class TextPartController {
 
         TextPartResource linkedPage = null;
 //        try {
-//            linkedPage = assembler.getLinkedPage(textPart, commonDataId, pageNumber, request, repository);
+//            linkedPage = assembler.getLinkedPage(textPart, commonDataId, currentPageNumber, request, repository);
 //        } catch (Exception e) {
 //            throw ControllerUtils.getNoHandlerFoundException(request);
 //        }

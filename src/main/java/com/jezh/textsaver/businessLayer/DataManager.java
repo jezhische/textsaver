@@ -3,7 +3,8 @@ package com.jezh.textsaver.businessLayer;
 import com.jezh.textsaver.controller.BookmarksController;
 import com.jezh.textsaver.controller.TextCommonDataController;
 import com.jezh.textsaver.controller.TextPartController;
-import com.jezh.textsaver.dto.BookmarksAux;
+import com.jezh.textsaver.dto.BookmarksData;
+import com.jezh.textsaver.dto.LRUCacheMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -32,6 +33,8 @@ public class DataManager {
     static {SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");}
 
     private final String port;
+
+    private static final int BOOKMARKS_COUNT = 10;
 
     @Autowired
     public DataManager(Environment env) {
@@ -74,8 +77,8 @@ public class DataManager {
     }
 
 
-    public String createBookmarksLink(long docDataId, BookmarksAux aux) throws NoHandlerFoundException, UnknownHostException {
-        URI resourcePath = linkTo(methodOn(BookmarksController.class).getBookmarks(docDataId, aux)).toUri();
+    public String createBookmarksLink(long docDataId, BookmarksData bookmarksData) throws NoHandlerFoundException, UnknownHostException {
+        URI resourcePath = linkTo(methodOn(BookmarksController.class).getBookmarks(docDataId, bookmarksData)).toUri();
         return UriComponentsBuilder.newInstance().scheme("http")
                 .host("localhost").port(port)
                 .path(resourcePath.getPath())
@@ -95,4 +98,37 @@ public class DataManager {
     }
 
 
+    public String[] updateLastOpenArray(String[] lastOpenArray, int previousPageNumber, boolean isPageUpdated) {
+        LRUCacheMap<String, String> cacheMap = new LRUCacheMap<>(BOOKMARKS_COUNT);
+        for (String item : lastOpenArray) {
+            int length = item.length();
+            cacheMap.put(item.substring(0, length - 1), item.substring(length - 1));
+        }
+        cacheMap.put(String.valueOf(previousPageNumber), isPageUpdated ? "1" : "0");
+        String[] updated = new String[cacheMap.size()];
+        Set<Map.Entry<String, String>> entries = cacheMap.entrySet();
+        List<String> strings = new LinkedList<>();
+        entries.forEach(entry -> strings.add(entry.getKey() + entry.getValue()));
+        Collections.reverse(strings); // FIXME: 07.01.2019 check if I need this reverse
+        return strings.toArray(updated);
+    }
+
+    public int[] updateSpecialBookmarks(int[] specialBookmarks, int previousPageNumber, boolean isSpecialBookmark) {
+        if (specialBookmarks != null) {
+            TreeSet<Integer> specials = new TreeSet<>();
+            for (int specialBookmark : specialBookmarks) {
+                specials.add(specialBookmark);
+            }
+            if (isSpecialBookmark) specials.add(previousPageNumber);
+//        return specials.toArray(new Integer[specials.size()]);
+            int[] ints = new int[specials.size()];
+            LinkedList<Integer> list = new LinkedList<>(specials);
+            for (int i = 0; i < list.size(); i++) {
+                ints[i] = list.get(i);
+            }
+            return ints;
+        } else {
+            return null;
+        }
+    }
 }

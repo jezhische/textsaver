@@ -96,8 +96,8 @@ public class TextPartServiceImpl implements TextPartService {
 
 
 //    @Override
-//    public Page<TextPart> findSortedPageByNumber(Integer pageNumber, Pageable pageable) {
-//        return repository.findSortedPageById(pageNumber, pageable);
+//    public Page<TextPart> findSortedPageByNumber(Integer currentPageNumber, Pageable pageable) {
+//        return repository.findSortedPageById(currentPageNumber, pageable);
 //    }
 
     @Override

@@ -15,23 +15,28 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     private BookmarkRepository bookmarkRepository;
 
-    private TextCommonDataRepository textCommonDataRepository;
+//    private TextCommonDataRepository textCommonDataRepository;
 
     @Autowired
-    public BookmarkServiceImpl(BookmarkRepository bookmarkRepository,
-                               TextCommonDataRepository textCommonDataRepository) {
+    public BookmarkServiceImpl(BookmarkRepository bookmarkRepository/*,
+                               TextCommonDataRepository textCommonDataRepository*/) {
         this.bookmarkRepository = bookmarkRepository;
-        this.textCommonDataRepository = textCommonDataRepository;
+//        this.textCommonDataRepository = textCommonDataRepository;
     }
 
-    @Override
-    public Bookmarks create(Bookmarks newOne) {
-        return bookmarkRepository.saveAndFlush(newOne);
-    }
+//    @Override
+//    public Bookmarks create(Bookmarks newOne) {
+//        return bookmarkRepository.saveAndFlush(newOne);
+//    }
 
     @Override
     public Optional<Bookmarks> findById(Long id) {
         return bookmarkRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Bookmarks> update(Bookmarks bookmarks) {
+        return Optional.of(bookmarkRepository.saveAndFlush(bookmarks));
     }
 
     //    @Override

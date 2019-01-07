@@ -3,17 +3,14 @@ package com.jezh.textsaver.controller;
 import com.jezh.textsaver.businessLayer.BookmarkResourceAssembler;
 import com.jezh.textsaver.businessLayer.DataManager;
 import com.jezh.textsaver.dto.BookmarkResource;
-import com.jezh.textsaver.dto.BookmarksAux;
+import com.jezh.textsaver.dto.BookmarksData;
 import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.service.BookmarkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
@@ -45,15 +42,32 @@ public class BookmarksController {
 
     @PostMapping(value = "/bookmarks")
     public List<BookmarkResource> getBookmarks(@PathVariable(value = "commonDataId") long id,
-                                                               @RequestBody BookmarksAux aux)
+                                                               @RequestBody BookmarksData bookmarksData)
             throws NoHandlerFoundException, UnknownHostException {
-        String url = dataManager.createBookmarksLink(id, aux);
+        String url = dataManager.createBookmarksLink(id, bookmarksData);
         Bookmarks bookmarks = bookmarkService.findById(id).orElseThrow(
                 () -> new NoHandlerFoundException("GET", url, new HttpHeaders()));
-        System.out.println("************************************************************************** " + aux.getPageNumber() + ", " + aux.getTotalPages());
-//        return assembler.convertBookmarksToBookmarkResourceList(bookmarks, aux.getPageNumber(), aux.getTotalPages());
-        BookmarkResource bookmarkResource = BookmarkResource.builder().color("a").pageLink("b").pageNumber(5).build();
-        return Arrays.asList(bookmarkResource);
+        return assembler.convertBookmarksToBookmarkResourceList(bookmarks, bookmarksData.getCurrentPageNumber(), bookmarksData.getTotalPages());
+    }
+
+    @PutMapping(value = "/bookmarks")
+    public List<BookmarkResource> updateBookmarks(@PathVariable(value = "commonDataId") long id,
+                                               @RequestBody BookmarksData bookmarksData)
+            throws NoHandlerFoundException, UnknownHostException {
+        String url = dataManager.createBookmarksLink(id, bookmarksData);
+        Bookmarks bookmarks = bookmarkService.findById(id).orElseThrow(
+                () -> new NoHandlerFoundException("GET", url, new HttpHeaders()));
+        System.out.println("***********************************************************" + bookmarksData);
+        int previousPageNumber = bookmarksData.getPreviousPageNumber();
+            String[] lastOpenArray = bookmarks.getLastOpenArray();
+            bookmarks.setLastOpenArray(dataManager.updateLastOpenArray(lastOpenArray, previousPageNumber,
+                    bookmarksData.isPageUpdated()));
+            bookmarks.setSpecialBookmarks(dataManager.updateSpecialBookmarks(bookmarks.getSpecialBookmarks(),
+                    previousPageNumber, bookmarksData.isSpecialBookmark()));
+        System.out.println("***********************************************************" + bookmarks);
+        bookmarkService.update(bookmarks);
+        return assembler.convertBookmarksToBookmarkResourceList(bookmarks, bookmarksData.getCurrentPageNumber(),
+                bookmarksData.getTotalPages());
     }
 
 

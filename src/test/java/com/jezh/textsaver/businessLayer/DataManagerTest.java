@@ -1,17 +1,16 @@
 package com.jezh.textsaver.businessLayer;
 
         import com.jezh.textsaver.configuration.BasePostgresConnectingTest;
-        import com.jezh.textsaver.dto.BookmarksAux;
+        import com.jezh.textsaver.dto.BookmarksData;
+        import com.jezh.textsaver.dto.LRUCacheMap;
         import org.junit.After;
         import org.junit.Before;
-        import org.junit.Ignore;
         import org.junit.Test;
         import org.springframework.beans.factory.annotation.Autowired;
         import org.springframework.web.servlet.NoHandlerFoundException;
 
         import java.net.UnknownHostException;
-
-        import static org.junit.Assert.*;
+        import java.util.*;
 
 public class DataManagerTest extends BasePostgresConnectingTest {
 
@@ -43,10 +42,23 @@ public class DataManagerTest extends BasePostgresConnectingTest {
 
     @Test
     public void createBookmarksLink() throws UnknownHostException, NoHandlerFoundException {
-        String bookmarksLink = dataManager.createBookmarksLink(333L, new BookmarksAux());
+        String bookmarksLink = dataManager.createBookmarksLink(333L, new BookmarksData());
         System.out.println("**********************************************" + bookmarksLink);
 //        assertEquals("http://localhost/textsaver/doc-data/333/bookmarks", bookmarksLink);
     }
 
+    @Test
+    public void updateLastOpenArray() {
+        String[] testArray = {"10", "121"};
+        System.out.println("***********************************************" +
+                Arrays.asList(dataManager.updateLastOpenArray(testArray, 3, true)));
+    }
 
+    @Test
+    public void test() {
+    }
+
+    @Test
+    public void updateSpecialBookmarks() {
+    }
 }

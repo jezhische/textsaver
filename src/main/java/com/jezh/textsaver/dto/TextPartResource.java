@@ -35,7 +35,7 @@ public class TextPartResource extends ResourceSupport {
                 "body='" + body + '\'' +
                 ", name='" + name + '\'' +
                 ", lastUpdate=" + lastUpdate +
-                ", pageNumber=" + pageNumber +
+                ", currentPageNumber=" + pageNumber +
                 ", totalPages=" + totalPages +
                 ", bookmarkResources=" + bookmarkResources +
                 ", links=" + getLinks() +

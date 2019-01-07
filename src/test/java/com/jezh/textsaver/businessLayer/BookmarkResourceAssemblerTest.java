@@ -31,12 +31,19 @@ public class BookmarkResourceAssemblerTest extends BasePostgresConnectingTest {
 
     @Before
     public void setUp() throws Exception {
-        bookmarks = bookmarkService.findById(14L).get();
+        bookmarks = bookmarkService.findById(1803L).get();
     }
 
     @After
     public void tearDown() throws Exception {
         bookmarks = null;
+    }
+
+    @Test
+    public void convertBookmarksToBookmarkResourceList() throws UnknownHostException, NoHandlerFoundException {
+
+        System.out.println("*************************************" + assembler.convertBookmarksToBookmarkResourceList(
+                bookmarks, 1, 8));
     }
 
 
