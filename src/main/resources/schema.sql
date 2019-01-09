@@ -255,3 +255,8 @@ END
 -- LANGUAGE plpgsql;
 --
 -- SELECT * FROM public.update_text_part_by_id(44, 'new body - updated: 44 next 46');
+
+
+
+
+-- SELECT count(*) FROM text_parts as tp where tp.text_common_data_id = 1795;

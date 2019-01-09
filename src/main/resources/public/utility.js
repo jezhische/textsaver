@@ -53,7 +53,7 @@ function createInitialButtonsRow(elem) {
     // let row = $('#' + elemId);
     elem.html('<div class="page-btn-bar">' +
         '<button id="delete-page" style="width: 20%" disabled>delete current page</button>' +
-        '<button id="minus" style="width: 10%" disabled>back</button>' +
+        '<button id="minus" style="width: 10%">back</button>' +
         '<button id="1" type="submit" formaction="" class="page-number-button" disabled>1</button>' +
         '<button id="plus" style="width: 10%">forward</button>' +
         '<button id="insert-page" style="width: 20%">insert new page</button>' +

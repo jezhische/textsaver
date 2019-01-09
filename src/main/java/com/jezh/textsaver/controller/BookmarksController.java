@@ -59,15 +59,16 @@ public class BookmarksController {
                 () -> new NoHandlerFoundException("GET", url, new HttpHeaders()));
         System.out.println("***********************************************************" + bookmarksData);
         int previousPageNumber = bookmarksData.getPreviousPageNumber();
-            String[] lastOpenArray = bookmarks.getLastOpenArray();
-            bookmarks.setLastOpenArray(dataManager.updateLastOpenArray(lastOpenArray, previousPageNumber,
+            bookmarks.setLastOpenArray(dataManager.updateLastOpenArray(bookmarks.getLastOpenArray(), previousPageNumber,
                     bookmarksData.isPageUpdated()));
-            bookmarks.setSpecialBookmarks(dataManager.updateSpecialBookmarks(bookmarks.getSpecialBookmarks(),
+            bookmarks.setSpecialBookmarks(dataManager.updateSpecialBookmarks(bookmarks.getSpecialBookmarks(), // FIXME: 09.01.2019 fix updateSpecialBookmarks()
                     previousPageNumber, bookmarksData.isSpecialBookmark()));
         System.out.println("***********************************************************" + bookmarks);
         bookmarkService.update(bookmarks);
-        return assembler.convertBookmarksToBookmarkResourceList(bookmarks, bookmarksData.getCurrentPageNumber(),
+        List<BookmarkResource> bookmarkResources = assembler.convertBookmarksToBookmarkResourceList(bookmarks, bookmarksData.getCurrentPageNumber(),
                 bookmarksData.getTotalPages());
+        bookmarkResources.forEach(bookmarkResource -> System.out.println("************* bookmarkResource:" + bookmarkResource));
+        return bookmarkResources;
     }
 
 

@@ -16,7 +16,8 @@ public class MainMenuController {
     @ResponseBody
     @GetMapping(value = "/about")
     public String getAbout() {
-        return "this is about info";
+        return "for more information about controllers:      http://localhost:8074/textsaver/v2/api-docs" +
+                "      http://localhost:8074/textsaver/swagger-ui.html";
     }
 
     @GetMapping(value = "/swagger")

@@ -15,4 +15,6 @@ public class BookmarksData {
     // fields for object (e.g. both fields "pageUpdated" and "isPageUpdated" when the client returns the bookmarksData object),
     // but I need no such additives
     private boolean specialBookmark;
+
+
 }

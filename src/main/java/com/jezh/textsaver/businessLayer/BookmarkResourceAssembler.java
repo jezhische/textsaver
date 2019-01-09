@@ -44,7 +44,8 @@ public class BookmarkResourceAssembler {
      public List<BookmarkResource> convertBookmarksToBookmarkResourceList(Bookmarks bookmarks,
                                                                           int pageNumber, int totalPages)
              throws NoHandlerFoundException, UnknownHostException {
-        String[] lastOpenArray = bookmarks.getLastOpenArray(); // Strings kind of "page number + 1 or 0" (edited or opened)
+        String[] lastOpenArray = bookmarks.getLastOpenArray(); // Strings kind of "page number + 1 or 0" (edited or opened);
+        // "pageNumber" - starts from 1
         long docDataId = bookmarks.getId();
         List<BookmarkResource> resources = new LinkedList<>();
         for (int i = 0; i < lastOpenArray.length; i++) {

@@ -90,14 +90,6 @@ public class DataManager {
         return obtainedName.substring(1, obtainedName.length() - 1);
     }
 
-    // FIXME: 18.12.2018 IllegalArgumentException: Cannot subclass final class java.lang.String
-    public static String createDocDataLink(String name) throws NoHandlerFoundException, UnknownHostException {
-        return linkTo(methodOn(TextCommonDataController.class)
-                .create(name))
-                .withSelfRel().getHref();
-    }
-
-
     public String[] updateLastOpenArray(String[] lastOpenArray, int previousPageNumber, boolean isPageUpdated) {
         LRUCacheMap<String, String> cacheMap = new LRUCacheMap<>(BOOKMARKS_COUNT);
         for (String item : lastOpenArray) {
@@ -109,11 +101,11 @@ public class DataManager {
         Set<Map.Entry<String, String>> entries = cacheMap.entrySet();
         List<String> strings = new LinkedList<>();
         entries.forEach(entry -> strings.add(entry.getKey() + entry.getValue()));
-        Collections.reverse(strings); // FIXME: 07.01.2019 check if I need this reverse
         return strings.toArray(updated);
     }
 
     public int[] updateSpecialBookmarks(int[] specialBookmarks, int previousPageNumber, boolean isSpecialBookmark) {
+        // FIXME: 09.01.2019 if specialBookmarks == null && isSpecialBookmarks == true - then create new specialBookmarks array
         if (specialBookmarks != null) {
             TreeSet<Integer> specials = new TreeSet<>();
             for (int specialBookmark : specialBookmarks) {
