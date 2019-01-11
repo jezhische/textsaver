@@ -87,7 +87,10 @@ public class DataManager {
 
 
     public static String trimQuotes(String obtainedName) {
-        return obtainedName.substring(1, obtainedName.length() - 1);
+        if (obtainedName.startsWith("\"") || obtainedName.startsWith("'") ||
+                obtainedName.endsWith("\"") || obtainedName.endsWith("'"))
+            obtainedName = obtainedName.substring(1, obtainedName.length() - 1);
+        return obtainedName;
     }
 
     public String[] updateLastOpenArray(String[] lastOpenArray, int previousPageNumber, boolean isPageUpdated) {
@@ -105,14 +108,14 @@ public class DataManager {
     }
 
     public int[] updateSpecialBookmarks(int[] specialBookmarks, int previousPageNumber, boolean isSpecialBookmark) {
-        // FIXME: 09.01.2019 if specialBookmarks == null && isSpecialBookmarks == true - then create new specialBookmarks array
         if (specialBookmarks != null) {
             TreeSet<Integer> specials = new TreeSet<>();
-            for (int specialBookmark : specialBookmarks) {
-                specials.add(specialBookmark);
+            if (specialBookmarks != null) {
+                for (int specialBookmark : specialBookmarks) {
+                    specials.add(specialBookmark);
+                }
             }
             if (isSpecialBookmark) specials.add(previousPageNumber);
-//        return specials.toArray(new Integer[specials.size()]);
             int[] ints = new int[specials.size()];
             LinkedList<Integer> list = new LinkedList<>(specials);
             for (int i = 0; i < list.size(); i++) {

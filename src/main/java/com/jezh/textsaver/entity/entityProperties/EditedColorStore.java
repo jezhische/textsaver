@@ -1,14 +1,15 @@
 package com.jezh.textsaver.entity.entityProperties;
 
 public enum EditedColorStore {
-    eff3300,
-    eff471a,
-    eff5c33,
-    eff704d,
-    eff8566,
-    eff9980,
-    effad99,
-    effc2b3,
+
+    effebe6,
     effd6cc,
-    effebe6;
+    effc2b3,
+    effad99,
+    eff9980,
+    eff8566,
+    eff704d,
+    eff5c33,
+    eff471a,
+    eff3300;
 }

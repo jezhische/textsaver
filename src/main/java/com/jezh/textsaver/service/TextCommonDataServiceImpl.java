@@ -61,7 +61,7 @@ public class TextCommonDataServiceImpl implements TextCommonDataService {
         // create bookmarks
 //        String[] lastOpens = new String[BOOKMARKS_COUNT];
         String[] lastOpens = new String[1];
-        lastOpens[0] = DataManager.getLastOpenedArrayItem(1, false);
+        lastOpens[0] = DataManager.getLastOpenedArrayItem(0, false);
         Bookmarks bookmarks = Bookmarks.builder()
                 .lastOpenArray(lastOpens)
                 .specialBookmarks(new int[0])

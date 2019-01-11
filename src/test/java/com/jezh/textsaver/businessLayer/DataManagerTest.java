@@ -64,5 +64,14 @@ public class DataManagerTest extends BasePostgresConnectingTest {
 
     @Test
     public void updateSpecialBookmarks() {
+
+    }
+
+    @Test
+    public void trimQuotes() {
+        assertEquals("aou", DataManager.trimQuotes("\"aou\""));
+        assertEquals("", DataManager.trimQuotes("\"\""));
+        assertEquals("aou", DataManager.trimQuotes("'aou'"));
+        assertEquals("", DataManager.trimQuotes("''"));
     }
 }

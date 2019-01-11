@@ -45,33 +45,33 @@ public class BookmarkResourceAssembler {
                                                                           int pageNumber, int totalPages)
              throws NoHandlerFoundException, UnknownHostException {
         String[] lastOpenArray = bookmarks.getLastOpenArray(); // Strings kind of "page number + 1 or 0" (edited or opened);
-        // "pageNumber" - starts from 1
+        // "pageNumber" - starts from 0
         long docDataId = bookmarks.getId();
         List<BookmarkResource> resources = new LinkedList<>();
         for (int i = 0; i < lastOpenArray.length; i++) {
             String current = lastOpenArray[i];
             if (current != null) {
-                // NumberFormatException
-                int curPageNm = Integer.parseInt(current.substring(0, current.length() - 1));
-                // set the color according to page index in lastOpenArray and isEdited value
-                // (that means page index in lastOpenArray define the "least recent updated" option and,
-                // accordingly  to it, the color of the page number button)
-                String color = current.endsWith("1") ?
-                        editedColorStores[i].name().substring(1) : // need to trim first letter
-                        openedColorStores[i].name().substring(1);
-                String currentPageLink = dataManager.createPageLink(docDataId, curPageNm + 1);
-                String selfLink = dataManager.createBookmarksLink(docDataId, new BookmarksData());
-                BookmarkResource bookmarkResource = BookmarkResource.builder()
-                        .pageNumber(curPageNm + 1)
-                        .color(color)
-                        .pageLink(currentPageLink)
-                        .build();
-                bookmarkResource.add(new Link(selfLink).withSelfRel());
-                resources.add(bookmarkResource);
+            // NumberFormatException check here:
+            int curPageNm = Integer.parseInt(current.substring(0, current.length() - 1));
+            // set the color according to page index in lastOpenArray and isEdited value
+            // (that means page index in lastOpenArray define the "least recent updated" option and,
+            // accordingly  to it, the color of the page number button)
+            String color = current.endsWith("1") ?
+                    editedColorStores[i].name().substring(1) : // need to trim first letter
+                    openedColorStores[i].name().substring(1);
+            String currentPageLink = dataManager.createPageLink(docDataId, curPageNm);
+            String selfLink = dataManager.createBookmarksLink(docDataId, new BookmarksData());
+            BookmarkResource bookmarkResource = BookmarkResource.builder()
+                    .pageNumber(curPageNm)
+                    .color(color)
+                    .pageLink(currentPageLink)
+                    .build();
+            bookmarkResource.add(new Link(selfLink).withSelfRel());
+            resources.add(bookmarkResource);
             }
         }
-        return addElsePagesLinks(resources, bookmarks, docDataId, pageNumber + 1, totalPages);
-    }
+         return addElsePagesLinks(resources, bookmarks, docDataId, pageNumber, totalPages);
+     }
 
 
     /**
@@ -86,9 +86,11 @@ public class BookmarkResourceAssembler {
          // simple way to sort page references in the natural order
         Map<Integer, BookmarkResource> rawMap = new TreeMap<>();
 
-        // add adjacent page references to sorted map (by 5 references right and left)
+        // add adjacent page references into the sorted map (by 5 references right and left)
         for (int i = pageNumber - 5; i < pageNumber + 5; i++) {
-            if (i >= 1 && i <= totalPages && i != pageNumber && !rawMap.containsKey(i)) {
+            // нет смысла проверять все, если ключ уже есть, значение просто будет переписано
+//            if (i >= 1 && i <= totalPages && i != pageNumber && !rawMap.containsKey(i)) {
+                if (i >= 0 && i <= totalPages - 1/* && i != pageNumber && !rawMap.containsKey(i)*/) {
                 String link = dataManager.createPageLink(docDataId, i);
                 rawMap.put(i, BookmarkResource.builder()
                         .pageNumber(i)
@@ -102,14 +104,14 @@ public class BookmarkResourceAssembler {
             rawMap.put(totalPages, BookmarkResource.builder()
                     .pageNumber(totalPages)
                     .color(ADJASENT_PAGE_REFERENCES_COLOR)
-                    .pageLink(dataManager.createPageLink(docDataId, totalPages))
+                    .pageLink(dataManager.createPageLink(docDataId, totalPages - 1))
                     .build());
         // add the first page reference, if not exists
-        if (!rawMap.containsKey(1))
-            rawMap.put(1, BookmarkResource.builder()
-                    .pageNumber(1)
+        if (!rawMap.containsKey(0))
+            rawMap.put(0, BookmarkResource.builder()
+                    .pageNumber(0)
                     .color(ADJASENT_PAGE_REFERENCES_COLOR)
-                    .pageLink(dataManager.createPageLink(docDataId, 1))
+                    .pageLink(dataManager.createPageLink(docDataId, 0))
                     .build());
 
         // add last opened/edited bookmarks

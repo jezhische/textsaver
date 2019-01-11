@@ -129,14 +129,13 @@ public class TextPartServiceImpl implements TextPartService {
 
     @Override
     public Page<TextPart> findPageByDocDataIdAndPageNumber(Long textCommonDataId, int currentPageNumber) {
-        return repository.findPageByDocDataId(textCommonDataId, PageRequest.of(currentPageNumber - 1, 1));
+        return repository.findPageByDocDataId(textCommonDataId, PageRequest.of(currentPageNumber, 1));
     }
 
     @Override
     public Page<TextPart> createPage(int newPageNumber, Long textCommonDataId)
             throws IndexOutOfBoundsException {
-        int jpaCurrentPageNumber = newPageNumber - 2; // "real" new page number in jpa paging = newPageNumber - 1, and
-        // the number of the current page = newPageNumber - 2
+        int jpaCurrentPageNumber = newPageNumber - 1;
         TextPart current = repository.findPageByDocDataId(textCommonDataId,
                 PageRequest.of(jpaCurrentPageNumber, 1)).getContent().get(0);
         TextPart next = repository.findNextByCurrentInSequence(current).orElse(null);
@@ -148,7 +147,6 @@ public class TextPartServiceImpl implements TextPartService {
         repository.saveAndFlush(newOne);
         current.setNextItem(newOne.getId());
         newOne.setNextItem(next == null ? null : next.getId());
-        return repository.findPageByDocDataId(textCommonDataId, PageRequest.of(newPageNumber - 1, 1));
-        // "real" new page number = newPageNumber - 1
+        return repository.findPageByDocDataId(textCommonDataId, PageRequest.of(newPageNumber, 1));
     }
 }

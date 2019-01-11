@@ -1,14 +1,15 @@
 package com.jezh.textsaver.entity.entityProperties;
 
 public enum OpenedColorStore {
-    o1b5412,
-    o216916,
-    o2f931f,
-    o3cbd28,
-    o56d742,
-    o7be06c,
-    oa1e996,
-    ob3ffb3,
+
+    od9f6d5,
     occffcc,
-    od9f6d5;
+    ob3ffb3,
+    oa1e996,
+    o7be06c,
+    o56d742,
+    o3cbd28,
+    o2f931f,
+    o216916,
+    o1b5412;
 }

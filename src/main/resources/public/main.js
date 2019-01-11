@@ -75,16 +75,14 @@ $(function () {
                 err.find('pre').html('');
                 err.css('visibility', 'hidden');
 
-                if (currentDocName !== obtainedData.name) alert("Something wrong with data saving. " +
-                    "The doc name will be changed to avoid data loss. Please refrain from using any " +
-                    "strange, weird and odd characters in the name");
-                currentPageNumber = 1;
+                currentPageNumber = 0;
                 currentPageLink = obtainedData._links.self.href;
                 createdDate = obtainedData.createdDate;
                 updatedDate = obtainedData.updatedDate;
 
                 setNewDocLinkOnclickBehavior(currentPageLink, currentDocName);
-                setPageNumberButtonBehavior(currentPageLink, 1);
+    // TODO: change to exstractBookmarks()
+                setPageNumberButtonBehavior(currentPageLink, 0);
                 setInsertPageButtonBehavior();
                 checkSum = 0;
                 totalPages = 1;
@@ -109,7 +107,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
                                                 console.log('extractPageContent() pageLink =  ' + targetPageLink);
     $.ajax({
         type: 'GET',
-        url: targetPageLink, // http://localhost:8074/textsaver/doc-data/837/pages?page=1
+        url: targetPageLink, // http://localhost:8074/textsaver/doc-data/837/pages?page=0
         dataType: 'json', // returns PageResource instance
         success: function (data, status, jqXHR) {
                                                     console.log('extractPageContent(): success');
@@ -126,7 +124,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
             let text = $('#container').find('#text');
             let pageContent = data.body;
 
-            if (pageContent !== null) { // 'Cannot read property 'toString' of null'
+            if (pageContent !== null) {
                 /* since JSON.stringify replace all "new line" tokens with "\\n", I need here the inverse transform */
                 let regex = new RegExp('\\\\n', 'g'); // flag 'g' means 'all matches'
                 pageContent = pageContent.toString().replace(regex, '\r\n');
@@ -162,6 +160,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
  * PUT requests) */
 // --------------------------------------------------------------------------------------------------------------------
 
+    // TODO: to complete it
     function extractBookmarks() {
         console.log('extractBookmarks() begin ---------------------------');
         $.ajax({
@@ -213,7 +212,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
             dataType: 'json', // obtainedData = BookmarkResource array
             success: function (obtainedData, status, jqXHR) {
                                 console.log('SETBOOKMARKS: url = ' + getBookmarksLink(previousPageLink));
-                                obtainedData.forEach(d => console.log('; ' + d.color + '::' + d.pageLink + '::' + d.pageNumber));
+                                // obtainedData.forEach(d => console.log('; ' + d.color + '::' + d.pageLink + '::' + d.pageNumber));
 
                 // $('#error-panel').css('visibility', 'hidden');
 
@@ -241,18 +240,15 @@ function extractPageContent(previousPageLink, targetPageLink) {
         //     '</div>');
 
         let upperPageButtons = $('#container').find('#upper-doc-bar').find('#upper-page-buttons-row');
-                                        console.log('BEFORE PAGE BUTTONS REMOVING: upperPageButtons.find(\'.page-number-button\').html() = '
-                                            + upperPageButtons.find('.page-number-button').html());
+
         upperPageButtons.find('.page-number-button').remove();
-                                        console.log('AFTER PAGE BUTTONS REMOVING: upperPageButtons.find(\'.page-number-button\').html() = '
-                                            + upperPageButtons.find('.page-number-button').html());
+
         bookmarksArray.forEach(bookmarkResource => {
             let pageNumber = bookmarkResource.pageNumber;
             let numberButton = $('<button id="'+ pageNumber + '" type="submit" formaction="' +
-                bookmarkResource.pageLink + '" class="page-number-button">'+ pageNumber + '</button>');
+                bookmarkResource.pageLink + '" class="page-number-button">'+ (pageNumber + 1) + '</button>'); // to render
             numberButton.insertBefore(upperPageButtons.find('#plus'));
                                         // console.log('BOOKMARKSARRAY create page number ' + pageNumber);
-
 
     // ONCLICK BEHAVIOR
             numberButton.click(function (event) {
@@ -261,8 +257,6 @@ function extractPageContent(previousPageLink, targetPageLink) {
                 numberButton.prop('disabled', true);
                 updatePage(currentPageLink);
 
-
-// FIXME: check and trace the method behavior in this place
                 let previousPageLink = currentPageLink;
                 currentPageNumber = pageNumber;
                 currentPageLink = bookmarkResource.pageLink;
@@ -270,7 +264,6 @@ function extractPageContent(previousPageLink, targetPageLink) {
                 console.log('setPageNumberButtonBehavior() after click: currentPageNumber = '
                     + currentPageNumber + ', currentPageLink = ' + currentPageLink);
 
-                // updateBookmarks(previousPageLink, currentPageLink);
                 });
 
             setBookmarksArrayButtonCss(numberButton, '#' + bookmarkResource.color);
@@ -300,7 +293,6 @@ function extractPageContent(previousPageLink, targetPageLink) {
 
 
         let form = $('#container').find('#upper-doc-bar').find('#upper-page-buttons-row').find('.page-btn-bar');
-        // let totalPageNm = form.find('.page-number-button:last').html(); // fixme: брать из тотальной переменной
 
         let currentPageButton = form.find('#' + currentPageNumber);
         let insertedPageNm = currentPageNumber + 1;
@@ -308,30 +300,13 @@ function extractPageContent(previousPageLink, targetPageLink) {
 
         updatePage(currentPageLink);
 
-
-        // if (totalPages > currentPageNumber) {
-        //     let nextPagesArray = form.find('button').get().slice(currentPageNumber + 1, totalPages);
-        //     console.log('insertPage(): totalPages = ' + totalPages +
-        //         ', currentPageNumber = ' + currentPageNumber +
-        //         ', current slice of next buttons: ');
-        //     nextPagesArray.forEach(btn => console.log($(btn).html()));
-        //
-        //     nextPagesArray.forEach(elem => {
-        //         let element = $(elem);
-        //     });
-        //     nextPagesArray.forEach(arr => console.log(arr));
-        // }
-        /* insert page number button element after "currentPageButton" element. This button will get the necessary
-        properties in the insertPage() method if success, or will be removed if error */
         let insertedPageButton = $('<button id="' + insertedPageNm + '" formaction="' + insertedPageLink + '" class="page-number-button" disabled>'
-            + insertedPageNm + '</button>');
+            + (insertedPageNm + 1) + '</button>');
         insertedPageButton.insertAfter(currentPageButton);
-        // let insertedPageButton = form.find('#' + insertedPageNm);
 
         currentPageButton.prop('disabled', false);
-        setPageButtonCss(currentPageButton, insertedPageButton);
-        // currentPageNumber = insertedPageNm;
-        // currentPageLink = insertedPageLink;
+        // TODO: applying css before server data retrieving, it was disabled, check it!
+        // setPageButtonCss(currentPageButton, insertedPageButton);
 
             $.ajax({
             type: 'POST', // http://localhost:8074/textsaver/doc-data815/pages?page=25
@@ -432,7 +407,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
 
         docLink.click(function (event) {
             event.preventDefault();
-                                                console.log('LINK CHECK: \n$(this).attr(\'href\') = ' + $(this).attr('href'));
+                                                console.log('LINK CHECK: $(this).attr(\'href\') = ' + $(this).attr('href'));
                                                 console.log('currentPageLink = ' + currentPageLink);
             if (currentPageLink !== '') updatePage(currentPageLink); // checking control sum locates in updatePage() method
 
@@ -442,18 +417,13 @@ function extractPageContent(previousPageLink, targetPageLink) {
                 currentDocName = $(this).html();
                 currentPageLink = $(this).attr('href');
                                     console.log('setLinksOnclickBehavior - after setting: currentPageLink = ' + currentPageLink);
-                currentPageNumber = 1;
+                currentPageNumber = 0;
                 setMarkup(currentDocName);
                 $('#1').attr('formaction', currentPageLink);
-                // setPageNumberButtonBehavior(currentPageLink, 1);
                 extractPageContent(currentPageLink, currentPageLink);
                                         console.log('setLinksOnclickBehavior - after setting: currentPageLink = ' + currentPageLink);
 
-                // updateBookmarks(currentPageLink, currentPageLink);
-
-                // setPlusPageButtonBehavior(); // in setMarkup()
                 setInsertPageButtonBehavior();
-                // extractBookmarks();
             }
         });
                                         console.log('setLinksOnclickBehavior() end ---');
@@ -479,7 +449,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
                 currentDocName = $(this).html();
                 currentPageLink = $(this).attr('href');
                                         console.log('setNewDocLinkOnclickBehavior - after setting: currentPageLink = ' + currentPageLink);
-                currentPageNumber = 1;
+                currentPageNumber = 0;
                 setMarkup(currentDocName);
                 $('#1').attr('formaction', currentPageLink);
                 // setPageNumberButtonBehavior(currentPageLink, 1);
@@ -560,7 +530,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
                 let currentPageButton = form.find('#' + currentPageNumber);
                 let insertedPageNm = currentPageNumber + 1;
                 let insertedPageLink = getNextPageLink(currentPageLink, currentPageNumber);
-                if (currentPageNumber < totalPages) {
+                if (currentPageNumber < totalPages - 1) {
                     updatePage(currentPageLink);
                     // currentPageNumber = insertedPageNm;
                     // currentPageLink = insertedPageLink;
@@ -605,7 +575,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
             let currentPageButton = form.find('#' + currentPageNumber);
             let insertedPageNm = currentPageNumber - 1;
             let insertedPageLink = getPreviousPageLink(currentPageLink, currentPageNumber);
-            if (currentPageNumber > 1) {
+            if (currentPageNumber > 0) {
                 updatePage(currentPageLink);
                 // currentPageNumber = insertedPageNm;
                 // currentPageLink = insertedPageLink;

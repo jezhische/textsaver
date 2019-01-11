@@ -27,7 +27,7 @@ public class PageResourceAssembler {
     public PageResource getResource(Page<TextPart> page)
             throws IndexOutOfBoundsException, NoHandlerFoundException, UnknownHostException {
         TextPart textPart = page.getContent().get(0);
-        int pageNumber = page.getNumber() + 1; // NB: not "page.getNumber()", 'cause page number for client = "real" page number + 1
+        int pageNumber = page.getNumber();
         PageResource resource = PageResource.builder()
                 .body(textPart.getBody())
                 .pageNumber(pageNumber)
