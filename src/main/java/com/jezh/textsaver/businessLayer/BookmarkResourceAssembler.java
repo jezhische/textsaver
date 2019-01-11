@@ -41,7 +41,7 @@ public class BookmarkResourceAssembler {
     /**
      * Returns list of BookmarkResource as they coded in the appropriate Bookmarks item (with the Bookmarks references only)
      * */
-     public List<BookmarkResource> xconvertBookmarksToBookmarkResourceList(Bookmarks bookmarks,
+     public List<BookmarkResource> convertBookmarksToBookmarkResourceList(Bookmarks bookmarks,
                                                                           int pageNumber, int totalPages)
              throws NoHandlerFoundException, UnknownHostException {
         String[] lastOpenArray = bookmarks.getLastOpenArray(); // Strings kind of "page number + 1 or 0" (edited or opened);
