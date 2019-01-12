@@ -61,9 +61,10 @@ public class BookmarksController {
         System.out.println("***********************************************************" + bookmarksData);
         int previousPageNumber = bookmarksData.getPreviousPageNumber();
             bookmarks.setLastOpenArray(dataManager.updateLastOpenArray(bookmarks.getLastOpenArray(), previousPageNumber,
-                    bookmarksData.isPageUpdated()));
-            bookmarks.setSpecialBookmarks(dataManager.updateSpecialBookmarks(bookmarks.getSpecialBookmarks(), // FIXME: 09.01.2019 fix updateSpecialBookmarks()
-                    previousPageNumber, bookmarksData.isSpecialBookmark()));
+                    bookmarksData.isPageUpdated(), bookmarksData.getTotalPages()));
+        if (bookmarksData.isSpecialBookmark())
+            bookmarks.setSpecialBookmarks(dataManager.updateSpecialBookmarks(bookmarks.getSpecialBookmarks(),
+                    previousPageNumber, bookmarksData.getTotalPages()));
         System.out.println("***********************************************************" + bookmarks);
         bookmarkService.update(bookmarks);
         List<BookmarkResource> bookmarkResources = assembler.convertBookmarksToBookmarkResourceList(bookmarks, bookmarksData.getCurrentPageNumber(),

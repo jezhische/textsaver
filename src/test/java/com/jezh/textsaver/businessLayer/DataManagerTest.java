@@ -52,7 +52,7 @@ public class DataManagerTest extends BasePostgresConnectingTest {
     @Test
     public void updateLastOpenArray() {
         String[] testArray = {"10", "121"};
-        String[] actualArray = dataManager.updateLastOpenArray(testArray, 3, true);
+        String[] actualArray = dataManager.updateLastOpenArray(testArray, 3, true, 8);
         System.out.println("***********************************************" + Arrays.asList(actualArray));
         String[] expectedArray = {"10", "121", "31"};
         assertArrayEquals(expectedArray, actualArray);

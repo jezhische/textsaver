@@ -34,20 +34,6 @@ public class TextCommonDataResourceAssembler {
             } catch (UnknownHostException | NoHandlerFoundException e) {
                 e.printStackTrace();
             }
-            try {
-                linkedDocData.add(new Link(dataManager.createPageLink(docData.getId(), 1))
-    //                    linkTo(
-    //                    methodOn(TextCommonDataController.class).findByLinkedDocName(linkedDocData.getName()))
-    //                    .withSelfRel()); // don't work - why?
-    //            linkTo(TextCommonDataController.class).slash("documents").slash(linkedDocData.getName()).withSelfRel()); // working
-
-    //                    linkTo(methodOn(TextCommonDataController.class).getLinkedTextCommonDataList())
-    //                            .slash(linkedDocData.getName())
-    //                            .withSelfRel()
-                );
-            } catch (UnknownHostException | NoHandlerFoundException e) {
-                e.printStackTrace();
-            }
             return linkedDocData;
         }).collect(Collectors.toList());
     }
@@ -59,7 +45,7 @@ public class TextCommonDataResourceAssembler {
                 .createdDate(createdDate)
                 .updatedDate(docData.getUpdatedDate())
                 .build();
-                resource.add(new Link(dataManager.createPageLink(docData.getId(), 1))/*.withSelfRel()*/);
+                resource.add(new Link(dataManager.createPageLink(docData.getId(), 0))/*.withSelfRel()*/);
                 return resource;
     }
 

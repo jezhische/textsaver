@@ -100,11 +100,12 @@ public class BookmarkResourceAssembler {
             }
         }
         // add the last page reference, if not exists
-        if (totalPages > 6 && !rawMap.containsKey(totalPages))
-            rawMap.put(totalPages, BookmarkResource.builder()
-                    .pageNumber(totalPages)
+        int lastPageNumber = totalPages - 1;
+        if (totalPages > 6 && !rawMap.containsKey(lastPageNumber))
+            rawMap.put(lastPageNumber, BookmarkResource.builder()
+                    .pageNumber(lastPageNumber)
                     .color(ADJASENT_PAGE_REFERENCES_COLOR)
-                    .pageLink(dataManager.createPageLink(docDataId, totalPages - 1))
+                    .pageLink(dataManager.createPageLink(docDataId, lastPageNumber))
                     .build());
         // add the first page reference, if not exists
         if (!rawMap.containsKey(0))

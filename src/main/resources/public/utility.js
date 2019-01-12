@@ -44,21 +44,24 @@ function addMainDocButtons(elemId) {
 }
 // ----------------------------------------------------------------------------------------------------------------
 
-function createNameBar(docName, elem) {
+function renderNameOnTheBar(docName, elem) {
     elem.html(docName);
 }
 // ----------------------------------------------------------------------------------------------------------------
 
 function createInitialButtonsRow(elem) {
-    // let row = $('#' + elemId);
+    // elem = container.find('#upper-page-buttons-row');
     elem.html('<div class="page-btn-bar">' +
         '<button id="delete-page" style="width: 20%" disabled>delete current page</button>' +
         '<button id="minus" style="width: 10%">back</button>' +
-        '<button id="1" type="submit" formaction="" class="page-number-button" disabled>1</button>' +
+
         '<button id="plus" style="width: 10%">forward</button>' +
         '<button id="insert-page" style="width: 20%">insert new page</button>' +
+        '<div class="bookmarks-bar">' +
+        '<button id="0" type="submit" formaction="" class="page-number-button" disabled>1</button>' +
+        '</div>' +
         '</div>');
-    console.log('******************* ' + $('#1').html());
+    console.log('******************* ' + $('#0').html());
 }
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -89,7 +92,6 @@ function setContainer() {
         '    </div>\n' +
         '    <textarea id="text"></textarea>\n' +
         '    <div id="lower-doc-bar">\n' +
-        // '        <div id="lower-page-buttons-row"></div>\n' +
         '        <div id="lower-doc-name-bar" class="doc-name-bar"></div>\n' +
         '    </div>'
     );
