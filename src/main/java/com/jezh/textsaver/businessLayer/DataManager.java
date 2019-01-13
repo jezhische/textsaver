@@ -108,15 +108,17 @@ public class DataManager {
         return strings.toArray(updated);
     }
 
-    public int[] updateSpecialBookmarks(int[] specialBookmarks, int previousPageNumber, int totalPages) {
+    public int[] updateSpecialBookmarks(int[] specialBookmarks, int previousPageNumber, boolean isSpecialBookmark, int totalPages) {
         if (previousPageNumber > totalPages -1) return specialBookmarks;
+
         TreeSet<Integer> specials = new TreeSet<>();
         if (specialBookmarks != null && specialBookmarks.length != 0) {
             for (int specialBookmark : specialBookmarks) {
                 specials.add(specialBookmark);
             }
         }
-        specials.add(previousPageNumber);
+        if (isSpecialBookmark) specials.add(previousPageNumber);
+        else specials.remove(previousPageNumber);
         int[] ints = new int[specials.size()];
         LinkedList<Integer> list = new LinkedList<>(specials);
         for (int i = 0; i < list.size(); i++) {

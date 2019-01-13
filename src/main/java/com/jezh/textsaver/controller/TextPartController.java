@@ -33,21 +33,22 @@ import java.util.Date;
 @RequestMapping("/doc-data/{commonDataId}")
 public class TextPartController {
 
-    @Autowired private TextPartService textPartService;
+    private final TextPartService textPartService;
 
-    @Autowired private TextCommonDataService textCommonDataService;
+    private final PageResourceAssembler pageModelAssembler;
 
-    @Autowired private BookmarkService bookmarkService;
-
-    @Autowired private PageResourceAssembler pageModelAssembler;
-
-    @Autowired private Environment env;
-
-    @Autowired private DataManager dataManager;
+    private final DataManager dataManager;
 
     // the same as @Value("${local.server.port}")
-    @LocalServerPort
-    private int port;
+//    @LocalServerPort
+//    private int port;
+
+    @Autowired
+    public TextPartController(PageResourceAssembler pageModelAssembler, DataManager dataManager, TextPartService textPartService) {
+        this.pageModelAssembler = pageModelAssembler;
+        this.dataManager = dataManager;
+        this.textPartService = textPartService;
+    }
 
 
 // ================================================================================================================ GET:

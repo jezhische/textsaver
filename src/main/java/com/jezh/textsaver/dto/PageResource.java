@@ -14,5 +14,5 @@ public class PageResource extends ResourceSupport {
     private String body;
     private int pageNumber;
     private int totalPages;
-    private List<BookmarkResource> bookmarkResources;
+//    private List<BookmarkResource> bookmarkResources;
 }

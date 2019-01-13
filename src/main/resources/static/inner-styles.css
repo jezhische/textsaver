@@ -155,3 +155,7 @@ textarea {
     /** remove resize handle (a little triangle in the bottom right of textarea) */
     /*resize: none;*/
 }
+
+.special-bookmarks {
+    background: rgb(0, 246, 235);
+}

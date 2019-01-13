@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -51,6 +49,7 @@ public class BookmarksController {
         return assembler.convertBookmarksToBookmarkResourceList(bookmarks, bookmarksData.getCurrentPageNumber(), bookmarksData.getTotalPages());
     }
 
+
     @PutMapping(value = "/bookmarks")
     public List<BookmarkResource> updateBookmarks(@PathVariable(value = "commonDataId") long id,
                                                @RequestBody BookmarksData bookmarksData)
@@ -60,11 +59,14 @@ public class BookmarksController {
                 () -> new NoHandlerFoundException("GET", url, new HttpHeaders()));
         System.out.println("***********************************************************" + bookmarksData);
         int previousPageNumber = bookmarksData.getPreviousPageNumber();
-            bookmarks.setLastOpenArray(dataManager.updateLastOpenArray(bookmarks.getLastOpenArray(), previousPageNumber,
-                    bookmarksData.isPageUpdated(), bookmarksData.getTotalPages()));
-        if (bookmarksData.isSpecialBookmark())
-            bookmarks.setSpecialBookmarks(dataManager.updateSpecialBookmarks(bookmarks.getSpecialBookmarks(),
-                    previousPageNumber, bookmarksData.getTotalPages()));
+        int totalPages = bookmarksData.getTotalPages();
+
+        bookmarks.setLastOpenArray(dataManager.updateLastOpenArray(bookmarks.getLastOpenArray(), previousPageNumber,
+                bookmarksData.isPageUpdated(), totalPages));
+//        if (bookmarksData.isSpecialBookmark())
+        bookmarks.setSpecialBookmarks(dataManager.updateSpecialBookmarks(bookmarks.getSpecialBookmarks(),
+                previousPageNumber, bookmarksData.isSpecialBookmark(), totalPages));
+
         System.out.println("***********************************************************" + bookmarks);
         bookmarkService.update(bookmarks);
         List<BookmarkResource> bookmarkResources = assembler.convertBookmarksToBookmarkResourceList(bookmarks, bookmarksData.getCurrentPageNumber(),

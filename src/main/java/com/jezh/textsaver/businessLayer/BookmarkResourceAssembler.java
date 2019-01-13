@@ -22,6 +22,8 @@ public class BookmarkResourceAssembler {
 
     private final static String CURRENT_PAGE_REFERENCE_COLOR = "ffdf00"; // yellow
 
+    private final static String CURRENT_PAGE_SPECIAL_BOOKMARKED_REFERENCE_COLOR = "ffb704"; // yellow-orange
+
     private final static String SPECIAL_BOOKMARK_COLOR = "00f6eb"; // blue
 
     private DataManager dataManager;
@@ -118,18 +120,6 @@ public class BookmarkResourceAssembler {
         // add last opened/edited bookmarks
         rawList.forEach(bookmarkResource -> rawMap.put(bookmarkResource.getPageNumber(), bookmarkResource));
 
-        // add special bookmarks (specialBookmarks array is the numbers of bookmarked pages)
-        int[] specialBookmarks = bookmarks.getSpecialBookmarks();
-        if (specialBookmarks != null && specialBookmarks.length != 0) {
-            for (int bookmarkedPage : specialBookmarks) {
-                String link = dataManager.createPageLink(docDataId, bookmarkedPage);
-                rawMap.put(bookmarkedPage, BookmarkResource.builder()
-                        .pageNumber(bookmarkedPage)
-                        .color(SPECIAL_BOOKMARK_COLOR)
-                        .pageLink(link)
-                        .build());
-            }
-        }
 
         // add the current page reference of yellow color
         rawMap.put(pageNumber, BookmarkResource.builder()
@@ -137,6 +127,29 @@ public class BookmarkResourceAssembler {
                 .color(CURRENT_PAGE_REFERENCE_COLOR)
                 .pageLink(dataManager.createPageLink(docDataId, pageNumber))
                 .build());
+
+        // add special bookmarks (specialBookmarks array is the numbers of bookmarked pages)
+        int[] specialBookmarks = bookmarks.getSpecialBookmarks();
+        if (specialBookmarks != null && specialBookmarks.length != 0) {
+            for (int bookmarkedPage : specialBookmarks) {
+                String link = dataManager.createPageLink(docDataId, bookmarkedPage);
+                // orange color for current pageNumberButton if it's specially bookmarked
+                if (bookmarkedPage == pageNumber) {
+                    rawMap.put(bookmarkedPage, BookmarkResource.builder()
+                            .pageNumber(bookmarkedPage)
+                            .color(CURRENT_PAGE_SPECIAL_BOOKMARKED_REFERENCE_COLOR)
+                            .pageLink(link)
+                            .build());
+                } else {
+                    rawMap.put(bookmarkedPage, BookmarkResource.builder()
+                            .pageNumber(bookmarkedPage)
+                            .color(SPECIAL_BOOKMARK_COLOR)
+                            .pageLink(link)
+                            .build());
+                }
+            }
+        }
+
 
         return new LinkedList<>(rawMap.values());
     }
