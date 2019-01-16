@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 // unresolvable circular reference?". So I need to use @Profile and @ActiveProfiles also with the production configuration.
 //@ActiveProfiles("testPostgres")
 
-// todo: https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html
+// https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html
 //  "By default, @DataJpaTest configures an in-memory embedded database, scans for @Entity classes, and configures
 // Spring Data JPA repositories".
 @DataJpaTest

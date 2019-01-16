@@ -12,8 +12,10 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.annotation.Resource;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 
@@ -126,7 +128,7 @@ public class TextPartServicePostgresTest {
     }
 
     @Test
-    public void createPage() {
+    public void createPage() throws NoHandlerFoundException, UnknownHostException {
         System.out.println("******************************************************************" +
                 service.createPage(2, 1469L).getContent().get(0));
     }
@@ -135,5 +137,10 @@ public class TextPartServicePostgresTest {
     public void findPageByDocDataIdAndPageNumber() {
         System.out.println("******************************************************************" +
                 service.findPageByDocDataIdAndPageNumber(1456L, 1).getContent().get(0));
+    }
+
+    @Test
+    public void delete() throws UnknownHostException, NoHandlerFoundException {
+        service.delete(2101L, 9);
     }
 }

@@ -260,3 +260,16 @@ END
 
 
 -- SELECT count(*) FROM text_parts as tp where tp.text_common_data_id = 1795;
+
+-- select * from public.bookmarks as bm where bm.text_common_data_id = 1795;
+-- select bm.special_bookmarks from public.bookmarks as bm where bm.text_common_data_id = 1795;
+
+-- delete from text_parts as tp where tp.id = 2094;
+--
+-- select * from text_parts as tp where tp.text_common_data_id = 2101;
+
+-- select * from text_common_data as tcd where tcd.id = 2101;
+--
+-- select * from text_parts as tp where tp.body = 'ghmhgjm';
+--
+-- delete from text_parts as tp where tp.text_common_data_id = 1812;

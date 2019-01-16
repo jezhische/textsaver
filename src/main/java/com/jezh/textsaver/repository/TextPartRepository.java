@@ -35,12 +35,6 @@ public interface TextPartRepository extends JpaRepository<TextPart, Long> {
     Optional<TextPart> findByNextItem(Long nextItem);
 
     /**
-     * find previous textPart by current one
-     */
-    @Query("select previous from TextPart previous where previous.nextItem = (select current.id from TextPart current where current = ?1)")
-    Optional<TextPart> findPreviousByCurrentInSequence(TextPart current);
-
-    /**
      * find all the textPart with the given textCommonData id in an order,
      * where currentTextPart.nextItem = nextTextPart.id
      */
@@ -69,6 +63,11 @@ public interface TextPartRepository extends JpaRepository<TextPart, Long> {
     List<TextPart> findAllByTextCommonDataId(Long id);
 
 // ====================================================================================
+    /**
+     * find previous textPart by current one
+     */
+    @Query("select previous from TextPart previous where previous.nextItem = (select current.id from TextPart current where current = ?1)")
+    Optional<TextPart> findPreviousByCurrentInSequence(TextPart current);
 
     /**
      * find next textPart by current one
@@ -90,7 +89,10 @@ List<BigInteger> findSortedTextPartIdByTextCommonDataId(Long textCommonDataId);
     @Query (value = "SELECT * FROM public.update_text_part_by_id(?1, ?2, ?3)", nativeQuery = true)
     Optional<Date> updateById(Long id, String body, Date updated);
 
-//    @Query (value = "SELECT * FROM public.update_text_part_by_id(?1, ?2, ?3)", nativeQuery = true)
+    @Override
+    void delete(TextPart textPart);
+
+    //    @Query (value = "SELECT * FROM public.update_text_part_by_id(?1, ?2, ?3)", nativeQuery = true)
 //    Optional<Date> updateByTextPartId(Long id, String body, Date updated);
 }
 

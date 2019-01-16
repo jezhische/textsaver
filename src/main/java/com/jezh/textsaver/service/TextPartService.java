@@ -3,7 +3,9 @@ package com.jezh.textsaver.service;
 import com.jezh.textsaver.entity.TextPart;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -44,5 +46,7 @@ public interface TextPartService {
 
     Page<TextPart> findPageByDocDataIdAndPageNumber(Long textCommonDataId, int currentPageNumber);
 
-    Page<TextPart> createPage(int newPageNumber, /*int nextPageNumber, */Long textCommonDataId);
+    Page<TextPart> createPage(int newPageNumber, /*int nextPageNumber, */Long textCommonDataId) throws UnknownHostException, NoHandlerFoundException;
+
+    void delete(long dataId, int pageNm) throws NoHandlerFoundException, UnknownHostException;
 }

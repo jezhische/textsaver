@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertTrue;
 
@@ -181,6 +182,26 @@ public class TextPartRepositoryPostgresTest extends BasePostgresConnectingTest {
     @Test
     public void deleteAll() {
         textPartRepository.deleteAll();
+    }
+
+    @Test
+    public void delete() {
+        TextPart current = textPartRepository.findById(2103L).get();
+        System.out.println("*********************************************** current: " + current);
+        TextPart previous = textPartRepository.findPreviousByCurrentInSequence(current).get();
+        System.out.println("*********************************************** previous: " + previous);
+
+        Long nextItem = current.getNextItem();
+
+
+        current.setNextItem(null);
+        System.out.println("*********************************************** current: " + current);
+        textPartRepository.saveAndFlush(current);
+        previous.setNextItem(nextItem);
+        textPartRepository.delete(current);
+        System.out.println("*********************************************** previous: " + previous);
+
+//        textPartRepository.saveAndFlush(previous);
     }
 
     //    @Test(expected = DataIntegrityViolationException.class)

@@ -5,6 +5,7 @@ import com.jezh.textsaver.controller.TextCommonDataController;
 import com.jezh.textsaver.controller.TextPartController;
 import com.jezh.textsaver.dto.BookmarksData;
 import com.jezh.textsaver.dto.LRUCacheMap;
+import com.jezh.textsaver.entity.Bookmarks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -125,5 +126,64 @@ public class DataManager {
             ints[i] = list.get(i);
         }
         return ints;
+    }
+
+    public void deleteBookmark(int pageNm, Bookmarks bookmarks) {
+        List<String> lastOpenArray = new ArrayList<>(Arrays.asList(bookmarks.getLastOpenArray())); // to avoid UnsupportedOperationException,
+        // 'cause asList() method forms a list with fixed size, cannot add or remove elements
+        ListIterator<String> listIterator = lastOpenArray.listIterator();
+        while (listIterator.hasNext()) {
+            String item = listIterator.next();
+            int length = item.length();
+            int pNum = Integer.parseInt(item.substring(0, length - 1));
+
+            if (pNum == pageNm) listIterator.remove();
+
+            if (pNum > pageNm) {
+            String isUpdated = item.substring(length - 1);
+            listIterator.set((pNum - 1) + isUpdated);
+            }
+        }
+//        lastOpenArray.removeIf(s -> s.startsWith(String.valueOf(pageNm)));
+        bookmarks.setLastOpenArray(lastOpenArray.toArray(new String[lastOpenArray.size()]));
+
+        ArrayList<Integer> specialBookmarks = new ArrayList<>();
+        for (int specialBookmark : bookmarks.getSpecialBookmarks()) {
+            if (specialBookmark > pageNm) specialBookmarks.add(specialBookmark - 1);
+            else if (specialBookmark < pageNm) specialBookmarks.add(specialBookmark);
+        }
+        int[] updated = new int[specialBookmarks.size()];
+        for (int i = 0; i < updated.length; i++) {
+            updated[i] = specialBookmarks.get(i);
+        }
+        bookmarks.setSpecialBookmarks(updated);
+    }
+
+    public void updateBookmarksForInsertPage(int currentPageNm, Bookmarks bookmarks) {
+        List<String> lastOpenArray = new ArrayList<>(Arrays.asList(bookmarks.getLastOpenArray()));
+
+        ListIterator<String> listIterator = lastOpenArray.listIterator();
+        while (listIterator.hasNext()) {
+            String item = listIterator.next();
+            int length = item.length();
+            int pNum = Integer.parseInt(item.substring(0, length - 1));
+
+            if (pNum > currentPageNm) {
+                String isUpdated = item.substring(length - 1);
+                listIterator.set((pNum + 1) + isUpdated);
+            }
+        }
+        bookmarks.setLastOpenArray(lastOpenArray.toArray(new String[lastOpenArray.size()]));
+
+        ArrayList<Integer> specialBookmarks = new ArrayList<>();
+        for (int specialBookmark : bookmarks.getSpecialBookmarks()) {
+            if (specialBookmark > currentPageNm) specialBookmarks.add(specialBookmark + 1);
+            else if (specialBookmark < currentPageNm) specialBookmarks.add(specialBookmark);
+        }
+        int[] updated = new int[specialBookmarks.size()];
+        for (int i = 0; i < updated.length; i++) {
+            updated[i] = specialBookmarks.get(i);
+        }
+        bookmarks.setSpecialBookmarks(updated);
     }
 }

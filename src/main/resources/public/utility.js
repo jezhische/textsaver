@@ -52,9 +52,8 @@ function renderNameOnTheBar(docName, elem) {
 function createInitialButtonsRow(elem) {
     // elem = container.find('#upper-page-buttons-row');
     elem.html('<div class="page-btn-bar">' +
-        '<button id="delete-page" style="width: 15%" disabled>delete current page</button>' +
+        '<button id="delete-page" style="width: 15%">delete current page</button>' +
         '<button id="minus" style="width: 25%">back</button>' +
-
         '<button id="plus" style="width: 25%">forward</button>' +
         '<button id="insert-page" style="width: 15%">insert new page</button>' +
         '<button id="is-special-bookmark" style="width: 20%">mark as special bookmark</button>' +

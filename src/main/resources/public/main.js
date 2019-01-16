@@ -134,6 +134,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
                 text.val('');
                                 console.log('pageContent = null');
             }
+
                                                         console.log('EXTRACTPAGECONTENT: checkSum = ' + checkSum +
                                                         ', currentPageNumber = ' + currentPageNumber +
                                                         ', data.pageNumber = ' + data.pageNumber +
@@ -205,6 +206,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
             dataType: 'json', // obtainedData = BookmarkResource array
             success: function (obtainedData, status, jqXHR) {
 
+                isPageUpdated = false;
 
     // isSpecialBookmark variable assigning occurs here
                 obtainedData.forEach(bookmarkResource => {
@@ -217,6 +219,8 @@ function extractPageContent(previousPageLink, targetPageLink) {
                 isSpecialBookmarkButton = $('#container').find('#upper-doc-bar')
                     .find('#upper-page-buttons-row').find('.page-btn-bar').find('#is-special-bookmark');
                 toggleSpecialBookmarkCss(isSpecialBookmarkButton);
+
+                // isPageUpdated = false;
 
                                 console.log('UPDATEBOOKMARKS: nextPageNumber = ' + nextPageNumber + ', nextBackgroundColor = ' +
                                     nextBackgroundColor + ', isPageUpdated = ' + isPageUpdated +
@@ -272,6 +276,8 @@ function extractPageContent(previousPageLink, targetPageLink) {
                 currentPageNumber = pageNumber;
                 currentPageLink = bookmarkResource.pageLink;
                 extractPageContent(previousPageLink, currentPageLink); // checkSum will be updated here
+                // isPageUpdated = false;
+
                 console.log('setPageNumberButtonBehavior() after click: currentPageNumber = '
                     + currentPageNumber + ', currentPageLink = ' + currentPageLink);
 
@@ -341,17 +347,16 @@ function extractPageContent(previousPageLink, targetPageLink) {
         let insertedPageNm = currentPageNumber + 1;
         let insertedPageLink = getNextPageLink(currentPageLink, currentPageNumber);
 
-        updatePage(currentPageLink);
+        updatePage(insertedPageLink);
 
-        let insertedPageButton = $('<button id="' + insertedPageNm + '" formaction="' + insertedPageLink + '" class="page-number-button" disabled>'
-            + (insertedPageNm + 1) + '</button>');
-        insertedPageButton.insertAfter(currentPageButton);
+        // let insertedPageButton = $('<button id="' + insertedPageNm + '" formaction="' + insertedPageLink + '" class="page-number-button" disabled>'
+        //     + (insertedPageNm + 1) + '</button>');
+        // insertedPageButton.insertAfter(currentPageButton);
 
             $.ajax({
             type: 'POST', // http://localhost:8074/textsaver/doc-data815/pages?page=25
             contentType: "application/json; charset=utf-8",
             url: insertedPageLink,
-            // data: JSON.stringify(docName),
             dataType: 'json',
             success: function (obtainedData, status, jqXHR) {
                 let err = $('#error-panel');
@@ -392,7 +397,6 @@ function extractPageContent(previousPageLink, targetPageLink) {
         let currentPageCheckSum = currentPageContent.toString().length;
 
         let targetPageNumber = getPageNumberByLink(targetPageLink);
-        // isSpecialBookmark = $('#' + currentPageNumber).css('background').substring(0, 16) === 'rgb(255, 183, 4)'; // '#ffb704';
 
                                             console.log('UPDATEPAGE targetPageNumber = ' + targetPageNumber + ', target button color = ' +
                                                 $('#' + currentPageNumber).css('background').substring(0, 16) +
@@ -425,12 +429,42 @@ function extractPageContent(previousPageLink, targetPageLink) {
             isPageUpdated = false;
                                             console.log('updatePage(): checkSum = ' + checkSum + ', there was nothing changed');
                                             }
-        // updateBookmarks(currentPageLink, targetPageLink);
     }
 
 
 // -------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------- (DELETE) DELETE PAGE
+// -------------------------------------------------------------------------------------------------------------------
+
+    function deletePage(pageNumber) {
+
+        let nextPageNm = currentPageNumber - 1;
+
+        // extractPageContent() происходит в resetPageNmBtns(), который происходит в updateBookmarks().
+        // Так что updateBookmarks() - это все, что мне нужно
+        $.ajax({
+            type: 'DELETE',
+            url: currentPageLink, // http://localhost:8074/textsaver/doc-data/1812/pages?page=6
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (obtainedData, status, jqXHR) {
+                let err = $('#error-panel');
+                err.find('pre').html('');
+                err.css('visibility', 'hidden');
+
+                updateBookmarks(currentPageNumber, nextPageNm);
+                // currentPageLink = getPageLinkByPageNumber(currentPageLink, currentPageNumber, nextPageNm);
+                // currentPageNumber = nextPageNm;
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                let err = $('#error-panel');
+                err.css('visibility', 'visible');
+                err.find('pre').html(jqXHR.responseText);
+            }
+        });
+    }
+
 // -------------------------------------------------------------------------------------------------------------------
 
 
@@ -519,24 +553,22 @@ function extractPageContent(previousPageLink, targetPageLink) {
 
 // ------------------------------------------------------------------------------------------------------------
 
-    function setPlusPageButtonBehavior() {
+    function setForwardPageButtonBehavior() {
         let form = $('#container').find('#upper-doc-bar').find('#upper-page-buttons-row').find('.page-btn-bar');
         let plusButton = form.find('#plus');
 
             plusButton.click(function (event) {
                 event.preventDefault();
-                                    console.log('setPlusPageButtonBehavior() totalPages = ' + totalPages);
+                                    console.log('setForwardPageButtonBehavior() totalPages = ' + totalPages);
                                     console.log('bookmarks link = ' + getBookmarksLink(currentPageLink));
 
-                let currentPageButton = form.find('#' + currentPageNumber);
+                // let currentPageButton = form.find('#' + currentPageNumber);
                 let insertedPageNm = currentPageNumber + 1;
                 let insertedPageLink = getNextPageLink(currentPageLink, currentPageNumber);
                 if (currentPageNumber < totalPages - 1) {
-                    updatePage(currentPageLink);
-
-                    // isSpecialBookmark = $('#' + currentPageNumber).css('background') === '00f6eb';
-
+                    updatePage(insertedPageLink);
                     extractPageContent(currentPageLink, insertedPageLink);
+                    // isPageUpdated = false;
                     currentPageNumber = insertedPageNm;
                     currentPageLink = insertedPageLink;
                 }
@@ -544,26 +576,48 @@ function extractPageContent(previousPageLink, targetPageLink) {
     }
 
 // ------------------------------------------------------------------------------------------------------------
-    function setMinusPageButtonBehavior() {
+    function setBackPageButtonBehavior() {
         let form = $('#container').find('#upper-doc-bar').find('#upper-page-buttons-row').find('.page-btn-bar');
         let minusButton = form.find('#minus');
 
         minusButton.click(function (event) {
             event.preventDefault();
-            console.log('setMinusPageButtonBehavior() totalPages = ' + totalPages);
+            console.log('setBackPageButtonBehavior() totalPages = ' + totalPages);
             console.log('bookmarks link = ' + getBookmarksLink(currentPageLink));
 
-            let currentPageButton = form.find('#' + currentPageNumber);
+            // let currentPageButton = form.find('#' + currentPageNumber);
             let insertedPageNm = currentPageNumber - 1;
             let insertedPageLink = getPreviousPageLink(currentPageLink, currentPageNumber);
             if (currentPageNumber > 0) {
-                updatePage(currentPageLink);
+                updatePage(insertedPageLink);
                 extractPageContent(currentPageLink, insertedPageLink);
+                // isPageUpdated = false;
                 currentPageNumber = insertedPageNm;
                 currentPageLink = insertedPageLink;
             }
         });
-        console.log('setPlusPageButtonBehavior() end ---');
+        console.log('setForwardPageButtonBehavior() end ---');
+    }
+
+// ------------------------------------------------------------------------------------------------------------
+
+    function setDeletePageButtonBehavior() {
+        let deleteButton = $('#container').find('#upper-doc-bar').find('#upper-page-buttons-row')
+            .find('.page-btn-bar').find('#delete-page');
+
+        deleteButton.click(function (event) {
+            event.preventDefault();
+            if (confirm('Do you want to delete page ' + (currentPageNumber + 1) + '?')) {
+                deletePage(currentPageNumber);
+            }
+        });
+    }
+
+// ------------------------------------------------------------------------------------------------------------
+
+    function getPageLinkByPageNumber(currentPageLink, currentPageNm, pageNm) {
+        let regex = new RegExp('(' + currentPageNm + '$)');
+        return currentPageLink.replace(regex, pageNm);
     }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -624,10 +678,11 @@ function extractPageContent(previousPageLink, targetPageLink) {
         createTextarea();
         createTextareaContentEventHandlers(text);
 
-        setPlusPageButtonBehavior();
-        setMinusPageButtonBehavior();
+        setForwardPageButtonBehavior();
+        setBackPageButtonBehavior();
         setInsertPageButtonBehavior();
         setIsSpecialBookmarkButtonBehavior();
+        setDeletePageButtonBehavior();
         // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@' + $('#container').find('#upper-doc-bar')
         //     .find('#upper-page-buttons-row').find('.page-btn-bar').find('#is-special-bookmark').html());
         console.log('setMarkup() end ---');
@@ -701,7 +756,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
 
 
     getSavedDocLinks();
-    // setPlusPageButtonBehavior();
+    // setForwardPageButtonBehavior();
     $('#create-doc-btn').click(function (event) {
         event.preventDefault();
         createNewDoc();

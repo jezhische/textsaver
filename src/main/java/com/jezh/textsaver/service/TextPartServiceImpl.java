@@ -1,16 +1,21 @@
 package com.jezh.textsaver.service;
 
+import com.jezh.textsaver.businessLayer.DataManager;
+import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
+import com.jezh.textsaver.repository.BookmarkRepository;
 import com.jezh.textsaver.repository.TextPartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.math.BigInteger;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,11 +25,17 @@ import java.util.Optional;
 @Transactional
 public class TextPartServiceImpl implements TextPartService {
 
-    private TextPartRepository repository;
+    private final TextPartRepository repository;
+
+    private final BookmarkRepository bookmarkRepository;
+
+    private final DataManager dataManager;
 
     @Autowired
-    public TextPartServiceImpl(TextPartRepository repository) {
+    public TextPartServiceImpl(TextPartRepository repository, BookmarkRepository bookmarkRepository, DataManager dataManager) {
         this.repository = repository;
+        this.bookmarkRepository = bookmarkRepository;
+        this.dataManager = dataManager;
     }
 
     @Override
@@ -128,16 +139,18 @@ public class TextPartServiceImpl implements TextPartService {
     }
 
     @Override
-    public Page<TextPart> findPageByDocDataIdAndPageNumber(Long textCommonDataId, int currentPageNumber) {
-        return repository.findPageByDocDataId(textCommonDataId, PageRequest.of(currentPageNumber, 1));
+    public Page<TextPart> findPageByDocDataIdAndPageNumber(Long docDataId, int currentPageNumber) {
+        return repository.findPageByDocDataId(docDataId, PageRequest.of(currentPageNumber, 1));
     }
 
     @Override
-    public Page<TextPart> createPage(int newPageNumber, Long textCommonDataId)
-            throws IndexOutOfBoundsException {
-        int jpaCurrentPageNumber = newPageNumber - 1;
-        TextPart current = repository.findPageByDocDataId(textCommonDataId,
-                PageRequest.of(jpaCurrentPageNumber, 1)).getContent().get(0);
+    public Page<TextPart> createPage(int newPageNumber, Long docDataId)
+            throws IndexOutOfBoundsException, UnknownHostException, NoHandlerFoundException {
+
+        String url = dataManager.createPageLink(docDataId, newPageNumber);
+
+        int currentPageNm = newPageNumber - 1;
+        TextPart current = findPageByDocDataIdAndPageNumber(docDataId, currentPageNm).getContent().get(0);
         TextPart next = repository.findNextByCurrentInSequence(current).orElse(null);
         TextCommonData textCommonData = current.getTextCommonData();
         TextPart newOne = TextPart.builder()
@@ -147,6 +160,44 @@ public class TextPartServiceImpl implements TextPartService {
         repository.saveAndFlush(newOne);
         current.setNextItem(newOne.getId());
         newOne.setNextItem(next == null ? null : next.getId());
-        return repository.findPageByDocDataId(textCommonDataId, PageRequest.of(newPageNumber, 1));
+
+        Bookmarks bookmarks = bookmarkRepository.findById(docDataId)
+                .orElseThrow(() -> new NoHandlerFoundException("post", url, new HttpHeaders()));
+        dataManager.updateBookmarksForInsertPage(currentPageNm, bookmarks);
+        bookmarkRepository.saveAndFlush(bookmarks);
+
+        return repository.findPageByDocDataId(docDataId, PageRequest.of(newPageNumber, 1));
+    }
+
+    @Override
+    public void delete(long docDataId, int currentPageNm) throws UnknownHostException, NoHandlerFoundException {
+
+        String url = dataManager.createPageLink(docDataId, currentPageNm);
+        NoHandlerFoundException noHandlerFoundException = new NoHandlerFoundException("delete", url, new HttpHeaders());
+
+        TextPart current = findPageByDocDataIdAndPageNumber(docDataId, currentPageNm)
+                .getContent()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> noHandlerFoundException);
+
+        TextPart previous = repository.findPreviousByCurrentInSequence(current).orElseThrow(() -> noHandlerFoundException);
+
+        TextCommonData textCommonData = current.getTextCommonData();
+        textCommonData.setUpdatedDate(new Date());
+
+        Bookmarks bookmarks = bookmarkRepository.findById(docDataId)
+                .orElseThrow(() -> noHandlerFoundException);
+        dataManager.deleteBookmark(currentPageNm, bookmarks);
+        bookmarkRepository.saveAndFlush(bookmarks);
+
+        Long nextItem = current.getNextItem();
+
+        current.setNextItem(null);
+        repository.saveAndFlush(current);
+
+        previous.setNextItem(nextItem);
+//        repository.saveAndFlush(previous);
+        repository.delete(current);
     }
 }
