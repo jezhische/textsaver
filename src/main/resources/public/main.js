@@ -80,12 +80,12 @@ $(function () {
                 createdDate = obtainedData.createdDate;
                 updatedDate = obtainedData.updatedDate;
                 checkSum = 0;
+                // setInsertPageButtonBehavior();
                 totalPages = 1;
 
                 setNewDocLinkOnclickBehavior(currentPageLink, currentDocName);
-    // TODO: change to exstractBookmarks()
+                // TODO: change to exstractBookmarks()
                 extractBookmarks();
-                // setInsertPageButtonBehavior();
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 let err = $('#error-panel');
@@ -172,6 +172,16 @@ function extractPageContent(previousPageLink, targetPageLink) {
             success: function (obtainedData, status, jqXHR) {
                                             console.log('EXTRACTBOOKMARKS: url = ' + getBookmarksLink(currentPageLink));
                                             obtainedData.forEach(d => console.log('; ' + d.color + '::' + d.pageLink + '::' + d.pageNumber));
+
+        // isSpecialBookmark variable assigning occurs here
+                obtainedData.forEach(bookmarkResource => {
+                    if (bookmarkResource.pageNumber.toString() === nextPageNumber.toString()) {
+                        nextBackgroundColor = bookmarkResource.color;
+                        isSpecialBookmark = nextBackgroundColor === "ffb704";
+                    }
+                });
+
+                toggleSpecialBookmarkCss();
                 resetPageNmBtns(obtainedData);
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -216,9 +226,8 @@ function extractPageContent(previousPageLink, targetPageLink) {
                     }
                 });
 
-                isSpecialBookmarkButton = $('#container').find('#upper-doc-bar')
-                    .find('#upper-page-buttons-row').find('.page-btn-bar').find('#is-special-bookmark');
-                toggleSpecialBookmarkCss(isSpecialBookmarkButton);
+
+                toggleSpecialBookmarkCss();
 
                 // isPageUpdated = false;
 
@@ -319,13 +328,16 @@ function extractPageContent(previousPageLink, targetPageLink) {
 
 // ------------------------------------------------------------------------------------------------------------
 
-    function toggleSpecialBookmarkCss(buttonElement) {
+    function toggleSpecialBookmarkCss() {
+        isSpecialBookmarkButton = $('#container').find('#upper-doc-bar')
+            .find('#upper-page-buttons-row').find('.page-btn-bar').find('#is-special-bookmark');
+
         let backgroundColor = isSpecialBookmark ? "#00f6eb" : "#f6f4f6";
 
-        buttonElement.css("background", backgroundColor);
-        buttonElement.mousedown(function () {$(this).css("background", "#efff00");});
-        buttonElement.mouseup(function () {$(this).css("background", "#ffdf00");});
-        buttonElement.hover(function () {$(this).css("background", "#8AB8CC");},
+        isSpecialBookmarkButton.css("background", backgroundColor);
+        isSpecialBookmarkButton.mousedown(function () {$(this).css("background", "#efff00");});
+        isSpecialBookmarkButton.mouseup(function () {$(this).css("background", "#ffdf00");});
+        isSpecialBookmarkButton.hover(function () {$(this).css("background", "#8AB8CC");},
             function () {$(this).css("background", backgroundColor);});
     }
 
@@ -343,7 +355,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
         let form = $('#container').find('#upper-doc-bar').find('#upper-page-buttons-row')
             .find('.page-btn-bar').find('bookmarks-bar');
 
-        let currentPageButton = form.find('#' + currentPageNumber);
+        // let currentPageButton = form.find('#' + currentPageNumber);
         let insertedPageNm = currentPageNumber + 1;
         let insertedPageLink = getNextPageLink(currentPageLink, currentPageNumber);
 
@@ -438,10 +450,12 @@ function extractPageContent(previousPageLink, targetPageLink) {
 
     function deletePage(pageNumber) {
 
-        let nextPageNm = currentPageNumber - 1;
+        if (isSpecialBookmark &&
+            $('#' + (currentPageNumber + 1)).css('background').toString().substring(0, 16) !== "rgb(0, 246, 235)")
+            $('#is-special-bookmark').click();
 
-        // extractPageContent() происходит в resetPageNmBtns(), который происходит в updateBookmarks().
-        // Так что updateBookmarks() - это все, что мне нужно
+        // todo: extractPageContent() происходит в resetPageNmBtns(), который происходит в updateBookmarks(),
+        //  который происходит в extractPageContent(). Break the vicious circle!
         $.ajax({
             type: 'DELETE',
             url: currentPageLink, // http://localhost:8074/textsaver/doc-data/1812/pages?page=6
@@ -452,9 +466,16 @@ function extractPageContent(previousPageLink, targetPageLink) {
                 err.find('pre').html('');
                 err.css('visibility', 'hidden');
 
-                updateBookmarks(currentPageNumber, nextPageNm);
-                // currentPageLink = getPageLinkByPageNumber(currentPageLink, currentPageNumber, nextPageNm);
-                // currentPageNumber = nextPageNm;
+                console.log('DELETEPAGE(): currentPageLink = ' + currentPageLink);
+
+                if (pageNumber === totalPages - 1) {
+                    currentPageLink = getPreviousPageLink(currentPageLink, currentPageNumber);
+                    currentPageNumber--;
+                }
+
+                totalPages--;
+
+                extractPageContent(currentPageLink, currentPageLink);
 
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -607,9 +628,11 @@ function extractPageContent(previousPageLink, targetPageLink) {
 
         deleteButton.click(function (event) {
             event.preventDefault();
-            if (confirm('Do you want to delete page ' + (currentPageNumber + 1) + '?')) {
+
+            if (currentPageNumber === 0) alert('You cannot delete page 1');
+            else {if (confirm('Do you want to delete page ' + (currentPageNumber + 1) + '?')) {
                 deletePage(currentPageNumber);
-            }
+            }}
         });
     }
 
@@ -638,7 +661,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
         let regex = new RegExp('(' + currentPageNm + '$)');
         let previousPageNumber = currentPageNm - 1;
         console.log('previousPageNumber = ' + previousPageNumber);
-        console.log('regex: ' + currentPageLink.replace(regex, previousPageNumber));
+        console.log('regex from getPreviousPageLink(): ' + currentPageLink.replace(regex, previousPageNumber));
         return currentPageLink.replace(regex, previousPageNumber);
     }
 

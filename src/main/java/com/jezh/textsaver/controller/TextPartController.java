@@ -98,14 +98,13 @@ public class TextPartController {
 
 // ============================================================================================================ DELETE:
     @DeleteMapping(value = "/pages", params = {"page"})
-    public void delete(@PathVariable(value = "commonDataId") long docDataId,
+    public ResponseEntity<Void> delete(@PathVariable(value = "commonDataId") long docDataId,
                        @RequestParam(value = "page") int pageNm) throws UnknownHostException, NoHandlerFoundException {
-        if (pageNm == 0) return;
+        if (pageNm == 0) return null;
+
         textPartService.delete(docDataId, pageNm);
 
-        // TODO: НУЖНО ЕЩЕ СДВИНУТЬ НОМЕРА СТРАНИЦ В ЗАКЛАДКАХ (В МАССИВАХ) НА -1, ЧТОБЫ ОНИ СОХРАНИЛИСЬ НА СДВИНУТЫХ ВЛЕВО
-        //  НОМЕРАХ СТРАНИЦ И НЕ УКАЗЫВАЛИ НА УЖЕ НЕСУЩЕСТВУЮЩУЮ ПОСЛЕДНЮЮ СТРАНИЦУ
-        //  ТО ЖЕ САМОЕ ДЛЯ ИНСЕРТ СТРАНИЦЫ!
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 //
 

@@ -52,7 +52,7 @@ public class SwaggerConfig {
                 "Browser notebook to write, edit and save text data, with autosaving",
                 "0.0.1-SNAPSHOT",
                 "Terms of service",
-                new Contact("Ivan Kuchuhurnyi", "", "jezhische@gmail.com"),
+                new Contact("Ivan Kuchuhurnyi", "https://github.com/jezhische/textsaver", "jezhische@gmail.com"),
                 "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0", Collections.emptyList());
     }
 }

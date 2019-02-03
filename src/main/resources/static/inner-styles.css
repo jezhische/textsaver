@@ -147,7 +147,7 @@ textarea {
     max-width: 100%;
     font-size: 120%;
     /* vh = viewport height */
-    max-height: 65vh;
+    max-height: 55vh;
     overflow: auto;
     visibility: hidden;
     /** allows to set min height of textarea as 1 row, not as 2 rows as its default value */
