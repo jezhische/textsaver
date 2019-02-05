@@ -24,26 +24,30 @@ import java.util.List;
 @RequestMapping("/doc-data")
 public class TextCommonDataController {
 
-    @Autowired
-    private TextCommonDataService textCommonDataService;
+    private final TextCommonDataService textCommonDataService;
+
+    private final DataManager dataManager;
+
+    private final Environment environment;
+
+    private final TextPartService textPartService;
+
+    private final BookmarkService bookmarkService;
+
+    private final TextCommonDataResourceAssembler dataAssembler;
+
+    private final BookmarkResourceAssembler pageModelAssembler;
 
     @Autowired
-    private DataManager dataManager;
-
-    @Autowired
-    private Environment environment;
-
-    @Autowired
-    private TextPartService textPartService;
-
-    @Autowired
-    private BookmarkService bookmarkService;
-
-    @Autowired
-    private TextCommonDataResourceAssembler dataAssembler;
-
-    @Autowired
-    private BookmarkResourceAssembler pageModelAssembler;
+    public TextCommonDataController(TextCommonDataService textCommonDataService, DataManager dataManager, Environment environment, TextPartService textPartService, BookmarkService bookmarkService, TextCommonDataResourceAssembler dataAssembler, BookmarkResourceAssembler pageModelAssembler) {
+        this.textCommonDataService = textCommonDataService;
+        this.dataManager = dataManager;
+        this.environment = environment;
+        this.textPartService = textPartService;
+        this.bookmarkService = bookmarkService;
+        this.dataAssembler = dataAssembler;
+        this.pageModelAssembler = pageModelAssembler;
+    }
 
 //    @ResponseBody
 //    @PostMapping("")

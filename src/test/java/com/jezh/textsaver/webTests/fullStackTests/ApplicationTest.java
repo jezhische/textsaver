@@ -23,6 +23,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -149,9 +150,10 @@ public class ApplicationTest {
     }
 
     @Test
+    @WithMockUser
     public void getBookmarks() throws Exception {
         mockMvc
-                .perform(post("/doc-data/1803/bookmarks")
+                .perform(post("/doc-data/1/bookmarks")
                 .contentType(MediaType.APPLICATION_JSON_UTF8).content(new ObjectMapper().writeValueAsString(
                         BookmarksData.builder().currentPageNumber(5).totalPages(10).build())))
                 .andDo(print())
@@ -162,7 +164,7 @@ public class ApplicationTest {
     @Test
     public void testGetTextCommonDataList() throws Exception {
         mockMvc
-                .perform(MockMvcRequestBuilders.get("/text-common-data"))
+                .perform(MockMvcRequestBuilders.get("/doc-data"))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))

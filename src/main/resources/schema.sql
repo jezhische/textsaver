@@ -8,7 +8,8 @@
 -- GRANT CONNECT, TEMPORARY ON DATABASE textsaver TO public;
 -- GRANT ALL ON DATABASE textsaver TO postgres WITH GRANT OPTION;
 
--- DROP DATABASE IF EXISTS textsaver; -- works only if the current role is postgres (superuser)
+--  SET ROLE postgres;
+--  DROP DATABASE IF EXISTS textsaver; -- works only if the current role is postgres (superuser)
 
 
 -- DROP SEQUENCE public.hibernate_sequence;
@@ -17,67 +18,91 @@ CREATE SEQUENCE IF NOT EXISTS public.hibernate_sequence;
 ALTER TABLE public.hibernate_sequence
   OWNER TO postgres;
 
-CREATE TABLE IF NOT EXISTS public.text_common_data (
-    id BIGINT NOT NULL
-  , name VARCHAR(255)
-  , first_item BIGINT
-  , creating_date TIMESTAMP without time zone DEFAULT now()
-  , updating_date TIMESTAMP without time zone DEFAULT now()
-  , CONSTRAINT text_common_data_pkey PRIMARY KEY (id)
+CREATE TABLE IF NOT EXISTS public.users
+(
+  id       BIGINT NOT NULL,
+  name     VARCHAR(255),
+  password VARCHAR(255),
+  CONSTRAINT user_pkey PRIMARY KEY (id)
 );
+
+-- DROP TABLE IF EXISTS public.users CASCADE;
+
+CREATE TABLE IF NOT EXISTS public.roles
+(
+  id   BIGINT NOT NULL,
+  role VARCHAR(15),
+  CONSTRAINT roles_pkey PRIMARY KEY (id)
+);
+
+-- DROP TABLE IF EXISTS public.roles CASCADE;
+
+-- INSERT INTO roles
+-- VALUES (1, 'ROLE_ADMIN'),
+--        (2, 'ROLE_USER');
+
+
+CREATE TABLE IF NOT EXISTS public.user_role
+(
+  user_id BIGINT NOT NULL,
+  role_id BIGINT NOT NULL,
+  CONSTRAINT user_role_pkey PRIMARY KEY (user_id, role_id),
+  CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES public.users (id),
+  CONSTRAINT fk_role_id FOREIGN KEY (role_id) REFERENCES public.roles (id)
+);
+
+
+CREATE TABLE IF NOT EXISTS public.text_common_data
+(
+  id            BIGINT NOT NULL,
+  name          VARCHAR(255),
+  first_item    BIGINT,
+  creating_date TIMESTAMP without time zone DEFAULT now(),
+  updating_date TIMESTAMP without time zone DEFAULT now(),
+  user_id       BIGINT NOT NULL,
+  CONSTRAINT text_common_data_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_text_common_data_users FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
 
 -- DROP TABLE IF EXISTS public.text_common_data CASCADE;
 
-CREATE TABLE IF NOT EXISTS public.text_parts (
-  id BIGINT NOT NULL
-  , body TEXT
-  , next_item BIGINT UNIQUE
-  , text_common_data_id BIGINT
-  , last_update TIMESTAMP without time zone DEFAULT now()
-  , CONSTRAINT text_parts_pkey PRIMARY KEY (id)
--- FOREIGN KEY (text_common_data_id) - ссылка на колонку в этой таблице
-  , CONSTRAINT fk_textParts_textCommonData FOREIGN KEY (text_common_data_id) REFERENCES text_common_data (id)
---     ON UPDATE CASCADE ON DELETE CASCADE -- default NO ACTION
+CREATE TABLE IF NOT EXISTS public.text_parts
+(
+  id                  BIGINT NOT NULL,
+  body                TEXT,
+  next_item           BIGINT UNIQUE,
+  text_common_data_id BIGINT,
+  last_update         TIMESTAMP without time zone DEFAULT now(),
+  CONSTRAINT text_parts_pkey PRIMARY KEY (id)
+  -- FOREIGN KEY (text_common_data_id) - ссылка на колонку в этой таблице
+  ,
+  CONSTRAINT fk_textParts_textCommonData FOREIGN KEY (text_common_data_id) REFERENCES text_common_data (id)
+  --     ON UPDATE CASCADE ON DELETE CASCADE -- default NO ACTION
 );
+
 
 CREATE INDEX IF NOT EXISTS idx_next_it
   ON public.text_parts
-  USING hash
-  (next_item);
+    USING hash
+    (next_item);
 
 -- DROP TABLE IF EXISTS public.text_parts CASCADE;
-
-
-
--- CREATE TYPE bookmark_def AS (
---   page_number INTEGER,
---   is_edited BOOLEAN
--- );
-
--- DROP TYPE bookmark_def CASCADE ;
-
--- CREATE TABLE IF NOT EXISTS bookmark_def (
---   page_number INTEGER,
---   is_edited BOOLEAN
--- );
-
--- DROP TABLE bookmark_def CASCADE ;
-
 
 CREATE TABLE IF NOT EXISTS public.bookmarks
 (
   text_common_data_id BIGINT NOT NULL,
-  last_open_array text [],
-  special_bookmarks integer[],
---   NB: PK and FK are the same
+  last_open_array     text[],
+  special_bookmarks   integer[],
+  --   NB: PK and FK are the same
   CONSTRAINT bookmarks_pkey PRIMARY KEY (text_common_data_id),
   CONSTRAINT fk_bookmarks_textCommonData FOREIGN KEY (text_common_data_id)
-  REFERENCES public.text_common_data (id)
+    REFERENCES public.text_common_data (id)
 );
 
 -- DROP TABLE IF EXISTS public.bookmarks CASCADE;
-
 -- INSERT INTO bookmarks VALUES (13, '{}');
+
 
 CREATE OR REPLACE FUNCTION get_remaining_texparts_ordered_set(IN this_text_part_id BIGINT) RETURNS SETOF public.text_parts AS
 '
@@ -273,3 +298,7 @@ END
 -- select * from text_parts as tp where tp.body = 'ghmhgjm';
 --
 -- delete from text_parts as tp where tp.text_common_data_id = 1812;
+-- ==================================================================================================================
+--select name, password from users where name='jezh'
+
+--select u.name, r.role from users u inner join user_role ur on(u.id=ur.user_id) inner join roles r on(ur.role_id=r.id) where u.name='jezh'

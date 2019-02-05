@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Spring Security Tutorial</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<form th:action="@{/registration}" method="get">
+    <button class="btn btn-md btn-warning btn-block" type="Submit">Go To Registration Page</button>
+</form>
+
+<div class="container">
+<!-- about method=POST (which is absent in LoginController):
+https://docs.spring.io/spring-security/site/docs/4.2.x/reference/htmlsingle/#multiple-httpsecurity
+5.3 Java Configuration and Form Login
+"You might be wondering where the login form came from when you were prompted to log in, since we made no mention of
+any HTML files or JSPs. Since Spring Security’s default configuration does not explicitly set a URL for the login page,
+Spring Security generates one automatically, based on the features that are enabled and using standard values for the
+URL which processes the submitted login, the default target URL the user will be sent to after logging in and so on."
+
+https://auth0.com/blog/implementing-jwt-authentication-on-spring-boot/
+ "Note: You might be wondering what class is dealing with the requests issued to the /login endpoint. The answer to this
+ question is simple, the JWTAuthenticationFilter class that you created previously extends UsernamePasswordAuthenticationFilter.
+ This filter, which is provided by Spring Security, registers itself as the responsible for this endpoint. As such, whenever
+ your backend API gets a request to /login, your specialization of this filter (i.e., JWTAuthenticationFilter) goes into
+ action and handles the authentication attempt (through the attemptAuthentication method)."-->
+    <img th:src="@{/images/login.jpg}" class="img-responsive center-block" width="300" height="300" alt="Logo"/>
+    <form th:action="@{/login}" method="POST" class="form-signin">
+        <h3 class="form-signin-heading" th:text="Welcome"></h3>
+        <br/>
+
+        <input type="text" id="name" name="name" th:placeholder="Name"
+               class="form-control"/> <br/>
+        <input type="password" th:placeholder="Password"
+               id="password" name="password" class="form-control"/> <br/>
+
+        <div align="center" th:if="${param.error}">
+            <p style="font-size: 20; color: #FF1C19;">Name or Password invalid, please verify</p>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" name="Submit" value="Login" type="Submit"
+                th:text="Login"></button>
+    </form>
+</div>
+</body>
+</html>
