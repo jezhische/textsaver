@@ -36,7 +36,7 @@ import java.util.*;
 //@EntityListeners(AuditingEntityListener.class)
 public class TextCommonData extends AbstractIdentifier {
 
-    // the name of the text
+    // the username of the text
 //  @NotBlank - must contain at least one non-whitespace character; for CharSequence
     @NotBlank
     @Column
@@ -89,7 +89,7 @@ public class TextCommonData extends AbstractIdentifier {
 //// initialize a collection of role: com.jezh.textsaver.entity.TextCommonData.textParts, could not initialize proxy - no Session"
 //    @OneToMany(mappedBy = "textCommonData", cascade = CascadeType.ALL, orphanRemoval = true
 //            /*, fetch = FetchType.LAZY*/) // default LAZY, so I can not define it here
-////    @JoinColumn(name = "text_common_data_id")
+////    @JoinColumn(username = "text_common_data_id")
 //    private Set<TextPart> textParts = new HashSet<>();
 //
 //    public void setTextParts(Set<TextPart> textParts) {

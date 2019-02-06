@@ -41,7 +41,7 @@ public class TextCommonDataResourceAssembler {
     public TextCommonDataResource convertToLinkedRepresentation(TextCommonData docData) throws UnknownHostException, NoHandlerFoundException {
         Date createdDate = docData.getCreatedDate();
         TextCommonDataResource resource = TextCommonDataResource.builder()
-                .name(docData.getName())/*(DataManager.getUniqueName(textCommonData.getName(), createdDate))*/ //todo: perhaps to remove
+                .name(docData.getName())/*(DataManager.getUniqueName(textCommonData.getUsername(), createdDate))*/ //todo: perhaps to remove
                 .createdDate(createdDate)
                 .updatedDate(docData.getUpdatedDate())
                 .build();

@@ -25,7 +25,7 @@ import java.util.Optional;
 public interface TextPartRepository extends JpaRepository<TextPart, Long> {
 
     /**
-     * find textPart by the field 'name' of bounded textCommonData
+     * find textPart by the field 'username' of bounded textCommonData
      */
     List<TextPart> findByTextCommonDataName(String textCommonDataName);
 

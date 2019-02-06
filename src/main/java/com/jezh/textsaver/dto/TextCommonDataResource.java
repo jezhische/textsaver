@@ -25,7 +25,7 @@ public class TextCommonDataResource extends ResourceSupport {
     @Override
     public String toString() {
         return "TextCommonDataResource{" +
-                "name='" + name + '\'' +
+                "username='" + name + '\'' +
                 ", createdDate=" + createdDate +
                 ", updatedDate=" + updatedDate +
                 ", _links=" + getLinks() +

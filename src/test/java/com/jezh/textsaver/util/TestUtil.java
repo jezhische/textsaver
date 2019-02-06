@@ -229,15 +229,15 @@ public class TestUtil {
     }
 
 // ============================================================================================================ TESTS
-String jsonArray = "[{\"name\":\"TextCommonDataRepositoryPostgresTest/ testCreate()/ textCommonDataRepository." +
+String jsonArray = "[{\"username\":\"TextCommonDataRepositoryPostgresTest/ testCreate()/ textCommonDataRepository." +
         "saveAndFlush(textCommonData)\",\"createdDate\":\"2018-09-13T06:43:34.656+0000\",\"updatedDate\":\"" +
-        "2018-09-13T06:43:34.656+0000\",\"id\":27},{\"name\":\"eighth\",\"createdDate\":\"2018-09-13T06:43:22." +
+        "2018-09-13T06:43:34.656+0000\",\"id\":27},{\"username\":\"eighth\",\"createdDate\":\"2018-09-13T06:43:22." +
         "345+0000\",\"updatedDate\":\"2018-09-13T17:10:42.199+0000\",\"id\":26}]\n";
 
     @Test
     public void testConvertJSONStringToObject() throws Exception {
         TextCommonData data = ((TextCommonData) convertJSONStringToObject(
-                "{\"name\":\"eighth\",\"createdDate\":\"2018-09-13T06:43:22.345+0000\",\"updatedDate\":\"2018-09-13T17:10:42.199+0000\",\"id\":26}",
+                "{\"username\":\"eighth\",\"createdDate\":\"2018-09-13T06:43:22.345+0000\",\"updatedDate\":\"2018-09-13T17:10:42.199+0000\",\"id\":26}",
                 TextCommonData.class));
         System.out.println(data);
         System.out.println(data.getId());
@@ -260,15 +260,15 @@ String jsonArray = "[{\"name\":\"TextCommonDataRepositoryPostgresTest/ testCreat
 
     public static void main(String[] args) throws Exception {
         TextCommonData data = ((TextCommonData) convertJSONStringToObject(
-                "{\"name\":\"eighth\",\"createdDate\":\"2018-09-13T06:43:22.345+0000\",\"updatedDate\":\"2018-09-13T17:10:42.199+0000\",\"id\":36}",
+                "{\"username\":\"eighth\",\"createdDate\":\"2018-09-13T06:43:22.345+0000\",\"updatedDate\":\"2018-09-13T17:10:42.199+0000\",\"id\":36}",
                 TextCommonData.class));
         System.out.println(data);
         System.out.println(data.getId());
         System.out.println(data.getCreatedDate());
         System.out.println("-----------------------------------------------------------------------");
 
-        String jsonArray = "[{\"name\":\"somename\",\"createdDate\":\"000\",\"updatedDate\":\"" +
-                "0000\",\"id\":37},{\"name\":\"eighth\",\"createdDate\":\"000\",\"updatedDate\":\"000\",\"id\":36}]";
+        String jsonArray = "[{\"username\":\"somename\",\"createdDate\":\"000\",\"updatedDate\":\"" +
+                "0000\",\"id\":37},{\"username\":\"eighth\",\"createdDate\":\"000\",\"updatedDate\":\"000\",\"id\":36}]";
         TextCommonData tcd = ((TextCommonData) convertArrayElementOfJSONStringArrayToObject(jsonArray,
                 TextCommonData[].class, 1));
         System.out.println(tcd);

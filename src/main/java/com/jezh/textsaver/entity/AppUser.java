@@ -4,20 +4,19 @@ import com.jezh.textsaver.extension.AbstractIdentifier;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Objects;
 
-//@Entity
-//@Table(name = "users")
+@Entity
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @Builder
 /* for test purpose */
 @AllArgsConstructor
-public class User extends AbstractIdentifier {
+public class AppUser extends AbstractIdentifier {
 
     @Column(name = "NAME")
-    private String name;
+    private String username;
 
     @Column(name = "PASSWORD")
     private String password;
@@ -35,8 +34,8 @@ public class User extends AbstractIdentifier {
 
     @Override
     public String toString() {
-        return "User{" +
-                "name='" + name + '\'' +
+        return "AppUser{" +
+                "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", id=" + id +
                 '}';

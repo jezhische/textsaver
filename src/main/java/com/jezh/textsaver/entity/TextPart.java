@@ -33,7 +33,7 @@ public class TextPart extends AbstractIdentifier {
 //// see https://docs.spring.io/spring-boot/docs/current/reference/html/howto-database-initialization.html#howto-initialize-a-database-using-spring-jdbc
 //    // NB: .AUTO works too
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
-////    @SequenceGenerator(name = "general_seq", sequenceName = "generalSequenceGenerator")
+////    @SequenceGenerator(username = "general_seq", sequenceName = "generalSequenceGenerator")
 ////    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "general_seq")
 //    @Column(nullable = false, unique = true)
 //    private Long id;
@@ -121,7 +121,7 @@ public class TextPart extends AbstractIdentifier {
                 "id=" + id +
                 ", body='" + body + '\'' +
                 ", nextItem=" + nextItem +
-//                ", textCommonDataName=" + textCommonData.getName() +
+//                ", textCommonDataName=" + textCommonData.getUsername() +
                 ", lastUpdate=" + lastUpdate +
                 '}';
     }
