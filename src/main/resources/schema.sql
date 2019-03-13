@@ -17,6 +17,14 @@ CREATE SEQUENCE IF NOT EXISTS public.hibernate_sequence;
 ALTER TABLE public.hibernate_sequence
   OWNER TO postgres;
 
+create table if not exists public.users (
+  id bigint not null,
+  name varchar(255),
+  password varchar(255),
+  enabled boolean,
+  constraint users_pkey primary key (id)
+);
+
 CREATE TABLE IF NOT EXISTS public.text_common_data (
     id BIGINT NOT NULL
   , name VARCHAR(255)

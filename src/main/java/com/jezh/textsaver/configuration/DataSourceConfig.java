@@ -12,6 +12,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 // https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html#boot-features-configure-datasource
 // Since AbstractIdentifier class is located in the directory "extension", different from "entity" directory,
 // there is need in this scan:
-@EntityScan("com.jezh.textsaver.extension")
+@EntityScan("com.jezh.textsaver.entity.extension")
 public class DataSourceConfig {
 }

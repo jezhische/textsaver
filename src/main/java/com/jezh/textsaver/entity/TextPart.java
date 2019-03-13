@@ -2,7 +2,7 @@ package com.jezh.textsaver.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.jezh.textsaver.extension.AbstractIdentifier;
+import com.jezh.textsaver.entity.extension.AbstractIdentifier;
 import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;

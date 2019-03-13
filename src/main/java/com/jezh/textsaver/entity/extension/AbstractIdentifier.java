@@ -1,4 +1,4 @@
-package com.jezh.textsaver.extension;
+package com.jezh.textsaver.entity.extension;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,7 +32,7 @@ public abstract class AbstractIdentifier {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (getClass() != o.getClass()) return false;
+        if (!(o instanceof AbstractIdentifier) ) return false;
         return id.equals(((AbstractIdentifier) o).id);
     }
 

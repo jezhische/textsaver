@@ -1,6 +1,6 @@
 package com.jezh.textsaver.entity;
 
-import com.jezh.textsaver.extension.AbstractIdentifier;
+import com.jezh.textsaver.entity.extension.AbstractIdentifier;
 import lombok.*;
 
 import javax.persistence.*;
@@ -15,11 +15,14 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class AppUser extends AbstractIdentifier {
 
-    @Column(name = "NAME")
+    @Column(name = "name")
     private String username;
 
-    @Column(name = "PASSWORD")
+    @Column(name = "password")
     private String password;
+
+    @Column(name = "enabled")
+    private boolean enabled;
 
 
     @Override
@@ -35,9 +38,10 @@ public class AppUser extends AbstractIdentifier {
     @Override
     public String toString() {
         return "AppUser{" +
+                ", id=" + id +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", id=" + id +
+                ", enabled = " + enabled +
                 '}';
     }
 }

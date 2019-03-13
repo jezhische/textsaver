@@ -7,10 +7,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class MainMenuController {
 
-//    /** when the application started, redirect to home page */
-//    @GetMapping(value = "")
+//    @GetMapping(value = "/login")
 //    public String getHomePage() {
-//        return "forward:/documents";
+//        return "forward:/";
 //    }
 
     @ResponseBody

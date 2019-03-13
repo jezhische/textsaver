@@ -62,3 +62,4 @@ public class BookmarksRepositoryPostgresTest extends BasePostgresConnectingTest 
         bookmarkRepository.deleteAll();
     }
 }
+
