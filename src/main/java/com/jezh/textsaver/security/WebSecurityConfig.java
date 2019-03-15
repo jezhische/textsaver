@@ -33,11 +33,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers("/login/**").permitAll() // for login.jpg
-//                .antMatchers("/login").permitAll()
-//                .antMatchers("/swagger-ui.html").permitAll()
-//                .antMatchers("/img/**").permitAll()
+        http
+                .cors()
+                .and()
+                .csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/login", "/users/sign-up", "/swagger-ui.html").permitAll() // for login.jpg
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
                 .anyRequest().authenticated()
                 .and()
@@ -48,9 +49,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("/login")
+//                requires POST method
                 .loginProcessingUrl("/login")
+                .usernameParameter("username")// If not specified then default is username.
+                .passwordParameter("password")// If not specified then default is password.
                 .failureUrl("/login?error=true")
+                .defaultSuccessUrl("/")
                 .permitAll()
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
+                .and()
+                .exceptionHandling()
+                .accessDeniedPage("/access-denied")
                 ;
     }
 
@@ -62,7 +74,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
-            .antMatchers(/*"/resources/**",*/ "/public/**", "/css/**", "/img/**", "/js/**", "/webjars/**");
+            .antMatchers( "/css/**", "/img/**", "/js/**", "/webjars/**");
     }
 
     @Bean

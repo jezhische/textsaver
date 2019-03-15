@@ -17,6 +17,11 @@ import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
 
+
+/**
+ * <a href= "http://localhost:8074/textsaver/v2/api-docs">swagger json</a>
+ * <div><a href= "http://localhost:8074/textsaver/swagger-ui.html">swagger userinterface</a></div>
+ */
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {

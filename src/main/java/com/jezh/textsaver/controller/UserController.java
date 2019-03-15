@@ -2,17 +2,19 @@ package com.jezh.textsaver.controller;
 
 import com.jezh.textsaver.entity.AppUser;
 import com.jezh.textsaver.service.AppUserService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * view controllers are defined in {@link com.jezh.textsaver.configuration.MvcConfig}
  */
-@RestController
-@RequestMapping("/login")
+@Controller
+//@RequestMapping("/login")
 public class UserController {
 
     private AppUserService appUserService;
@@ -23,11 +25,41 @@ public class UserController {
         this.encoder = encoder;
     }
 
-    @PostMapping("/sign-up")
+    @GetMapping("/users/sign-up")
+    public ModelAndView gotoRegistrationPage() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("user", new AppUser());
+        modelAndView.setViewName("registration");
+        return modelAndView;
+    }
+
+    @PostMapping("/users/sign-up")
+    @ResponseBody
     public void registration(@RequestBody AppUser user) {
+        AppUser byUsername = appUserService.findByUsername(user.getUsername());
         user.setPassword(encoder.encode(user.getPassword()));
         appUserService.save(user);
     }
+
+
+    /**
+     * serves default url
+     */
+    @GetMapping("/")
+    public ModelAndView getIndex() {
+        ModelAndView modelAndView = new ModelAndView();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AppUser user = appUserService.findByUsername(authentication.getName());
+        modelAndView.addObject("user", user);
+        modelAndView.setViewName("index");
+        return modelAndView;
+    }
+
+//    @PostMapping("/login")
+//    public @ResponseBody ResponseEntity<AppUser> getJsonInputStream(@RequestBody AppUser user) {
+//        return ResponseEntity.ok(user);
+//    }
+
 
 
 
