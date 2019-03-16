@@ -33,7 +33,7 @@ public class TextPartResource extends ResourceSupport {
     public String toString() {
         return "TextPartResource{" +
                 "body='" + body + '\'' +
-                ", name='" + name + '\'' +
+                ", username='" + name + '\'' +
                 ", lastUpdate=" + lastUpdate +
                 ", currentPageNumber=" + pageNumber +
                 ", totalPages=" + totalPages +

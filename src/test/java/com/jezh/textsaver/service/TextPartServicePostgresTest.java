@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * need to create test only on the 'real' db, cause on h2 db I get error: "Error creating bean with name
+ * need to create test only on the 'real' db, cause on h2 db I get error: "Error creating bean with username
  * 'inMemoryDatabaseShutdownExecutor'... Syntax error in SQL statement "CREATE INDEX IF NOT EXISTS IDX_NEXT_IT ON
  * PUBLIC.TEXT_PARTS USING[*] HASH (NEXT_ITEM)"; expected "COMMENT, ("
  * */

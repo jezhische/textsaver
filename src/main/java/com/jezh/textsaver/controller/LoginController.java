@@ -7,7 +7,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -61,7 +60,7 @@ public class LoginController {
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
     public ModelAndView createNewUser(@Valid AppUser user, BindingResult bindingResult) {
         ModelAndView modelAndView = new ModelAndView();
-        AppUser userExists = userService.findByName(user.getName());
+        AppUser userExists = userService.findByName(user.getUsername());
         if (userExists != null) {
             bindingResult
                     .rejectValue("email", "error.user",
@@ -85,7 +84,7 @@ public class LoginController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         AppUser user = userService.findByName(auth.getName());
         modelAndView.addObject("newuser", user);
-//        modelAndView.addObject("userName", "Welcome " + user.getName() + " " + user.getLastName() + " (" + user.getEmail() + ")");
+//        modelAndView.addObject("userName", "Welcome " + user.getUsername() + " " + user.getLastName() + " (" + user.getEmail() + ")");
 //        modelAndView.addObject("adminMessage","Content Available Only for Users with Admin Role");
         modelAndView.setViewName("index");
         return modelAndView;

@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS public.users
   id       BIGINT NOT NULL,
   name     VARCHAR(255),
   password VARCHAR(255),
+  enabled boolean,
   CONSTRAINT user_pkey PRIMARY KEY (id)
 );
 
@@ -299,6 +300,6 @@ END
 --
 -- delete from text_parts as tp where tp.text_common_data_id = 1812;
 -- ==================================================================================================================
---select name, password from users where name='jezh'
+--select username, password from users where username='jezh'
 
---select u.name, r.role from users u inner join user_role ur on(u.id=ur.user_id) inner join roles r on(ur.role_id=r.id) where u.name='jezh'
+--select u.username, r.role from users u inner join user_role ur on(u.id=ur.user_id) inner join roles r on(ur.role_id=r.id) where u.username='jezh'

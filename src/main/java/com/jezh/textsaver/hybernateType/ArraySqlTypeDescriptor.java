@@ -63,7 +63,7 @@ public class ArraySqlTypeDescriptor implements SqlTypeDescriptor {
                     WrapperOptions options
             ) throws SQLException {
                 throw new UnsupportedOperationException(
-                        "Binding by name is not supported!"
+                        "Binding by username is not supported!"
                 );
             }
         };

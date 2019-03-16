@@ -33,7 +33,7 @@ import java.util.*;
 //@EntityListeners(AuditingEntityListener.class)
 public class TextCommonData extends AbstractIdentifier {
 
-    // the name of the text
+    // the username of the text
 //  @NotBlank - must contain at least one non-whitespace character; for CharSequence
     @NotBlank
     @Column
