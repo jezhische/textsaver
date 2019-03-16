@@ -33,6 +33,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Autowired
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
+        this.setFilterProcessesUrl("/users/submit");
     }
 
     /**
@@ -50,6 +51,13 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             AppUser creds = new ObjectMapper()
                     .readValue(req.getInputStream(), AppUser.class);
 
+
+
+
+
+            System.out.println("************************************************** JWTAuthenticationFilter creds:  " + creds);
+
+//            creds.setEnabled(true);
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             creds.getUsername(),
@@ -60,6 +68,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             throw new RuntimeException(e);
         }
     }
+
+//    @Override
+//    public void setFilterProcessesUrl(String filterProcessesUrl) {
+//        this.setFilterProcessesUrl("/users/submit");
+////        super.setFilterProcessesUrl(filterProcessesUrl);
+//    }
 
     /**
      * The method called when a user successfully logs in. Here this method is used to generate a JWT for this user,
@@ -76,11 +90,15 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
+        System.out.println("*********************************** JWTAuthenticationFilter.successfulAuthentication()");
 
         String token = JWT.create()
                 .withSubject(((User) auth.getPrincipal()).getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(HMAC512(SECRET.getBytes()));
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+//        res.reset();
+//        res.setStatus(200);
+        res.sendRedirect("/textsaver/");
     }
 }

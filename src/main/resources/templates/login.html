@@ -5,13 +5,9 @@
     <meta charset="UTF-8">
     <title>login</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <!--<link rel="stylesheet" href="bootstrap3.3.7/css/bootstrap.min.css">-->
-    <!--<link rel="stylesheet" href="webjars/bootstrap/3.3.7-1/css/bootstrap.min.css">-->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <!--<script src="js/jquery-3.3.1.js"></script>-->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <!--<script src="bootstrap3.3.7/js/bootstrap.min.js"></script>-->
+    <link rel="stylesheet" href="bootstrap3.3.7/css/bootstrap.min.css">
+    <script src="js/jquery-3.3.1.js"></script>
+    <script src="bootstrap3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
 hello Jezh
@@ -20,7 +16,8 @@ hello Jezh
 </form>
 <div class="container">
     <img th:src="@{/img/login.jpg}" class="img-responsive center-block" width="300" height="300" alt="Logo" />
-    <form th:action="@{/login}" method="POST" class="form-signin">
+    <!--<form th:action="@{/login}" method="POST" class="form-signin">-->
+    <form class="form-signin">
         <h3 class="form-signin-heading" th:text="Welcome"></h3>
         <br/>
 
@@ -29,11 +26,13 @@ hello Jezh
         <input type="password"  th:placeholder="Password"
                id="password" name="password" class="form-control" /> <br />
 
-        <div align="center" th:if="${param.error}">
-            <p style="font-size: 20; color: #FF1C19;">Email or Password invalid, please verify</p>
-        </div>
-        <button class="btn btn-lg btn-primary btn-block" name="Submit" value="Login" type="Submit" th:text="Login"></button>
+        <!--<div align="center" th:if="${param.error}">-->
+        <div id="error-message" align="center" style="font-size: 20; color: #FF1C19;"></div>
+        <br>
+        <button class="btn btn-lg btn-primary btn-block" id="submit" name="Submit" value="Login" type="Submit" th:text="Login"></button>
     </form>
 </div>
+
+<script src="js/login.js"></script>
 </body>
 </html>

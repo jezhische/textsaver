@@ -1,5 +1,7 @@
 package com.jezh.textsaver.security;
 
+import com.auth0.spring.security.api.JwtWebSecurityConfigurer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -21,10 +23,16 @@ import static com.jezh.textsaver.security.SecurityConstants.SIGN_UP_URL;
  * <a href = https://auth0.com/blog/implementing-jwt-authentication-on-spring-boot>auth0 tutorial</a>
  */
 @EnableWebSecurity
-//@EnableGlobalMethodSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsServiceImpl userDetailsService;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Value(value = "${auth0.audience}")
+    private String audience;
+    @Value(value = "${auth0.issuer}")
+    private String issuer;
+
 
     public WebSecurityConfig(UserDetailsServiceImpl userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userDetailsService = userDetailsService;
@@ -38,8 +46,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/login", "/users/sign-up", "/swagger-ui.html").permitAll() // for login.jpg
+                .antMatchers(  "/login", "/users/sign-up", "/users/submit", "/swagger-ui.html").permitAll() // for login.jpg
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
+                .antMatchers("/**").authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
@@ -50,7 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")
 //                requires POST method
-                .loginProcessingUrl("/login")
+//                .loginProcessingUrl("/users/submit")
                 .usernameParameter("username")// If not specified then default is username.
                 .passwordParameter("password")// If not specified then default is password.
                 .failureUrl("/login?error=true")
@@ -64,6 +73,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling()
                 .accessDeniedPage("/access-denied")
                 ;
+
+//        JwtWebSecurityConfigurer
+//                .forRS256()
     }
 
     @Override
@@ -74,7 +86,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
-            .antMatchers( "/css/**", "/img/**", "/js/**", "/webjars/**");
+            .antMatchers( "/bootstrap3.3.7/**", "/css/**", "/img/**", "/js/**", "/webjars/**");
     }
 
     @Bean

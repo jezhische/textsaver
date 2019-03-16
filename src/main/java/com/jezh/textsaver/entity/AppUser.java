@@ -38,8 +38,8 @@ public class AppUser extends AbstractIdentifier {
     @Override
     public String toString() {
         return "AppUser{" +
-                ", id=" + id +
-                "username='" + username + '\'' +
+                "id=" + id +
+                ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", enabled = " + enabled +
                 '}';

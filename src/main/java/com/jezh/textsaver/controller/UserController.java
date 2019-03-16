@@ -2,6 +2,8 @@ package com.jezh.textsaver.controller;
 
 import com.jezh.textsaver.entity.AppUser;
 import com.jezh.textsaver.service.AppUserService;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,6 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.net.URI;
 
 /**
  * view controllers are defined in {@link com.jezh.textsaver.configuration.MvcConfig}
@@ -23,6 +27,34 @@ public class UserController {
     public UserController(AppUserService appUserService, BCryptPasswordEncoder encoder) {
         this.appUserService = appUserService;
         this.encoder = encoder;
+    }
+
+//    @GetMapping("/")
+//    public ModelAndView successAuth() {
+//        // сюда можно добавить юзера, полученного из секьюрити, и использовать на странице его имя
+//        ModelAndView modelAndView = new ModelAndView();
+//        modelAndView.setViewName("index");
+//        return modelAndView;
+//    }
+
+    /**
+     * serves default url
+     */
+    @GetMapping("/")
+    public ModelAndView getIndex() {
+        ModelAndView modelAndView = new ModelAndView();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AppUser user = appUserService.findByUsername(authentication.getName());
+        modelAndView.addObject("user", user);
+        modelAndView.setViewName("index");
+        return modelAndView;
+    }
+
+    @GetMapping("/login")
+    public ModelAndView getLoginPage() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("login");
+        return modelAndView;
     }
 
     @GetMapping("/users/sign-up")
@@ -42,23 +74,22 @@ public class UserController {
     }
 
 
-    /**
-     * serves default url
-     */
-    @GetMapping("/")
-    public ModelAndView getIndex() {
-        ModelAndView modelAndView = new ModelAndView();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        AppUser user = appUserService.findByUsername(authentication.getName());
-        modelAndView.addObject("user", user);
-        modelAndView.setViewName("index");
-        return modelAndView;
-    }
 
-//    @PostMapping("/login")
-//    public @ResponseBody ResponseEntity<AppUser> getJsonInputStream(@RequestBody AppUser user) {
-//        return ResponseEntity.ok(user);
-//    }
+    @PostMapping("/users/submit")
+    public @ResponseBody
+    ResponseEntity<AppUser> getJsonInputStream(@RequestBody AppUser user) {
+        System.out.println("******************************************************** user.username = " + user.getUsername());
+        System.out.println("appUserService.findByUsername(user.getUsername()) = " + appUserService.findByUsername(user.getUsername()));
+        AppUser byUsername = appUserService.findByUsername(user.getUsername());
+        if (byUsername == null) return null /*ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()*/;
+        else {
+            System.out.println("*********************************************************** UserController /users/submit: byUsername = " + byUsername);
+            return ResponseEntity.ok(byUsername);
+//            return ResponseEntity.created(URI.create("")).body(byUsername);
+//            return ResponseEntity.status(HttpStatus.CREATED).body(byUsername);
+        }
+
+    }
 
 
 
