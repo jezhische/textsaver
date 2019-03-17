@@ -4,7 +4,7 @@ import com.jezh.textsaver.entity.AppUser;
 
 public interface AppUserService {
 
-    AppUser findByName(String name);
+    AppUser findByUsername(String username);
 
     AppUser save(AppUser user);
 }

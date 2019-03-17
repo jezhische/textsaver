@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS public.roles
 -- DROP TABLE IF EXISTS public.roles CASCADE;
 
 -- INSERT INTO roles
--- VALUES (1, 'ROLE_ADMIN'),
---        (2, 'ROLE_USER');
+-- VALUES (1, 'ADMIN'),
+--        (2, 'USER');
 
 
 CREATE TABLE IF NOT EXISTS public.user_role

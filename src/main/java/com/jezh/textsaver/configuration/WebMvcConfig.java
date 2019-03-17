@@ -22,14 +22,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
         @Override
     public void addViewControllers(ViewControllerRegistry registry) {
 //        registry.addViewController("/home").setViewName("home");
-        registry.addViewController("/").setViewName("index.html");
+//        registry.addViewController("/").setViewName("index.html");
         registry.addViewController("/login").setViewName("login.html");
         registry.addViewController("/access-denied").setViewName("access-denied.html");
     }
-    @Override
-    public void configureDefaultServletHandling(
-            DefaultServletHandlerConfigurer configurer) {
-        configurer.enable();
-    }
+//    @Override
+//    public void configureDefaultServletHandling(
+//            DefaultServletHandlerConfigurer configurer) {
+//        configurer.enable();
+//    }
 
 }

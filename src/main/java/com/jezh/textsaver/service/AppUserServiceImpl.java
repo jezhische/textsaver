@@ -7,13 +7,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityExistsException;
 import java.util.Arrays;
 import java.util.HashSet;
 
 
 @Service
 @Transactional
-public class AppUserServiceImpl implements AppUserService {
+public class
+AppUserServiceImpl implements AppUserService {
 
     private AppUserRepository appUserRepository;
     private RoleService roleService;
@@ -26,14 +28,17 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUser findByName(String name) {
-        return appUserRepository.findByName(name);
+    public AppUser findByUsername(String username) {
+        return appUserRepository.findByUsername(username);
     }
 
     @Override
     public AppUser save(AppUser user) {
-        user.setPassword(encoder.encode(user.getPassword()));
-        user.setRoles(new HashSet<>(Arrays.asList(roleService.findByRole(ExistingRoles.ROLE_USER))));
+        if (appUserRepository.findByUsername(user.getUsername()) != null) {
+            throw new EntityExistsException("User with such name existed");
+        } else user.setPassword(encoder.encode(user.getPassword()));
+        user.setRoles(new HashSet<>(Arrays.asList(roleService.findByRole(ExistingRoles.USER))));
+        user.setEnabled(true);
         return appUserRepository.saveAndFlush(user);
     }
 }

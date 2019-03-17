@@ -14,6 +14,6 @@ public class RoleServiceImplTest extends BasePostgresConnectingTest {
 
     @Test
     public void findByRole() {
-        assertTrue(service.findByRole(ExistingRoles.ROLE_USER).getRole().equals("ROLE_USER"));
+        assertTrue(service.findByRole(ExistingRoles.USER).getRole().equals("USER"));
     }
 }

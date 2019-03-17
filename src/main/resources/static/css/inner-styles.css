@@ -1,0 +1,161 @@
+/* https://www.w3schools.com/csSref/css3_pr_box-sizing.asp */
+* {
+    box-sizing: border-box;
+}
+.col-1 {
+    width: 18%;
+    margin-left: 2%;
+    /* vh = viewport height, 120vh = 120% of viewport height */
+    height: 90vh;
+    overflow: auto;
+    background-color: rgba(139, 185, 205, 0.45);
+}
+.col-2 {
+    width: 79%;
+    /*min-height: 60vh;*/
+    height: 90vh;
+    overflow: auto;
+    background-color: rgba(131, 180, 132, 0.31);
+}
+[class*="col-"] {
+    float: left;
+    padding: 15px;
+    /*border: 1px solid red;*/
+}
+footer {width: 100%}
+/*.row::after {*/
+    /*content: "";*/
+    /*clear: both;*/
+    /*display: table;*/
+/*}*/
+ul#common-menu li{
+    display: inline-block;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+#common-menu {
+    text-align: center;
+    background: #00e074;
+    width: 99.8%;
+}
+
+#common-menu a {
+    display: block;
+    padding: 5px 45px;
+    color: #fff;
+    font-size:150%;
+    text-decoration: none;
+}
+
+#common-menu a:hover {
+    background: #8AB8CC;
+}
+
+button.create-btn {
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    width: 150px;
+    padding: .8em 1em calc(.8em + 3px);
+    border-radius: 8px;
+    background: rgb(184, 199, 82);
+    /*box-shadow: 0 -1px rgb(215, 114, 11) inset;*/
+    transition: 0.1s;
+}
+button.create-btn:hover { background: #8AB8CC; }
+button.create-btn:active {
+    background: rgb(255, 231, 2);
+    /*box-shadow: 0 3px rgb(233, 211, 2) inset;*/
+}
+input.create-input {
+    width: 500px;
+    font-weight: 700;
+    color: blue;
+    text-decoration: none;
+padding: .8em 1em calc(.8em + 3px);
+border-radius: 8px;
+background: rgb(253, 255, 235);
+}
+
+.doc-name-bar {
+    /*display: inline-block;*/
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background: #00c764;
+    color: #f5df40;
+    font-size:100%;
+    text-decoration: none;
+}
+
+[class*="page-"] button {
+    font-weight: 700;
+    font-size: 80%;
+    width: border-box;
+    color: #6b84d6;
+    text-decoration: none;
+    padding: .8em 1em calc(.8em + 3px);
+    border-radius: 8px;
+    background: rgb(246, 244, 246);
+    transition: 0.1s;
+}
+[class*="page-"] button:hover { background: #8AB8CC; }
+[class*="page-"] button:active { background: rgb(255, 231, 2); }
+
+/*.page-number-button {*/
+    /*width: 6%;*/
+    /*!*background: #f0f0f6;*!*/
+/*}*/
+/*[class*="active-"] button {*/
+    /*font-weight: 700;*/
+    /*font-size: 80%;*/
+    /*width: border-box;*/
+    /*color: #6b84d6;*/
+    /*text-decoration: none;*/
+    /*padding: .8em 1em calc(.8em + 3px);*/
+    /*border-radius: 8px;*/
+    /*background: #ffdf00;*/
+    /*transition: 0.1s;*/
+/*}*/
+/*[class*="active-"] button:hover { background: #8AB8CC; }*/
+/*[class*="active-"] button:active { background: rgb(255, 231, 2); }*/
+
+/*.active-page-number-button {*/
+    /*width: 6%;*/
+/*}*/
+
+/*iframe {*/
+    /*!*border: 10px;*!*/
+    /*outline: none;*/
+    /*!*padding: 0;*!*/
+    /*!*margin: 0;*!*/
+    /*width: 100%;*/
+    /*!*todo: to remove when to fix function setIframeHeightByContent() in utility.js*!*/
+    /*height: 100vh;*/
+    /*!* vh = viewport height *!*/
+    /*max-height: 100vh;*/
+    /*overflow: auto;*/
+    /*visibility: hidden;*/
+/*}*/
+
+textarea {
+    border: 1px;
+    /*outline: none;*/
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+    font-size: 120%;
+    /* vh = viewport height */
+    max-height: 55vh;
+    overflow: auto;
+    visibility: hidden;
+    /** allows to set min height of textarea as 1 row, not as 2 rows as its default value */
+/*!important;height: 0;*/
+    /** remove resize handle (a little triangle in the bottom right of textarea) */
+    /*resize: none;*/
+}
+
+.special-bookmarks {
+    background: rgb(0, 246, 235);
+}
