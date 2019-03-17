@@ -3,6 +3,7 @@ package com.jezh.textsaver.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class MainMenuController {
@@ -11,6 +12,14 @@ public class MainMenuController {
 //    @GetMapping(value = "")
 //    public String getHomePage() {
 //        return "forward:/documents";
+//    }
+
+//    @GetMapping(value = "/")
+//    public ModelAndView getHome() {
+//        ModelAndView modelAndView = new ModelAndView();
+//        modelAndView.setViewName("index");
+////        return new ModelAndView("index");
+//        return modelAndView;
 //    }
 
     @ResponseBody
