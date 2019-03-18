@@ -28,19 +28,22 @@ footer {width: 100%}
     /*clear: both;*/
     /*display: table;*/
 /*}*/
+
+#common-menu {
+    /*text-align: center;*/
+    background: #00e074;
+    width: 99.8%;
+}
+
 ul#common-menu li{
+/*#common-menu{*/
     display: inline-block;
     text-align: center;
     margin: 0;
     padding: 0;
 }
-#common-menu {
-    text-align: center;
-    background: #00e074;
-    width: 99.8%;
-}
 
-#common-menu a {
+#common-menu a.refer {
     display: block;
     padding: 5px 45px;
     color: #fff;
@@ -48,8 +51,18 @@ ul#common-menu li{
     text-decoration: none;
 }
 
-#common-menu a:hover {
+#common-menu a.refer:hover {
     background: #8AB8CC;
+}
+
+#common-menu a.non-refer {
+    display: block;
+    text-align: left;
+    padding: 5px 200px;
+    color: #ffed9f;
+    font-size:150%;
+    font-weight: bold;
+    text-decoration: none;
 }
 
 button.create-btn {

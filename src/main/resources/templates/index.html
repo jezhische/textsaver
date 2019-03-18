@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>home</title>
@@ -17,14 +17,18 @@
 <!-- https://www.w3schools.com/html/html_layout.asp -->
 <header>
     <form action="logout" method="get">
-        <button class="btn btn-md btn-warning btn-block" type="Submit" style="font-size: 150%">logout</button>
+        <button class="btn btn-md btn-warning btn-block" type="Submit" style="font-size: 130%; font-weight: bold">logout</button>
     </form>
     <!-- http://webcodius.ru/recepty-dlya-sajta/kak-razmestit-elementy-spiska-gorizontalno-ili-gorizontalnoe-menyu-s-pomoshhyu-css.html -->
-    <ul id="common-menu">
-        <li><a href="documents">home</a></li>
-        <li><a href="about">about</a></li>
-        <li><a href="swagger" target="_blank">swagger</a></li>
-    </ul>
+    <div >
+        <ul id="common-menu">
+            <!--<li id="li-menu" th:utext="${welcomemessage}">Hi, guest!</li>-->
+            <li><a class="non-refer" th:utext="${welcomemessage}"> Hi, guest!</a></li>
+            <li><a class="refer" href="documents">home</a></li>
+            <li><a class="refer" href="about">about</a></li>
+            <li><a class="refer" href="swagger" target="_blank">swagger</a></li>
+        </ul>
+    </div>
 </header>
 
 <!--<div class="row">-->

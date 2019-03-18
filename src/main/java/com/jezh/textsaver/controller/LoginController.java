@@ -4,7 +4,6 @@ import com.jezh.textsaver.entity.AppUser;
 import com.jezh.textsaver.service.AppUserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,6 +67,7 @@ public class LoginController {
         AppUser user = appUserService.findByUsername(auth.getName());
         System.out.println("****************************************************************** user from db: " + user);
         modelAndView.addObject("user", user);
+        modelAndView.addObject("welcomemessage", "Hi, " + user.getUsername() + "!");
         modelAndView.setViewName("index");
 //        // for "/sign-in" mapping:
 //        modelAndView.setViewName("redirect:/");
