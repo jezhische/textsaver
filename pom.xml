@@ -76,11 +76,11 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
-		<dependency>
-			<groupId>org.hibernate.validator</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<version>6.1.0.Alpha3</version>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>org.hibernate.validator</groupId>-->
+			<!--<artifactId>hibernate-validator</artifactId>-->
+			<!--<version>6.1.0.Alpha3</version>-->
+		<!--</dependency>-->
 
 
 		<dependency>

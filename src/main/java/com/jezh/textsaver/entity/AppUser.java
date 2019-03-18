@@ -3,15 +3,18 @@ package com.jezh.textsaver.entity;
 import com.jezh.textsaver.extension.AbstractIdentifier;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotEmpty;
+//import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
-@Getter
-@Setter
+@Table(name = "users",
+        uniqueConstraints = @UniqueConstraint(columnNames = "username"))
+//@Getter
+//@Setter
+@Data
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor

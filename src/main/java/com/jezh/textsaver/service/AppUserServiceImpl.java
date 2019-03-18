@@ -34,9 +34,9 @@ AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUser save(AppUser user) {
-        if (appUserRepository.findByUsername(user.getUsername()) != null) {
+        /*if (appUserRepository.findByUsername(user.getUsername()) != null) {
             throw new EntityExistsException("User with such name existed");
-        } else user.setPassword(encoder.encode(user.getPassword()));
+        } else*/ user.setPassword(encoder.encode(user.getPassword()));
         user.setRoles(new HashSet<>(Arrays.asList(roleService.findByRole(ExistingRoles.USER)/*, roleService.findByRole(ExistingRoles.ADMIN)*/)));
         user.setEnabled(true);
         return appUserRepository.saveAndFlush(user);
