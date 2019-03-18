@@ -17,6 +17,48 @@ CREATE SEQUENCE IF NOT EXISTS public.hibernate_sequence;
 ALTER TABLE public.hibernate_sequence
   OWNER TO postgres;
 
+--  ==============================================================================================
+
+  CREATE TABLE IF NOT EXISTS public.users
+(
+  id       BIGINT NOT NULL,
+  username     VARCHAR(255),
+  password VARCHAR(255),
+  enabled boolean,
+  CONSTRAINT user_pkey PRIMARY KEY (id)
+);
+
+-- DROP TABLE IF EXISTS public.users CASCADE;
+
+CREATE TABLE IF NOT EXISTS public.roles
+(
+  id   BIGINT NOT NULL,
+  role VARCHAR(15),
+  CONSTRAINT roles_pkey PRIMARY KEY (id)
+);
+
+-- DROP TABLE IF EXISTS public.roles CASCADE;
+
+-- INSERT INTO roles
+-- VALUES (1, 'ADMIN'),
+--        (2, 'USER');
+
+CREATE TABLE IF NOT EXISTS public.user_role
+(
+  user_id BIGINT NOT NULL,
+  role_id BIGINT NOT NULL,
+  CONSTRAINT user_role_pkey PRIMARY KEY (user_id, role_id),
+  CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES public.users (id),
+  CONSTRAINT fk_role_id FOREIGN KEY (role_id) REFERENCES public.roles (id)
+);
+
+--drop table if exists public.user_role cascade;
+
+select u.username, u.password, u.enabled from users u where u.username= 'jezh';
+select u.username, r.role from users u inner join user_role ur on u.id = ur.user_id inner join roles r on r.id = ur.role_id where u.username = 'jezh';
+
+-- ===========================================================================
+
 CREATE TABLE IF NOT EXISTS public.text_common_data (
     id BIGINT NOT NULL
   , name VARCHAR(255)

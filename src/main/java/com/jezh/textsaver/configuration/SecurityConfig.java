@@ -47,17 +47,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 authorizeRequests()
                 .antMatchers("/login", "/sign-up", "/sign-in", "/access-denied").permitAll()
 //                .antMatchers("/product-images-uploads/**").hasAuthority("ADMIN")
-                .antMatchers("/**").hasAnyAuthority("ADMIN", "CUSTOMER")
+//                .antMatchers("/home").hasAuthority("USER")
+                .antMatchers("/**").hasAnyAuthority("ADMIN", "USER")
                 .anyRequest()
                 .authenticated()
                 .and()
                 .csrf().disable()
                 .formLogin()
                 .loginPage("/login")
-                .loginProcessingUrl("/sign-in")
+//                .loginProcessingUrl("/sign-in")
                 .failureUrl("/login?error=true")
                 // controller method GET mapped "/", and THE ADDRESS WILL BE http://localhost:8082/textsaver
-                .defaultSuccessUrl("/")
+                .defaultSuccessUrl("/")// "/sign-in"
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .and()
@@ -77,6 +78,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web
 //  let Spring knows that some static resources can be served skipping the antMatchers defined
                 .ignoring()
-                .antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**");
+                .antMatchers( "/bootstrap3.3.7/**", "/css/**", "/js/**", "/img/**", "/css/login.css");
     }
 }
