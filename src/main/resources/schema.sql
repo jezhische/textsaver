@@ -63,9 +63,11 @@ CREATE TABLE IF NOT EXISTS public.text_common_data (
     id BIGINT NOT NULL
   , name VARCHAR(255)
   , first_item BIGINT
+  , user_id BIGINT
   , creating_date TIMESTAMP without time zone DEFAULT now()
   , updating_date TIMESTAMP without time zone DEFAULT now()
   , CONSTRAINT text_common_data_pkey PRIMARY KEY (id)
+  , CONSTRAINT fk_text_common_data_users FOREIGN KEY (user_id) REFERENCES public.users (id)
 );
 
 -- DROP TABLE IF EXISTS public.text_common_data CASCADE;

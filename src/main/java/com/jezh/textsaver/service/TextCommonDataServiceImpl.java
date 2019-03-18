@@ -1,13 +1,17 @@
 package com.jezh.textsaver.service;
 
 import com.jezh.textsaver.businessLayer.DataManager;
+import com.jezh.textsaver.entity.AppUser;
 import com.jezh.textsaver.entity.Bookmarks;
 import com.jezh.textsaver.entity.TextCommonData;
 import com.jezh.textsaver.entity.TextPart;
+import com.jezh.textsaver.repository.AppUserRepository;
 import com.jezh.textsaver.repository.BookmarkRepository;
 import com.jezh.textsaver.repository.TextCommonDataRepository;
 import com.jezh.textsaver.repository.TextPartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,35 +23,44 @@ import java.util.Optional;
 @Transactional
 public class TextCommonDataServiceImpl implements TextCommonDataService {
 
-    private TextCommonDataRepository textCommonDataRepository;
+    private final TextCommonDataRepository textCommonDataRepository;
 
-    private BookmarkRepository bookmarkRepository;
+    private final BookmarkRepository bookmarkRepository;
 
-    private TextPartRepository textPartRepository;
+    private final TextPartRepository textPartRepository;
+
+    private final AppUserRepository appUserRepository;
 
 //    private static final int BOOKMARKS_COUNT = 10;
 
     @Autowired
     public TextCommonDataServiceImpl(TextCommonDataRepository textCommonDataRepository,
                                      BookmarkRepository bookmarkRepository,
-                                     TextPartRepository textPartRepository) {
+                                     TextPartRepository textPartRepository,
+                                     AppUserRepository appUserRepository) {
         this.textCommonDataRepository = textCommonDataRepository;
         this.bookmarkRepository = bookmarkRepository;
         this.textPartRepository = textPartRepository;
+        this.appUserRepository = appUserRepository;
     }
 
 
     @Override
     public List<TextCommonData> findAllByOrderByNameCreatedDateAsc() {
-        return textCommonDataRepository.findAllByOrderByNameAsc();
+        AppUser authenticated = appUserRepository.findByUsername(
+                SecurityContextHolder.getContext().getAuthentication().getName());
+        return textCommonDataRepository.findAllByUserOrderByNameAsc(authenticated);
     }
 
     @Override
     public TextCommonData create(String name) {
         // create textCommonData
         Date createdDate = new Date();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        AppUser principal = (AppUser) auth.getPrincipal();
         TextCommonData textCommonData = TextCommonData.builder()
                 .name(DataManager.trimQuotes(name))
+                .user(appUserRepository.findByUsername(auth.getName()))
                 .createdDate(createdDate)
                 .updatedDate(createdDate)
                 .build();

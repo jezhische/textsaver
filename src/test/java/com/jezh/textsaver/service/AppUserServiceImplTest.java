@@ -1,6 +1,7 @@
 package com.jezh.textsaver.service;
 
 import com.jezh.textsaver.configuration.BasePostgresConnectingTest;
+import com.jezh.textsaver.controller.LoginController;
 import com.jezh.textsaver.entity.AppUser;
 import com.jezh.textsaver.entity.Role;
 import org.hamcrest.Matchers;
@@ -8,6 +9,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -18,6 +22,9 @@ public class AppUserServiceImplTest extends BasePostgresConnectingTest {
 
     @Autowired
     AppUserService appUserService;
+
+    @Autowired
+    LoginController loginController;
 
     private AppUser user;
 
@@ -59,7 +66,18 @@ public class AppUserServiceImplTest extends BasePostgresConnectingTest {
                 Matchers.is("USER"));
     }
 
-//    @Test(expected = EntityExistsException.class)
+    @Test
+    public void testAuth() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        auth.setAuthenticated(true);
+//        auth.implies(new AppUser())
+        AppUser principal = (AppUser) auth.getPrincipal();
+        System.out.println("********************************************* " + principal);
+        UserDetails details = (UserDetails) auth.getDetails();
+        System.out.println("************************************************** " + details);
+    }
+
+    //    @Test(expected = EntityExistsException.class)
 //    public void doubleSave() {
 //        AppUser saved = appUserService.save(user);
 //    }

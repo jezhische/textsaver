@@ -61,6 +61,10 @@ public class TextCommonData extends AbstractIdentifier {
     @LastModifiedDate
     private Date updatedDate;
 
+    @ManyToOne(fetch = FetchType.EAGER, optional = true) // LAZY?
+    @JoinColumn(name = "user_id")
+    private AppUser user;
+
     /** if this field exists, hibernate makes request to bookmarks each time when there is request to text_common_data */
 //    @JsonIgnore
 //    @OneToOne(mappedBy = "textCommonData", cascade = CascadeType.ALL,
