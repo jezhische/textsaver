@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--status="debug" выводит внутренние (при работе log4j) логи в консоль ВНЕ ЗАВИСИМОСТИ от root level-->
+<Configuration status="error" name="LogConfig">
+    <Properties>
+        <!--skipJansi у меня не работает для 2.10.0, а для более низких версий подключен по умолчанию:-->
+        <Property name="log4j.skipJansi">false</Property>
+        <Property name="log_path">src\main\java\com\jezh\textsaver\log</Property>
+    </Properties>
+    <Filters>
+<!--  Здесь могут быть фильтры, относящиеся к уровню конфигурации, до того, сообщение попало в LogConfig -->
+    </Filters>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--<PatternLayout pattern="%highlight{%style{%d [%t] %-5level %class.%-8method: %-60msg%n%throwable}{Bright, BG_Yellow}}{FATAL=red, ERROR=red, WARN=magenta, INFO=blue, DEBUG=red, TRACE=black}"/>-->
+            <PatternLayout
+                    pattern="%highlight{%d [%t] %-5level %class{-3}.%-8method: %-60msg%n%throwable}{FATAL=red, ERROR=red, WARN=Bright red, INFO=Bright blue, DEBUG=red, TRACE=black}"/>
+        </Console>
+        <!--console appender from baeldung https://www.baeldung.com/log4j2-appenders-layouts-filters-->
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="
+%style{%date{DEFAULT}}{yellow}
+%highlight{%-5level}{FATAL=bg_red, ERROR=red, WARN=yellow, INFO=green}
+%style{%message}{Black}\n"/>
+        </Console>
+        <Console name="Console2" target="SYSTEM_OUT">
+            <PatternLayout pattern="
+%style{%d}{yellow}
+[%t]
+%highlight{%-5level}{FATAL=bg_red, ERROR=red, WARN=Bright red, INFO=green, DEBUG=yellow}
+%class{-3}.%-8method:
+%-60msg%n
+%style{%throwable}{red}"/>
+        </Console>
+
+        <!--  .............................................................................................................. -->
+
+        <!--  Ф А Й Л О В Ы Е  А П П Е Н Д Е Р Ы: -->
+
+        <!--fileName="...logBar.log" нужен как буфер. Последние логи могут так в нем и остаться, и переписываются в
+        соответствующий файл (который может тут же и создаваться по условию OnStartupTriggeringPolicy minSize="1")
+        только при следующем запуске приложения (т.е. происходит flush, опорожнение буфера)-->
+        <RollingFile name="BarRollingFile" fileName="${log_path}/logBar.log"
+                     filePattern="${log_path}/logBarLog/logBar_$${date:yyyy-MM-dd}/%d{HH}/logBar-%d{yyyy-MM-dd_HH}-%i.log">
+<!--выражение ${date:yyyy-MM-dd} является lookup, который "inserts external values into the log4j2 configuration"
+(в данном случае - current date), а предшествующий $ - это "escape character, to insert the lookup expression
+into the filePattern attribute"-->
+            <!--еще пример lookup - заголовок будет выведен перед первой записью логгера (только в файле)-->
+            <PatternLayout header="%d ${java:version} - ${java:os}\n">
+                <Pattern>%d [%t] %-5level %logger: %msg%n%throwable</Pattern>
+            </PatternLayout>
+<!--маркер-фильтры нуждаются в добавлении маркеров к сообщениям, отсылаемым логгерами, в джава-коде-->
+            <!--Чтобы несколько фильтров работали в связке, нужно создать композитный фильтр - тег <Filters>. Если
+            фильтр только один, этот тег не нужен:-->
+            <!--<Filters>-->
+        <!--&lt;!&ndash;Если я добавлю этот ThresholdFilter, то тогда в output пойдет все подряд:&ndash;&gt;-->
+                <!--&lt;!&ndash;<ThresholdFilter level="TRACE" onMatch="ACCEPT" onMismatch="DENY"/>&ndash;&gt;-->
+                <!--<MarkerFilter marker="PBAR" onMatch="ACCEPT" onMismatch="NEUTRAL"/>-->
+                <!--<MarkerFilter marker="ChBAR" onMatch="ACCEPT" onMismatch="DENY"/>-->
+            <!--</Filters>-->
+
+            <Policies>
+                <OnStartupTriggeringPolicy minSize="1"/>
+                <!--интервал 1 файл/единицу времени - в час, т.к. название файла заканчивается на {...HH} -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="2 KB"/>
+            </Policies>
+            <!--Не более 60 файлов С ОДИНАКОВЫМ ИМЕНЕМ (с разными индексами i) будет в каждой подпапке с именем logBar_$${date:yyyy-MM-dd},
+            если больше, то новый будет записываться с индексом 60, 60-й переписываться с индексом 59 и т.д.,
+            а 1-ый уничтожаться - файлы дописываются в конец (в отличие от того, что написано в доках), и работают
+            как стек, FIFO. В общем, будет получаться не более 60 файлов в час, и при этом i = {1; 60}-->
+            <DefaultRolloverStrategy max="60" />
+        </RollingFile>
+<!--  .............................................................................................................. -->
+    </Appenders>
+
+    <Loggers>
+        <Logger name="com.jezh.textsaver" level="trace" additivity="false">
+            <AppenderRef ref="Console2"/>
+            <!--<AppenderRef ref="ConsoleAppender"/>-->
+            <!--<AppenderRef ref="Console"/>-->
+            <AppenderRef ref="BarRollingFile"/>
+            <Filters>
+                <!--  Здесь могут быть фильтры, относящиеся к уровню LogConfig, до того, как сообщение попало в аппендер -->
+            </Filters>
+        </Logger>
+        <!--Это будет его ребенок, и поскольку у него additivity="true" по умолчанию, то аппендеров ему не добавляем -
+        он будет пересылать свои сообщения родителю, который будет ими распоряжаться, и дальше пропускать родитель их
+        уже не будет, поскольку у родителя additivity="false"-->
+        <Logger name="com.jezh.textsaver.util.logger.CommonLogger" level="trace">
+            <!--NB: запись типа <Logger.../> не работает, нужно <Logger...></Logger>-->
+        </Logger>
+
+        <Root level="info">
+            <AppenderRef ref="Console2"/>
+        </Root>
+    </Loggers>
+</Configuration>

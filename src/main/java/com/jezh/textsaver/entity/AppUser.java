@@ -1,6 +1,6 @@
 package com.jezh.textsaver.entity;
 
-import com.jezh.textsaver.extension.AbstractIdentifier;
+import com.jezh.textsaver.entity.extension.AbstractIdentifier;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 //import org.hibernate.validator.constraints.NotEmpty;

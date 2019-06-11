@@ -2,11 +2,13 @@ package com.jezh.textsaver.controller;
 
 import com.jezh.textsaver.entity.AppUser;
 import com.jezh.textsaver.service.AppUserService;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,9 +20,11 @@ import javax.validation.Valid;
 public class LoginController {
 
     private final AppUserService appUserService;
+    public Logger logger;
 
-    public LoginController(AppUserService appUserService) {
+    public LoginController(AppUserService appUserService, Logger logger) {
         this.appUserService = appUserService;
+//        logger = LogManager.getLogger(getClass());
     }
 
 //    @GetMapping(value={"/login"})
@@ -67,12 +71,13 @@ public class LoginController {
         // NB the way to get access to user data
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         AppUser user = appUserService.findByUsername(auth.getName());
-        System.out.println("****************************************************************** user from db: " + user);
         modelAndView.addObject("user", user);
         modelAndView.addObject("welcomemessage", "Hi, " + user.getUsername() + "!");
         modelAndView.setViewName("index");
 //        // for "/sign-in" mapping:
 //        modelAndView.setViewName("redirect:/");
+//        logger.info("******************************************** user authenticated: " + user +
+//                ". Authentication successfull");
         return modelAndView;
     }
 

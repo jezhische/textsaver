@@ -7,11 +7,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableJpaRepositories(basePackages = "com.jezh.textsaver.repository")
 @EnableTransactionManagement
-// To activate auditing in the classes marked @EntityListeners(AuditingEntityListener.class)
+// To activate auditing in the classes marked @EntityListeners(AuditingEntityListener.class), see TextPart.class
 @EnableJpaAuditing
-// https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html#boot-features-configure-datasource
-// Since AbstractIdentifier class is located in the directory "extension", different from "entity" directory,
-// there is need in this scan:
-@EntityScan("com.jezh.textsaver.extension")
 public class DataSourceConfig {
 }

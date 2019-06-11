@@ -57,7 +57,6 @@ public class BookmarksController {
         String url = dataManager.createBookmarksLink(id, bookmarksData);
         Bookmarks bookmarks = bookmarkService.findById(id).orElseThrow(
                 () -> new NoHandlerFoundException("GET", url, new HttpHeaders()));
-//        System.out.println("***********************************************************" + bookmarksData);
         int previousPageNumber = bookmarksData.getPreviousPageNumber();
         int totalPages = bookmarksData.getTotalPages();
 
@@ -67,11 +66,9 @@ public class BookmarksController {
         bookmarks.setSpecialBookmarks(dataManager.updateSpecialBookmarks(bookmarks.getSpecialBookmarks(),
                 previousPageNumber, bookmarksData.isSpecialBookmark(), totalPages));
 
-//        System.out.println("***********************************************************" + bookmarks);
         bookmarkService.update(bookmarks);
         List<BookmarkResource> bookmarkResources = assembler.convertBookmarksToBookmarkResourceList(bookmarks, bookmarksData.getCurrentPageNumber(),
                 bookmarksData.getTotalPages());
-//        bookmarkResources.forEach(bookmarkResource -> System.out.println("************* bookmarkResource:" + bookmarkResource));
         return bookmarkResources;
     }
 
