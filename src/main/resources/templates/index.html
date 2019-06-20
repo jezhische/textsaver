@@ -16,13 +16,12 @@
 <body>
 <!-- https://www.w3schools.com/html/html_layout.asp -->
 <header>
-    <form action="logout" method="get">
+    <form action="logout" method="post">
         <button class="btn btn-md btn-warning btn-block" type="Submit" style="font-size: 130%; font-weight: bold">logout</button>
     </form>
     <!-- http://webcodius.ru/recepty-dlya-sajta/kak-razmestit-elementy-spiska-gorizontalno-ili-gorizontalnoe-menyu-s-pomoshhyu-css.html -->
     <div >
         <ul id="common-menu">
-            <!--<li id="li-menu" th:utext="${welcomemessage}">Hi, guest!</li>-->
             <li><a class="non-refer" th:utext="${welcomemessage}"> Hi, guest!</a></li>
             <li><a class="refer" href="documents">home</a></li>
             <li><a class="refer" href="about">about</a></li>

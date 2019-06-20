@@ -27,7 +27,7 @@ public class TextCommonDataResourceAssembler {
     }
 
     public List<TextCommonDataResource> getLinkedDocsData(List<TextCommonData> docsData) {
-        return docsData.stream().map(docData -> {
+        return docsData.stream().map(docData -> { // .map(Function<TextCommonData, TextCommonDataResource>)
             TextCommonDataResource linkedDocData = null;
             try {
                 linkedDocData = convertToLinkedRepresentation(docData);
@@ -39,19 +39,20 @@ public class TextCommonDataResourceAssembler {
     }
 
     public TextCommonDataResource convertToLinkedRepresentation(TextCommonData docData) throws UnknownHostException, NoHandlerFoundException {
-        Date createdDate = docData.getCreatedDate();
         TextCommonDataResource resource = TextCommonDataResource.builder()
                 .name(docData.getName())/*(DataManager.getUniqueName(textCommonData.getName(), createdDate))*/ //todo: perhaps to remove
-                .createdDate(createdDate)
+                .createdDate(docData.getCreatedDate())
                 .updatedDate(docData.getUpdatedDate())
                 .build();
+                // link to page 0 uses as link to the whole document
                 resource.add(new Link(dataManager.createPageLink(docData.getId(), 0))/*.withSelfRel()*/);
                 return resource;
     }
 
-//    public TextCommonDataResource addSelfLink(TextCommonDataResource resource) {}
-
-    public TextCommonData convertToEntity(TextCommonDataResource representation) {
-        return null;
-    }
+    /*
+     * for future needs
+     */
+//    public TextCommonData convertToEntity(TextCommonDataResource representation) {
+//        return null;
+//    }
 }

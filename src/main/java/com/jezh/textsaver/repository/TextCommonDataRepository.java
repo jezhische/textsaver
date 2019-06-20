@@ -15,6 +15,7 @@ public interface TextCommonDataRepository extends JpaRepository<TextCommonData, 
     @Query(value = "SELECT * FROM public.find_textcommondata_by_id(?1)", nativeQuery = true)
     Optional<TextCommonData> findTextCommonDataById(Long id);
 
+    // todo: remake to 'findAllByUserOrderByNameCreatedDateAsc'
     List<TextCommonData> findAllByUserOrderByNameAsc(AppUser authenticated);
 
 //    List<TextCommonData> findAllByOrderByNameAsc();

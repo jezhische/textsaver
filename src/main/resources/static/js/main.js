@@ -19,7 +19,6 @@ $(function () {
                                 console.log('getSavedDocLinks() begin ---------------------------');
         $.ajax({
             type: 'GET',
-            // contentType: 'application/json',
             url: 'doc-data', // returns List<TextCommonDataResource>
             dataType: 'json',
             success: function (obtainedData, status, jqXHR) {
@@ -143,6 +142,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
                                                         ', isSpecialBookmark = ' + isSpecialBookmark);
 
             updateBookmarks(previousPageLink, targetPageLink);
+            setCloseDocButtonBehavior(targetPageLink);
         },
         error: function (jqXHR, textStatus, errorThrown) {
             let err = $('#error-panel');
@@ -495,6 +495,23 @@ function extractPageContent(previousPageLink, targetPageLink) {
 
     // several util functions placed here, 'cause from utility.js I get "Uncaught ReferenceError: extractPageContent
     // is not defined"
+
+
+// --------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------- update current page and CLOSE doc
+// --------------------------------------------------------------------------------------------------------------------
+function setCloseDocButtonBehavior(targetPageLink) {
+    let closeButton = $('#close-doc');
+    closeButton.click(function (event) {
+        event.preventDefault();
+                                            console.log('setCloseDocButtonBehavior() begins;');
+        updatePage(targetPageLink);
+        location.reload();
+    });
+}
+
+// ------------------------------------------------------------------------------------------------------------
+
     /* set the onclick behavior of the links in context '#docLinks' (class .col-1, left column) */
     function setLinksOnclickBehavior(docLink) {
                                                 console.log('setLinksOnclickBehavior() begin ---------------------------');
@@ -779,7 +796,6 @@ function extractPageContent(previousPageLink, targetPageLink) {
 
 
     getSavedDocLinks();
-    // setForwardPageButtonBehavior();
     $('#create-doc-btn').click(function (event) {
         event.preventDefault();
         createNewDoc();

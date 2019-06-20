@@ -45,9 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.
                 authorizeRequests()
-                .antMatchers("/login", "/sign-up", "/sign-in", "/access-denied").permitAll()
-//                .antMatchers("/product-images-uploads/**").hasAuthority("ADMIN")
-//                .antMatchers("/home").hasAuthority("USER")
+                .antMatchers("/login", "/sign-up", "/access-denied").permitAll()
                 .antMatchers("/**").hasAnyAuthority("ADMIN", "USER")
                 .anyRequest()
                 .authenticated()
@@ -57,14 +55,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginPage("/login")
 //                .loginProcessingUrl("/sign-in")
                 .failureUrl("/login?error=true")
-                // controller method GET mapped "/", and THE ADDRESS WILL BE http://localhost:8082/textsaver
-                .defaultSuccessUrl("/")// "/sign-in"
+                // controller method GET mapped "/", and THE ADDRESS WILL BE http://localhost:8074/textsaver
+                .defaultSuccessUrl("/")
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .and()
                 .logout()
-                // to use POST "/logout":
-//                .logoutUrl("/logout")
+                // the following method to use POST "/logout" - see index.html, "logout" button
+                .logoutUrl("/logout")
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/")
                 .and()

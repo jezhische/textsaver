@@ -23,15 +23,11 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @Component
 public class DataManager {
 
-//    private TextCommonDataControllerTransientDataRepo repository;
-//
-//    private TextCommonDataResourceAssembler assembler;
-
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT;
 
-//    private Environment env;
-
-    static {SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");}
+    static {
+        SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+    }
 
     private final String port;
 
@@ -39,9 +35,8 @@ public class DataManager {
 
     @Autowired
     public DataManager(Environment env) {
-//        this.env = env;
-        port = env.getRequiredProperty("local.server.port"); // by unknown reason property "server.port" in
-        // spring boot 2 returns "-1", so this is a crutch;
+        // by unknown reason property "server.port" in spring boot 2 returns "-1", so this is a crutch:
+        port = env.getRequiredProperty("local.server.port");
     }
 
     // TODO: to remove?
@@ -56,25 +51,28 @@ public class DataManager {
     }
 
     public static String getLastOpenedArrayItem(int pageNumber, boolean isEdited) {
-        return String.valueOf(pageNumber) + (isEdited ? "1" : "0");
+        return pageNumber + (isEdited ? "1" : "0");
     }
 
     /**
      *
-     * */
+     */
     public String createPageLink(long docDataId, int pageNumber) throws NoHandlerFoundException, UnknownHostException {
+        // the opportunity to use host address finding:
 //        String hostAddress = InetAddress.getLocalHost().getHostAddress();
+        // find path to the doc page from Controller method (the opportunity given by hateoas ControllerLinkBuilder class):
         URI resourcePath = linkTo(methodOn(TextPartController.class)
                 .findPage(docDataId, pageNumber)).toUri();
         String uri = UriComponentsBuilder.newInstance().scheme("http")
                 .host(/*hostAddress*/"localhost").port(port)
-//                .path(env.getRequiredProperty("server.servlet.context-path")) // by unknown reason, from test the
-//                context-path isn't created, and this line is necessary for test, but from controller this line
-//                causes duplication of context-path, so I need to remove it for application run
+                // by unknown reason, the context-path isn't created when I test this method, and the following line
+                // is necessary for test. But when I call the method from controller, this line causes duplication
+                // of context-path, so I need to remove it to run the application
+//                .path(env.getRequiredProperty("server.servlet.context-path"))
                 .path(resourcePath.getPath())
                 .query(resourcePath.getQuery())
                 .toUriString();
-          return uri; // http://localhost:port/textsaver/doc-data/docDataId/pages?page=pageNumber
+        return uri; // http://localhost:port/textsaver/doc-data/docDataId/pages?page=pageNumber
     }
 
 
@@ -95,7 +93,7 @@ public class DataManager {
     }
 
     public String[] updateLastOpenArray(String[] lastOpenArray, int previousPageNumber, boolean isPageUpdated, int totalPages) {
-        if (previousPageNumber > totalPages -1) return lastOpenArray;
+        if (previousPageNumber > totalPages - 1) return lastOpenArray;
         LRUCacheMap<String, String> cacheMap = new LRUCacheMap<>(BOOKMARKS_COUNT);
         for (String item : lastOpenArray) {
             int length = item.length();
@@ -110,7 +108,7 @@ public class DataManager {
     }
 
     public int[] updateSpecialBookmarks(int[] specialBookmarks, int previousPageNumber, boolean isSpecialBookmark, int totalPages) {
-        if (previousPageNumber > totalPages -1) return specialBookmarks;
+        if (previousPageNumber > totalPages - 1) return specialBookmarks;
 
         TreeSet<Integer> specials = new TreeSet<>();
         if (specialBookmarks != null && specialBookmarks.length != 0) {
@@ -140,8 +138,8 @@ public class DataManager {
             if (pNum == pageNm) listIterator.remove();
 
             if (pNum > pageNm) {
-            String isUpdated = item.substring(length - 1);
-            listIterator.set((pNum - 1) + isUpdated);
+                String isUpdated = item.substring(length - 1);
+                listIterator.set((pNum - 1) + isUpdated);
             }
         }
 //        lastOpenArray.removeIf(s -> s.startsWith(String.valueOf(pageNm)));

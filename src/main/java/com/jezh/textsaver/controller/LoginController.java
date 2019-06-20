@@ -20,19 +20,10 @@ import javax.validation.Valid;
 public class LoginController {
 
     private final AppUserService appUserService;
-    public Logger logger;
 
-    public LoginController(AppUserService appUserService, Logger logger) {
+    public LoginController(AppUserService appUserService) {
         this.appUserService = appUserService;
-//        logger = LogManager.getLogger(getClass());
     }
-
-//    @GetMapping(value={"/login"})
-//    public ModelAndView login(){
-//        ModelAndView modelAndView = new ModelAndView();
-//        modelAndView.setViewName("login");
-//        return modelAndView;
-//    }
 
 
     @GetMapping(value="/sign-up")
@@ -65,7 +56,8 @@ public class LoginController {
         return modelAndView;
     }
 
-    @GetMapping(value="/") // "/sign-in"
+    @GetMapping(value="/") // if the post request "/login" from login.html is successful, security redirects page
+    // to "defaultSuccessUrl("/")", i.e. to this controller
     public ModelAndView signin(){
         ModelAndView modelAndView = new ModelAndView();
         // NB the way to get access to user data
@@ -74,10 +66,6 @@ public class LoginController {
         modelAndView.addObject("user", user);
         modelAndView.addObject("welcomemessage", "Hi, " + user.getUsername() + "!");
         modelAndView.setViewName("index");
-//        // for "/sign-in" mapping:
-//        modelAndView.setViewName("redirect:/");
-//        logger.info("******************************************** user authenticated: " + user +
-//                ". Authentication successfull");
         return modelAndView;
     }
 
