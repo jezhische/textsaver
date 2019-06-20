@@ -1,0 +1,1 @@
+![alt text](https://github.com/jezhische/textsaver/blob/master/src/main/resources/static/img/login.png)
