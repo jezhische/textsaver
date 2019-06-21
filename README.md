@@ -1,1 +1,1 @@
-![alt relative path to image 'login'](img/login.png)
+![relative path to image 'login'](src/main/resources/static/img/login.png)
