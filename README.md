@@ -1,1 +1,1 @@
-![alt text](https://github.com/jezhische/textsaver/blob/master/src/main/resources/static/img/login.png)
+![alt relative path to image 'login'](img/login.png)
