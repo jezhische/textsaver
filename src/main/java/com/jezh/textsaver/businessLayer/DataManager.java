@@ -77,6 +77,7 @@ public class DataManager {
 
 
     public String createBookmarksLink(long docDataId, BookmarksData bookmarksData) throws NoHandlerFoundException, UnknownHostException {
+        // ControllerLinkBuilder class extends LinkBuilderSupport<ControllerLinkBuilder>, that contains URI toUri() method
         URI resourcePath = linkTo(methodOn(BookmarksController.class).getBookmarks(docDataId, bookmarksData)).toUri();
         return UriComponentsBuilder.newInstance().scheme("http")
                 .host("localhost").port(port)
@@ -94,6 +95,8 @@ public class DataManager {
 
     public String[] updateLastOpenArray(String[] lastOpenArray, int previousPageNumber, boolean isPageUpdated, int totalPages) {
         if (previousPageNumber > totalPages - 1) return lastOpenArray;
+        // the condition 'BOOKMARKS_COUNT = 10' means that lastOpenArray.length = 10 maximum, and if more it will be
+        // cut to 10 on LRU (Least Recently Used) principle
         LRUCacheMap<String, String> cacheMap = new LRUCacheMap<>(BOOKMARKS_COUNT);
         for (String item : lastOpenArray) {
             int length = item.length();

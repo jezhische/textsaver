@@ -54,8 +54,8 @@ CREATE TABLE IF NOT EXISTS public.user_role
 
 --drop table if exists public.user_role cascade;
 
-select u.username, u.password, u.enabled from users u where u.username= 'jezh';
-select u.username, r.role from users u inner join user_role ur on u.id = ur.user_id inner join roles r on r.id = ur.role_id where u.username = 'jezh';
+-- select u.username, u.password, u.enabled from users u where u.username= 'jezh';
+-- select u.username, r.role from users u inner join user_role ur on u.id = ur.user_id inner join roles r on r.id = ur.role_id where u.username = 'jezh';
 
 -- ===========================================================================
 
@@ -79,7 +79,6 @@ CREATE TABLE IF NOT EXISTS public.text_parts (
   , text_common_data_id BIGINT
   , last_update TIMESTAMP without time zone DEFAULT now()
   , CONSTRAINT text_parts_pkey PRIMARY KEY (id)
--- FOREIGN KEY (text_common_data_id) - ссылка на колонку в этой таблице
   , CONSTRAINT fk_textParts_textCommonData FOREIGN KEY (text_common_data_id) REFERENCES text_common_data (id)
 --     ON UPDATE CASCADE ON DELETE CASCADE -- default NO ACTION
 );
@@ -90,22 +89,6 @@ CREATE INDEX IF NOT EXISTS idx_next_it
   (next_item);
 
 -- DROP TABLE IF EXISTS public.text_parts CASCADE;
-
-
-
--- CREATE TYPE bookmark_def AS (
---   page_number INTEGER,
---   is_edited BOOLEAN
--- );
-
--- DROP TYPE bookmark_def CASCADE ;
-
--- CREATE TABLE IF NOT EXISTS bookmark_def (
---   page_number INTEGER,
---   is_edited BOOLEAN
--- );
-
--- DROP TABLE bookmark_def CASCADE ;
 
 
 CREATE TABLE IF NOT EXISTS public.bookmarks
@@ -123,6 +106,7 @@ CREATE TABLE IF NOT EXISTS public.bookmarks
 
 -- INSERT INTO bookmarks VALUES (13, '{}');
 
+-- obtain all the pages of the doc started with given page number up to end of the doc in ordered sequence
 CREATE OR REPLACE FUNCTION get_remaining_texparts_ordered_set(IN this_text_part_id BIGINT) RETURNS SETOF public.text_parts AS
 '
 DECLARE
@@ -131,13 +115,14 @@ DECLARE
   this_text_common_data_id BIGINT;
 BEGIN
   r := (SELECT tp FROM public.text_parts AS tp WHERE tp.id = this_text_part_id);
---   there is need in explicit casting in non-SQL expressions, so r casts to text_parts type
+--   there is need in explicit casting to non-SQL expressions, so r is casted to text_parts type
   this_text_common_data_id := (r::public.text_parts).text_common_data_id;
   next_id := (r::public.text_parts).next_item;
   RETURN NEXT r;
   IF (next_id IS NULL) THEN
     RETURN;
   END IF;
+--   grab all the pages of the doc with the found text_common_data_id
   FOR r IN SELECT * FROM public.text_parts AS tp WHERE tp.text_common_data_id = this_text_common_data_id
   LOOP
     r := (SELECT tp FROM public.text_parts AS tp WHERE tp.id = next_id);
@@ -156,6 +141,7 @@ LANGUAGE plpgsql;
 -- SELECT * FROM get_remaining_texparts_ordered_set(62);
 
 
+-- obtain all the pages of the doc from beginning to end of the doc in ordered sequence
 CREATE OR REPLACE FUNCTION get_all_texparts_ordered_set(IN this_text_common_data_id BIGINT) RETURNS SETOF public.text_parts AS
 -- NB: function body must be something like "one statement" for JPA, so the "dollars quotes" $$ there are
 -- no suitable here, only '. But they are suitable INTO the function body

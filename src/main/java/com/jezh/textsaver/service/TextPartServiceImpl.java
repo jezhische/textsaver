@@ -140,6 +140,7 @@ public class TextPartServiceImpl implements TextPartService {
 
     @Override
     public Page<TextPart> findPageByDocDataIdAndPageNumber(Long docDataId, int currentPageNumber) {
+        // the Page is the list that can consist of several db entries; in my case I use one entry per page only
         return repository.findPageByDocDataId(docDataId, PageRequest.of(currentPageNumber, 1));
     }
 
@@ -156,7 +157,8 @@ public class TextPartServiceImpl implements TextPartService {
         TextPart newOne = TextPart.builder()
                 .lastUpdate(new Date())
                 .textCommonData(textCommonData)
-                .build(); // in this moment without nextItem to avoid constraint "unique next_item" violation
+                .build();
+        // save entry in db without nextItem (i.e. nextItem ) to avoid constraint "unique next_item" violation
         repository.saveAndFlush(newOne);
         current.setNextItem(newOne.getId());
         newOne.setNextItem(next == null ? null : next.getId());

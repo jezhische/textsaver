@@ -83,7 +83,6 @@ $(function () {
                 totalPages = 1;
 
                 setNewDocLinkOnclickBehavior(currentPageLink, currentDocName);
-                // TODO: change to exstractBookmarks()
                 extractBookmarks();
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -202,15 +201,12 @@ function extractPageContent(previousPageLink, targetPageLink) {
 
         let nextPageNumber = getPageNumberByLink(nextPageLink);
         let nextBackgroundColor;
-        let isSpecialBookmarkButton;
-
 
         $.ajax({
             type: 'PUT',
             url: getBookmarksLink(previousPageLink), // http://localhost:8074/textsaver/doc-data/1733/bookmarks
             contentType: 'application/json; charset=utf-8',
             data: JSON.stringify({"previousPageNumber":getPageNumberByLink(previousPageLink),
-                // "currentPageNumber":currentPageNumber, "totalPages":totalPages,
                 "currentPageNumber":getPageNumberByLink(nextPageLink), "totalPages":totalPages,
                 "isPageUpdated": isPageUpdated, "isSpecialBookmark": isSpecialBookmark}),
             dataType: 'json', // obtainedData = BookmarkResource array
@@ -218,7 +214,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
 
                 isPageUpdated = false;
 
-    // isSpecialBookmark variable assigning occurs here
+        // to assign isSpecialBookmark variable value:
                 obtainedData.forEach(bookmarkResource => {
                     if (bookmarkResource.pageNumber.toString() === nextPageNumber.toString()) {
                         nextBackgroundColor = bookmarkResource.color;
@@ -226,19 +222,14 @@ function extractPageContent(previousPageLink, targetPageLink) {
                     }
                 });
 
-
                 toggleSpecialBookmarkCss();
-
-                // isPageUpdated = false;
-
                                 console.log('UPDATEBOOKMARKS: nextPageNumber = ' + nextPageNumber + ', nextBackgroundColor = ' +
                                     nextBackgroundColor + ', isPageUpdated = ' + isPageUpdated +
                                     ', isSpecialBookmark = ' + isSpecialBookmark + ', url = ' + getBookmarksLink(previousPageLink) +
                                 ', getPageNumberByLink(previousPageLink) = ' + getPageNumberByLink(previousPageLink));
                                 // obtainedData.forEach(d => console.log('; ' + d.color + '::' + d.pageLink + '::' + d.pageNumber));
 
-
-
+                // to reset bookmark buttons row:
                 resetPageNmBtns(obtainedData);
 
             },
@@ -257,8 +248,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
     function resetPageNmBtns(bookmarksArray) {
 
         let upperPageButtons = $('#container').find('#upper-doc-bar').find('#upper-page-buttons-row');
-        let isSpecialBookmarkButton = upperPageButtons.find('.page-btn-bar').find('#is-special-bookmark');
-
+        // let isSpecialBookmarkButton = upperPageButtons.find('.page-btn-bar').find('#is-special-bookmark');
         upperPageButtons.find('.page-number-button').remove();
 
         bookmarksArray.forEach(bookmarkResource => {
@@ -270,10 +260,12 @@ function extractPageContent(previousPageLink, targetPageLink) {
                 $('<button id="'+ pageNumber + '" type="submit" formaction="' +
                 bookmarkResource.pageLink + '" class="page-number-button">'+ (pageNumber + 1) + '</button>');
             upperPageButtons.find('.bookmarks-bar').append(numberButton);
-    // ONCLICK BEHAVIOR
+    // ONCLICK BEHAVIOR assigning:
             numberButton.click(function (event) {
                 event.preventDefault();
 
+                // todo: if the page updating is necessary in forEach cycle? CHECK (but without this line there is no
+                //  updating for insertPageButton and PageNmButtons, only for back-forward)
                 updatePage(currentPageLink);
 
                             console.log('RESETPAGENMBTNS clickedPgNmBackgroundColor = ' + clickedPgNmBackgroundColor +
@@ -359,7 +351,8 @@ function extractPageContent(previousPageLink, targetPageLink) {
         let insertedPageNm = currentPageNumber + 1;
         let insertedPageLink = getNextPageLink(currentPageLink, currentPageNumber);
 
-        updatePage(insertedPageLink);
+        updatePage(currentPageLink);
+        // updatePage(getNextPageLink(currentPageLink, currentPageNumber));
 
         // let insertedPageButton = $('<button id="' + insertedPageNm + '" formaction="' + insertedPageLink + '" class="page-number-button" disabled>'
         //     + (insertedPageNm + 1) + '</button>');
@@ -419,10 +412,10 @@ function extractPageContent(previousPageLink, targetPageLink) {
             $.ajax({
                 type: 'PUT',
                 contentType: "application/json; charset=utf-8",
-                url: currentPageLink, // http://localhost:8074/textsaver/doc-data/pages?page=25
+                url: currentPageLink, // http://localhost:8074/textsaver/doc-data/106/pages?page=25
                 data: JSON.stringify(currentPageContent),
-                dataType: 'text', // currentPageContent
-                success: function (obtainedData, status, jqXHR) {
+//                dataType: 'text', // obtainedData
+                success: function () {
                                             console.log('success updating page ' + currentPageLink + ', ' +
                                                 'pageContent = ' + currentPageContent.toString().substring(0, 5) + "...");
                     let err = $('#error-panel');
@@ -431,7 +424,7 @@ function extractPageContent(previousPageLink, targetPageLink) {
 
                     checkSum = currentPageCheckSum;
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
+                error: function (jqXHR) {
                     let err = $('#error-panel');
                     err.css('visibility', 'visible');
                     err.find('pre').html(jqXHR.responseText);
