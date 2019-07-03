@@ -23,8 +23,6 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 @SpringBootApplication
-/*(exclude = ErrorMvcAutoConfiguration.class)*/
-//@Import(DataSourceConfig.class)
 @ComponentScan("com.jezh.textsaver")
 // Since @WebMvcTest throws an error: IllegalArgumentException: At least one JPA metamodel must be present!,
 // I moved all the @Enable* annotations to a dedicated @Configuration class  DataSourceConfig.

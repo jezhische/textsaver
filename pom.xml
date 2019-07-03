@@ -15,7 +15,6 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.0.6.RELEASE</version>
-		<!--<version>1.5.2.RELEASE</version>-->
 		<relativePath/> <!-- lookup parent from bookmarkRepository -->
 	</parent>
 
@@ -32,10 +31,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		<!--<dependency>-->
-			<!--<groupId>org.springframework.boot</groupId>-->
-			<!--<artifactId>spring-boot-starter-data-rest</artifactId>-->
-		<!--</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -48,17 +43,9 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-hateoas</artifactId>
         </dependency>
-		<!-- https://mvnrepository.com/artifact/de.escalon.hypermedia/spring-hateoas-ext -->
-		<!--<dependency>-->
-			<!--<groupId>de.escalon.hypermedia</groupId>-->
-			<!--<artifactId>spring-hateoas-ext</artifactId>-->
-			<!--<version>0.4.1</version>-->
-		<!--</dependency>-->
-		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-aop -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-aop</artifactId>
-			<!--<version>2.0.6.RELEASE</version>-->
 		</dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -77,14 +64,6 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
-		<!--<dependency>-->
-			<!--<groupId>org.hibernate.validator</groupId>-->
-			<!--<artifactId>hibernate-validator</artifactId>-->
-			<!--<version>6.1.0.Alpha3</version>-->
-		<!--</dependency>-->
-
-
 		<dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -96,17 +75,6 @@
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 
-        <!-- Querydsl is an extensive Java framework, which helps with creating and running type-safe queries in a
-        domain specific language that is similar to SQL. - I DON'T USE YET -->
-		<!-- https://mvnrepository.com/artifact/com.querydsl/querydsl-jpa -->
-		<!--<dependency>-->
-			<!--<groupId>com.querydsl</groupId>-->
-			<!--<artifactId>querydsl-jpa</artifactId>-->
-			<!--<version>4.1.3</version>-->
-		<!--</dependency>-->
-
-        <!-- for dto mapping -->
-        <!-- https://mvnrepository.com/artifact/net.rakugakibox.spring.boot/orika-spring-boot-starter -->
         <dependency>
             <groupId>net.rakugakibox.spring.boot</groupId>
             <artifactId>orika-spring-boot-starter</artifactId>
@@ -115,13 +83,11 @@
 
 <!--============================================================================================== logger-->
 
-		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 			<version>2.8.2</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
