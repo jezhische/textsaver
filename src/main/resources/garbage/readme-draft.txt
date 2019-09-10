@@ -40,7 +40,7 @@ linkTo() (creates a pointing to a controller method), который прини�
 - ссылок на документы: подгружать первые 30, по мере надобности - следующие. То же
  и с результатами поиска(это условие сразу для поиска в бд)
 
- ![alt text](https://github.com/jezhische/textsaver/blob/master/src/main/resources/static/img/login.png)
+![alt: doc_editing_window](src\main\resources\static\img\readme_img\doc_editing.jpeg)
 
  Данный проект сделан исключительно с учебными целями, статус: работает, но незавершен.
  Использованные технологии: JDK 8 /Spring Boot 2.0.6.RELEASE /Spring Web MVC /Spring Security /Spring Data JPA /
