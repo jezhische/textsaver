@@ -1,4 +1,6 @@
 <p><i>This project is created exclusively for educational purposes. Current status: working, unfinished.</i></p>
+ <p>Unfortunately, at the time of writing, I had no idea of callback and Promise at all. So an attempt to perform 
+ asynchronous functions similarly to synchronous ones leaded the application became unstable and I couldn't finish it. </p>
  <br>
  <p>Technologies used: JDK 8 /Spring Boot 2.0.6.RELEASE /Spring Web MVC /Spring Security /Spring Data JPA /
  Spring HATEOAS /Spring AOP /Spring Boot Test /jQuery /PostgreSQL 9 /PL/pgSQL /Project Lombok /Thymeleaf /
